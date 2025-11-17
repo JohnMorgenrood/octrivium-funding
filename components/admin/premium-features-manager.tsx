@@ -185,7 +185,7 @@ export function PremiumFeaturesManager({
 
       {/* Expiry Date */}
       <div className="mb-6">
-        <label className="block text-sm font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
+        <label className="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white mb-2">
           <Calendar className="w-4 h-4" />
           Premium Features Expiry Date
         </label>
