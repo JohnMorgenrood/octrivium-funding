@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Building2, TrendingUp, Users, Calendar, ArrowUpRight, ArrowDownRight, Clock, Target, Shield, ArrowRight } from 'lucide-react';
 import { useState } from 'react';
 
-// Fake deals data
+// Fake deals data - multipliers match seed data
 const fakeDeals = [
   {
     id: 1,
@@ -21,7 +21,7 @@ const fakeDeals = [
     revenueGrowth: 15.5,
     daysLeft: 12,
     minInvestment: 1000,
-    targetReturn: 1.7,
+    targetReturn: 1.6,
     riskLevel: 'Medium',
     status: 'ACTIVE',
     logo: '🔋',
@@ -40,7 +40,7 @@ const fakeDeals = [
     revenueGrowth: 22.3,
     daysLeft: 8,
     minInvestment: 1000,
-    targetReturn: 1.7,
+    targetReturn: 1.4,
     riskLevel: 'Low',
     status: 'ACTIVE',
     logo: '☕',
@@ -59,7 +59,7 @@ const fakeDeals = [
     revenueGrowth: 45.2,
     daysLeft: 25,
     minInvestment: 5000,
-    targetReturn: 1.7,
+    targetReturn: 1.8,
     riskLevel: 'High',
     status: 'ACTIVE',
     logo: '💳',
@@ -78,7 +78,7 @@ const fakeDeals = [
     revenueGrowth: 18.7,
     daysLeft: 15,
     minInvestment: 1000,
-    targetReturn: 1.7,
+    targetReturn: 1.5,
     riskLevel: 'Medium',
     status: 'ACTIVE',
     logo: '👗',
@@ -97,7 +97,7 @@ const fakeDeals = [
     revenueGrowth: 12.4,
     daysLeft: 18,
     minInvestment: 2500,
-    targetReturn: 1.7,
+    targetReturn: 1.45,
     riskLevel: 'Medium',
     status: 'ACTIVE',
     logo: '🚚',
@@ -116,7 +116,7 @@ const fakeDeals = [
     revenueGrowth: 28.5,
     daysLeft: 30,
     minInvestment: 1000,
-    targetReturn: 1.7,
+    targetReturn: 1.75,
     riskLevel: 'Medium',
     status: 'PENDING',
     logo: '🏥',
@@ -246,7 +246,7 @@ export default function DealsPage() {
                 <div className="p-4 md:p-6 border-b border-slate-200 dark:border-slate-700">
                   <div className="flex justify-between items-start mb-3">
                     <div className="flex items-center space-x-3">
-                      <div className="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-xl md:text-2xl shadow-lg ring-4 ring-white dark:ring-slate-800">
+                      <div className="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-xl md:text-2xl shadow-lg ring-4 ring-white dark:ring-slate-800 flex-shrink-0 aspect-square">
                         {deal.logo}
                       </div>
                       <div>
