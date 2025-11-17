@@ -153,8 +153,8 @@ async function getDashboardStats(userId: string, role: string) {
       }),
     ]);
 
-    const totalInvested = investments.reduce((sum, inv) => sum + Number(inv.amount), 0);
-    const totalReturns = investments.reduce((sum, inv) => sum + Number(inv.totalReceived), 0);
+    const totalInvested = investments.reduce((sum: number, inv: any) => sum + Number(inv.amount), 0);
+    const totalReturns = investments.reduce((sum: number, inv: any) => sum + Number(inv.totalReceived), 0);
 
     return {
       totalInvested,
@@ -182,10 +182,10 @@ async function getDashboardStats(userId: string, role: string) {
       include: { _count: { select: { investments: true } } },
     });
 
-    const totalRaised = deals.reduce((sum, deal) => sum + Number(deal.currentFunding), 0);
-    const totalRepaid = deals.reduce((sum, deal) => sum + Number(deal.totalRepaid), 0);
-    const investorCount = deals.reduce((sum, deal) => sum + deal._count.investments, 0);
-    const activeDeals = deals.filter(d => ['ACTIVE', 'FUNDED', 'REPAYING'].includes(d.status)).length;
+    const totalRaised = deals.reduce((sum: number, deal: any) => sum + Number(deal.currentFunding), 0);
+    const totalRepaid = deals.reduce((sum: number, deal: any) => sum + Number(deal.totalRepaid), 0);
+    const investorCount = deals.reduce((sum: number, deal: any) => sum + deal._count.investments, 0);
+    const activeDeals = deals.filter((d: any) => ['ACTIVE', 'FUNDED', 'REPAYING'].includes(d.status)).length;
 
     return {
       totalRaised,

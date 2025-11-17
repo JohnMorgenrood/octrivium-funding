@@ -34,7 +34,7 @@ export async function POST(req: Request) {
 
     // In production, this would integrate with PayFast for payouts
     // For now, we'll simulate a pending withdrawal
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx: any) => {
       // Update wallet balance
       const updatedWallet = await tx.wallet.update({
         where: { userId: session.user.id },

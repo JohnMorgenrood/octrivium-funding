@@ -26,7 +26,7 @@ export async function GET(req: Request) {
     });
 
     return NextResponse.json({
-      transactions: transactions.map((tx) => ({
+      transactions: transactions.map((tx: any) => ({
         ...tx,
         amount: Number(tx.amount),
         fee: Number(tx.fee),

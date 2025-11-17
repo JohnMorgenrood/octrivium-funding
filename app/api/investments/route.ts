@@ -71,7 +71,7 @@ export async function POST(req: Request) {
     }
 
     // Create investment in a transaction
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx: any) => {
       // Create investment
       const investment = await tx.investment.create({
         data: {
@@ -123,7 +123,7 @@ export async function POST(req: Request) {
           where: { dealId: validated.dealId },
         });
 
-        const totalFunding = allInvestments.reduce((sum, inv) => sum + Number(inv.amount), 0);
+        const totalFunding = allInvestments.reduce((sum: number, inv: any) => sum + Number(inv.amount), 0);
 
         for (const inv of allInvestments) {
           await tx.investment.update({
