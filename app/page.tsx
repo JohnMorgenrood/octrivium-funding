@@ -51,6 +51,7 @@ const fakeDealss = [
     id: 1,
     name: 'Green Energy Solutions',
     industry: 'Renewable Energy',
+    description: 'Solar panel installation and renewable energy solutions for residential and commercial properties.',
     fundingGoal: 500000,
     funded: 425000,
     investors: 89,
@@ -58,14 +59,16 @@ const fakeDealss = [
     revenueGrowth: 15.5,
     daysLeft: 12,
     minInvestment: 1000,
-    targetReturn: 1.7,
+    targetReturn: 1.5,
     status: 'active',
     logo: '🔋',
+    image: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=600&h=400&fit=crop',
   },
   {
     id: 2,
     name: 'Cape Town Coffee Co.',
     industry: 'Food & Beverage',
+    description: 'Specialty coffee chain expanding across Western Cape with online delivery service.',
     fundingGoal: 750000,
     funded: 680000,
     investors: 124,
@@ -73,14 +76,16 @@ const fakeDealss = [
     revenueGrowth: 22.3,
     daysLeft: 8,
     minInvestment: 1000,
-    targetReturn: 1.7,
+    targetReturn: 1.3,
     status: 'active',
     logo: '☕',
+    image: 'https://images.unsplash.com/photo-1511920170033-f8396924c348?w=600&h=400&fit=crop',
   },
   {
     id: 3,
     name: 'Tech Innovators SA',
     industry: 'FinTech',
+    description: 'Mobile payment solutions and digital wallet platform serving underbanked communities.',
     fundingGoal: 1000000,
     funded: 340000,
     investors: 67,
@@ -91,11 +96,13 @@ const fakeDealss = [
     targetReturn: 1.7,
     status: 'active',
     logo: '💳',
+    image: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=600&h=400&fit=crop',
   },
   {
     id: 4,
     name: 'African Fashion Hub',
     industry: 'E-commerce',
+    description: 'Online marketplace connecting African fashion designers with global customers.',
     fundingGoal: 350000,
     funded: 285000,
     investors: 52,
@@ -103,9 +110,10 @@ const fakeDealss = [
     revenueGrowth: 18.7,
     daysLeft: 15,
     minInvestment: 1000,
-    targetReturn: 1.7,
+    targetReturn: 1.4,
     status: 'active',
     logo: '👗',
+    image: 'https://images.unsplash.com/photo-1558769132-cb1aea1f162f?w=600&h=400&fit=crop',
   },
 ];
 
@@ -323,17 +331,17 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Navigation Arrows */}
+        {/* Navigation Arrows - Hidden */}
         <button
           onClick={scrollPrev}
-          className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white hover:bg-white/30 transition-all shadow-lg"
+          className="hidden absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white hover:bg-white/30 transition-all shadow-lg"
           aria-label="Previous slide"
         >
           <ChevronLeft className="h-6 w-6" />
         </button>
         <button
           onClick={scrollNext}
-          className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white hover:bg-white/30 transition-all shadow-lg"
+          className="hidden absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white hover:bg-white/30 transition-all shadow-lg"
           aria-label="Next slide"
         >
           <ChevronRight className="h-6 w-6" />
@@ -562,7 +570,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Live Deals - Trading Platform Style */}
+      {/* Live Deals - Image Card Style */}
       <section className="py-20 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-blue-950 dark:to-indigo-950">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-12">
@@ -575,121 +583,109 @@ export default function HomePage() {
               </p>
             </div>
             <Link href="/deals">
-              <Button variant="outline" className="hidden md:flex">
+              <Button variant="outline" className="hidden md:flex group">
                 View All Deals
-                <ArrowRight className="ml-2 h-4 w-4" />
+                <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {fakeDealss.map((deal, index) => {
               const percentFunded = (deal.funded / deal.fundingGoal) * 100;
-              const isGrowing = deal.revenueGrowth > 0;
-              
-              // Assign colors based on index
-              const borderColors = [
-                'border-l-4 border-emerald-500 dark:border-emerald-400',
-                'border-l-4 border-yellow-500 dark:border-yellow-400',
-                'border-l-4 border-blue-500 dark:border-blue-400',
-                'border-l-4 border-purple-500 dark:border-purple-400',
-              ];
-              const borderColor = borderColors[index % borderColors.length];
               
               return (
                 <div
                   key={deal.id}
-                  className={`group bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-lg hover:shadow-2xl border-2 border-slate-100 dark:border-slate-700 hover:border-slate-200 dark:hover:border-slate-600 hover:-translate-y-1 transition-all duration-300 ${borderColor} backdrop-blur-sm`}
+                  className="group bg-white dark:bg-slate-800 rounded-2xl shadow-lg hover:shadow-2xl border border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-600 hover:-translate-y-2 transition-all duration-300 overflow-hidden"
                 >
-                  {/* Header */}
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-2xl shadow-lg ring-4 ring-white dark:ring-slate-800">
-                        {deal.logo}
-                      </div>
-                      <div>
-                        <h3 className="font-bold text-lg text-slate-900 dark:text-white">
-                          {deal.name}
-                        </h3>
-                        <p className="text-sm text-slate-500 dark:text-slate-400">{deal.industry}</p>
+                  {/* Business Image Header */}
+                  <div className="relative h-48 overflow-hidden">
+                    <Image
+                      src={deal.image}
+                      alt={deal.name}
+                      fill
+                      className="object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+                    
+                    {/* Logo and Name Overlay */}
+                    <div className="absolute bottom-0 left-0 right-0 p-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-white dark:bg-slate-900 rounded-full flex items-center justify-center text-xl shadow-xl ring-2 ring-white/50">
+                          {deal.logo}
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-bold text-base text-white leading-tight line-clamp-1">
+                            {deal.name}
+                          </h3>
+                          <p className="text-xs text-white/90">{deal.industry}</p>
+                        </div>
                       </div>
                     </div>
-                    <div className="flex items-center space-x-1 px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-sm font-semibold">
-                      <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                      <span>ACTIVE</span>
+
+                    {/* Return Badge */}
+                    <div className="absolute top-3 right-3">
+                      <Badge className="bg-emerald-500 text-white font-bold text-sm px-2.5 py-1 shadow-lg">
+                        {deal.targetReturn}x
+                      </Badge>
                     </div>
                   </div>
 
-                  {/* Key Metrics */}
-                  <div className="grid grid-cols-3 gap-4 mb-4">
-                    <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900/50 dark:to-slate-900/30 rounded-xl p-3 border border-slate-200 dark:border-slate-700">
-                      <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Monthly Revenue</div>
-                      <div className="font-bold text-slate-900 dark:text-white">
-                        R{(deal.monthlyRevenue / 1000).toFixed(0)}k
+                  {/* Card Content */}
+                  <div className="p-4 space-y-3">
+                    {/* Description */}
+                    <p className="text-sm text-slate-600 dark:text-slate-300 line-clamp-2 leading-relaxed">
+                      {deal.description}
+                    </p>
+
+                    {/* Progress Bar */}
+                    <div>
+                      <div className="flex justify-between items-center mb-1.5">
+                        <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                          Progress
+                        </span>
+                        <span className="text-xs font-bold text-blue-600 dark:text-blue-400">
+                          {percentFunded.toFixed(0)}%
+                        </span>
                       </div>
-                      <div className={`flex items-center text-xs mt-1 ${isGrowing ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
-                        {isGrowing ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
+                      <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full transition-all duration-500"
+                          style={{ width: `${Math.min(percentFunded, 100)}%` }}
+                        ></div>
+                      </div>
+                      <div className="flex justify-between items-center mt-1">
+                        <span className="text-xs text-slate-500 dark:text-slate-400">
+                          R{(deal.funded / 1000).toFixed(0)}k / R{(deal.fundingGoal / 1000).toFixed(0)}k
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Stats */}
+                    <div className="flex justify-between items-center pt-2 text-xs text-slate-500 dark:text-slate-400">
+                      <div className="flex items-center">
+                        <Users className="h-3 w-3 mr-1" />
+                        {deal.investors}
+                      </div>
+                      <div className="flex items-center">
+                        <Clock className="h-3 w-3 mr-1" />
+                        {deal.daysLeft}d left
+                      </div>
+                      <div className="flex items-center text-emerald-600 dark:text-emerald-400">
+                        <TrendingUp className="h-3 w-3 mr-1" />
                         {deal.revenueGrowth}%
                       </div>
                     </div>
-                    <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900/50 dark:to-slate-900/30 rounded-xl p-3 border border-slate-200 dark:border-slate-700">
-                      <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Target Return</div>
-                      <div className="font-bold text-slate-900 dark:text-white">
-                        {deal.targetReturn}x
-                      </div>
-                      <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">Capped</div>
-                    </div>
-                    <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900/50 dark:to-slate-900/30 rounded-xl p-3 border border-slate-200 dark:border-slate-700">
-                      <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Min Investment</div>
-                      <div className="font-bold text-slate-900 dark:text-white">
-                        R{(deal.minInvestment / 1000).toFixed(0)}k
-                      </div>
-                      <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">Entry</div>
-                    </div>
-                  </div>
 
-                  {/* Funding Progress */}
-                  <div className="mb-4">
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-                        Funding Progress
-                      </span>
-                      <span className="text-sm font-bold text-blue-600 dark:text-blue-400">
-                        {percentFunded.toFixed(0)}%
-                      </span>
-                    </div>
-                    <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full transition-all duration-500"
-                        style={{ width: `${percentFunded}%` }}
-                      ></div>
-                    </div>
-                    <div className="flex justify-between items-center mt-2">
-                      <span className="text-xs text-slate-500 dark:text-slate-400">
-                        R{(deal.funded / 1000).toFixed(0)}k raised
-                      </span>
-                      <span className="text-xs text-slate-500 dark:text-slate-400">
-                        R{(deal.fundingGoal / 1000).toFixed(0)}k goal
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Bottom Stats */}
-                  <div className="flex justify-between items-center pt-4 border-t border-slate-200 dark:border-slate-700">
-                    <div className="flex items-center space-x-4 text-sm">
-                      <div className="flex items-center text-slate-600 dark:text-slate-300">
-                        <Users className="h-4 w-4 mr-1" />
-                        {deal.investors} investors
-                      </div>
-                      <div className="flex items-center text-slate-600 dark:text-slate-300">
-                        <Clock className="h-4 w-4 mr-1" />
-                        {deal.daysLeft} days left
-                      </div>
-                    </div>
-                    <Link href={`/deals/${deal.id}`}>
-                      <Button size="sm" className="shadow-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 group-hover:scale-105 transition-transform">
-                        View Deal
-                        <ArrowRight className="ml-2 h-4 w-4" />
+                    {/* CTA Button */}
+                    <Link href={`/deals/${deal.id}`} className="block">
+                      <Button 
+                        size="sm" 
+                        className="w-full shadow-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 group-hover:shadow-xl transition-all font-semibold"
+                      >
+                        View Details
+                        <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                       </Button>
                     </Link>
                   </div>

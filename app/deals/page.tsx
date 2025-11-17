@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Navigation } from '@/components/navigation';
 import { Building2, TrendingUp, Users, Calendar, ArrowUpRight, ArrowDownRight, Clock, Target, Shield, ArrowRight } from 'lucide-react';
 import { useState } from 'react';
 
@@ -152,8 +153,10 @@ export default function DealsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-blue-950 dark:to-indigo-950">
-      <div className="container mx-auto px-4 py-6 md:py-8">
+    <>
+      <Navigation />
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-blue-950 dark:to-indigo-950">
+        <div className="container mx-auto px-4 py-6 md:py-8">
         <div className="mb-6 md:mb-8">
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-2 md:mb-3 text-slate-900 dark:text-white">
             Investment Opportunities
@@ -386,7 +389,8 @@ export default function DealsPage() {
             </Button>
           </div>
         )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
