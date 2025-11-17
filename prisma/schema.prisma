@@ -186,6 +186,18 @@ model Deal {
   adminNotes            String?    @db.Text
   approvedAt            DateTime?
   approvedBy            String?
+  
+  // Premium Listing Features
+  isFeatured            Boolean    @default(false) // Featured badge on card
+  isTopListing          Boolean    @default(false) // Top of homepage spot
+  isSponsored           Boolean    @default(false) // Sponsored category placement
+  isPrioritySearch      Boolean    @default(false) // Priority in search results
+  isNewsletterFeatured  Boolean    @default(false) // Featured in investor newsletter
+  isSocialBoosted       Boolean    @default(false) // Featured on social media
+  isPriorityReview      Boolean    @default(false) // Fast-track approval
+  premiumExpiresAt      DateTime?  // When premium features expire
+  premiumNotes          String?    @db.Text // Admin notes about premium features
+  
   createdAt             DateTime   @default(now())
   updatedAt             DateTime   @updatedAt
 

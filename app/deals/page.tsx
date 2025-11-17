@@ -30,6 +30,8 @@ const fakeDeals = [
     location: 'Cape Town',
     founded: 2020,
     image: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=600&h=400&fit=crop',
+    isFeatured: true,
+    isTopListing: true,
   },
   {
     id: 2,
@@ -50,6 +52,8 @@ const fakeDeals = [
     location: 'Cape Town',
     founded: 2019,
     image: 'https://images.unsplash.com/photo-1511920170033-f8396924c348?w=600&h=400&fit=crop',
+    isFeatured: false,
+    isTopListing: false,
   },
   {
     id: 3,
@@ -70,6 +74,8 @@ const fakeDeals = [
     location: 'Johannesburg',
     founded: 2021,
     image: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=600&h=400&fit=crop',
+    isFeatured: false,
+    isTopListing: false,
   },
   {
     id: 4,
@@ -90,6 +96,8 @@ const fakeDeals = [
     location: 'Durban',
     founded: 2020,
     image: 'https://images.unsplash.com/photo-1558769132-cb1aea1f162f?w=600&h=400&fit=crop',
+    isFeatured: true,
+    isTopListing: false,
   },
   {
     id: 5,
@@ -110,6 +118,8 @@ const fakeDeals = [
     location: 'Johannesburg',
     founded: 2019,
     image: 'https://images.unsplash.com/photo-1566576721346-d4a3b4eaeb55?w=600&h=400&fit=crop',
+    isFeatured: false,
+    isTopListing: false,
   },
   {
     id: 6,
@@ -130,6 +140,8 @@ const fakeDeals = [
     location: 'Pretoria',
     founded: 2021,
     image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600&h=400&fit=crop',
+    isFeatured: false,
+    isTopListing: false,
   },
 ];
 
@@ -137,11 +149,20 @@ export default function DealsPage() {
   const [filterIndustry, setFilterIndustry] = useState('all');
   const [filterRisk, setFilterRisk] = useState('all');
 
-  const filteredDeals = fakeDeals.filter(deal => {
+  const filteredDeals = fakeDeals
+    .filter(deal => {
     if (filterIndustry !== 'all' && deal.industry !== filterIndustry) return false;
     if (filterRisk !== 'all' && deal.riskLevel !== filterRisk) return false;
     return deal.status === 'ACTIVE';
-  });
+  })
+    .sort((a, b) => {
+      // Sort premium deals first: Top Listing > Featured > Regular
+      if (a.isTopListing && !b.isTopListing) return -1;
+      if (!a.isTopListing && b.isTopListing) return 1;
+      if (a.isFeatured && !b.isFeatured) return -1;
+      if (!a.isFeatured && b.isFeatured) return 1;
+      return 0;
+    });
 
   const getRiskColor = (risk: string) => {
     switch (risk) {
@@ -250,7 +271,13 @@ export default function DealsPage() {
             return (
               <div
                 key={deal.id}
-                className="group bg-white dark:bg-slate-800 rounded-2xl shadow-lg hover:shadow-2xl border border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-600 hover:-translate-y-2 transition-all duration-300 backdrop-blur-sm overflow-hidden"
+                className={`group bg-white dark:bg-slate-800 rounded-2xl shadow-lg hover:shadow-2xl border-2 ${
+                  deal.isTopListing
+                    ? 'border-purple-400 dark:border-purple-500 ring-2 ring-purple-300 dark:ring-purple-600'
+                    : deal.isFeatured
+                    ? 'border-amber-400 dark:border-amber-500 ring-2 ring-amber-300 dark:ring-amber-600'
+                    : 'border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-600'
+                } hover:-translate-y-2 transition-all duration-300 backdrop-blur-sm overflow-hidden`}
               >
                 {/* Business Image Header */}
                 <div className="relative h-48 overflow-hidden">
@@ -277,11 +304,21 @@ export default function DealsPage() {
                     </div>
                   </div>
 
-                  {/* Return Badge */}
-                  <div className="absolute top-4 right-4">
+                  {/* Return Badge and Featured Badge */}
+                  <div className="absolute top-4 right-4 flex flex-col gap-2 items-end">
                     <Badge className="bg-emerald-500 text-white font-bold text-sm px-3 py-1 shadow-lg">
                       {deal.targetReturn}x Return
                     </Badge>
+                    {deal.isFeatured && (
+                      <Badge className="bg-gradient-to-r from-amber-500 to-yellow-500 text-white font-bold text-xs px-3 py-1 shadow-lg flex items-center gap-1">
+                        <span className="text-white">⭐</span> Recommended
+                      </Badge>
+                    )}
+                    {deal.isTopListing && (
+                      <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold text-xs px-3 py-1 shadow-lg flex items-center gap-1">
+                        <span className="text-white">👑</span> Top Deal
+                      </Badge>
+                    )}
                   </div>
                 </div>
 
