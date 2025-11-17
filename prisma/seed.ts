@@ -21,7 +21,7 @@ async function main() {
       password: await bcrypt.hash('admin123', 12),
       role: 'ADMIN',
       emailVerified: new Date(),
-      kycStatus: 'VERIFIED',
+      kycStatus: 'APPROVED',
       wallet: {
         create: {
           balance: 0,
@@ -41,7 +41,7 @@ async function main() {
         password: await bcrypt.hash('password123', 12),
         role: 'INVESTOR',
         emailVerified: new Date(),
-        kycStatus: 'VERIFIED',
+        kycStatus: 'APPROVED',
         wallet: {
           create: {
             balance: 250000,
@@ -58,7 +58,7 @@ async function main() {
         password: await bcrypt.hash('password123', 12),
         role: 'INVESTOR',
         emailVerified: new Date(),
-        kycStatus: 'VERIFIED',
+        kycStatus: 'APPROVED',
         wallet: {
           create: {
             balance: 500000,
@@ -75,7 +75,7 @@ async function main() {
         password: await bcrypt.hash('password123', 12),
         role: 'INVESTOR',
         emailVerified: new Date(),
-        kycStatus: 'VERIFIED',
+        kycStatus: 'APPROVED',
         wallet: {
           create: {
             balance: 150000,
@@ -95,7 +95,7 @@ async function main() {
       password: await bcrypt.hash('password123', 12),
       role: 'BUSINESS',
       emailVerified: new Date(),
-      kycStatus: 'VERIFIED',
+      kycStatus: 'APPROVED',
       wallet: {
         create: {
           balance: 0,
@@ -129,7 +129,7 @@ async function main() {
       password: await bcrypt.hash('password123', 12),
       role: 'BUSINESS',
       emailVerified: new Date(),
-      kycStatus: 'VERIFIED',
+      kycStatus: 'APPROVED',
       wallet: {
         create: {
           balance: 0,
@@ -163,7 +163,7 @@ async function main() {
       password: await bcrypt.hash('password123', 12),
       role: 'BUSINESS',
       emailVerified: new Date(),
-      kycStatus: 'VERIFIED',
+      kycStatus: 'APPROVED',
       wallet: {
         create: {
           balance: 0,
@@ -197,7 +197,7 @@ async function main() {
       password: await bcrypt.hash('password123', 12),
       role: 'BUSINESS',
       emailVerified: new Date(),
-      kycStatus: 'VERIFIED',
+      kycStatus: 'APPROVED',
       wallet: {
         create: {
           balance: 0,
@@ -231,7 +231,7 @@ async function main() {
       password: await bcrypt.hash('password123', 12),
       role: 'BUSINESS',
       emailVerified: new Date(),
-      kycStatus: 'VERIFIED',
+      kycStatus: 'APPROVED',
       wallet: {
         create: {
           balance: 0,
