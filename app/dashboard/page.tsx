@@ -50,7 +50,7 @@ export default async function DashboardPage() {
               <CardContent>
                 <div className="text-2xl font-bold">{formatCurrency(stats.totalReturns || 0)}</div>
                 <p className="text-xs text-muted-foreground">
-                  {stats.totalReturns > 0 ? '+' : ''}{((stats.totalReturns / (stats.totalInvested || 1)) * 100).toFixed(1)}% ROI
+                  {(stats.totalReturns || 0) > 0 ? '+' : ''}{(((stats.totalReturns || 0) / (stats.totalInvested || 1)) * 100).toFixed(1)}% ROI
                 </p>
               </CardContent>
             </Card>
