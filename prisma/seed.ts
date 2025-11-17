@@ -425,7 +425,7 @@ async function main() {
       revenueSharePercentage: 6.5,
       repaymentCap: 1.7,
       minInvestment: 10000,
-      status: 'PENDING',
+      status: 'PENDING_APPROVAL',
       riskRating: 7,
       fundingDeadline: new Date('2026-06-01'),
       startDate: null,
