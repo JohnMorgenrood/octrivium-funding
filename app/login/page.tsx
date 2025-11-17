@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -61,13 +62,26 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl shadow-lg mb-4">
-            <span className="text-white font-bold text-2xl">O</span>
-          </div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-            Welcome Back
-          </h1>
-          <p className="text-slate-600 dark:text-slate-400 mt-2">Sign in to your Octrivium account</p>
+          <Link href="/" className="inline-flex flex-col items-center gap-3">
+            <div className="relative w-20 h-20">
+              <Image
+                src="/assets/logo.png"
+                alt="Octrivium Logo"
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                Octrivium
+              </h1>
+              <p className="text-sm font-semibold text-slate-500 dark:text-slate-400 tracking-wider uppercase">
+                Funding
+              </p>
+            </div>
+          </Link>
+          <p className="text-slate-600 dark:text-slate-400 mt-4">Sign in to your account</p>
         </div>
 
         {/* Success Message */}

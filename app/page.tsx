@@ -482,102 +482,263 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* How It Works */}
-      <section className="py-20 bg-slate-50 dark:bg-slate-900">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-slate-900 dark:text-white">
+      {/* How It Works - Interactive Timeline */}
+      <section className="py-20 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950 dark:from-slate-950 dark:via-indigo-950 dark:to-black relative overflow-hidden">
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-20 left-10 w-72 h-72 bg-blue-500 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-500 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        </div>
+
+        <div className="container mx-auto px-4 relative z-10">
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 text-white">
               How It Works
             </h2>
-            <p className="text-xl text-slate-600 dark:text-slate-300">Simple, transparent, and effective</p>
-          </div>
+            <p className="text-xl md:text-2xl text-blue-200">Simple, transparent, and effective</p>
+          </motion.div>
 
-          <div className="max-w-5xl mx-auto">
-            {/* For Investors */}
-            <div className="mb-16">
-              <h3 className="text-3xl font-bold mb-8 text-center text-blue-600 dark:text-blue-400">For Investors</h3>
-              <div className="grid md:grid-cols-4 gap-6">
-                <div className="relative">
-                  <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-lg border-2 border-blue-200 dark:border-blue-500/50 hover:shadow-xl transition-shadow">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4 shadow-lg">
-                      1
+          <div className="max-w-7xl mx-auto">
+            {/* Split View - Investors & Businesses */}
+            <div className="grid lg:grid-cols-2 gap-12 lg:gap-16">
+              
+              {/* For Investors Side */}
+              <motion.div
+                initial={{ opacity: 0, x: -50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.7 }}
+              >
+                <div className="text-center mb-10">
+                  <motion.div
+                    animate={{ rotate: [0, 5, -5, 0] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                    className="inline-block mb-4"
+                  >
+                    <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center shadow-2xl">
+                      <TrendingUp className="w-8 h-8 text-white" />
                     </div>
-                    <h4 className="font-bold text-lg mb-2 text-slate-900 dark:text-white">Sign Up</h4>
-                    <p className="text-slate-600 dark:text-slate-300 text-sm">Create your investor account in minutes</p>
-                  </div>
+                  </motion.div>
+                  <h3 className="text-3xl md:text-4xl font-bold text-white mb-2">For Investors</h3>
+                  <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-cyan-500 mx-auto rounded-full"></div>
                 </div>
-                <div className="relative">
-                  <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-lg border-2 border-blue-200 dark:border-blue-500/50 hover:shadow-xl transition-shadow">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4 shadow-lg">
-                      2
+
+                <div className="space-y-8">
+                  {[
+                    { 
+                      num: '01', 
+                      title: 'Sign Up', 
+                      desc: 'Create your investor account in minutes with simple KYC verification',
+                      icon: '👤',
+                      delay: 0.1
+                    },
+                    { 
+                      num: '02', 
+                      title: 'Browse Deals', 
+                      desc: 'Explore verified businesses with detailed financials and growth plans',
+                      icon: '🔍',
+                      delay: 0.2
+                    },
+                    { 
+                      num: '03', 
+                      title: 'Invest Smart', 
+                      desc: 'Choose your amount starting from R1,000 and confirm with secure payment',
+                      icon: '💰',
+                      delay: 0.3
+                    },
+                    { 
+                      num: '04', 
+                      title: 'Earn Returns', 
+                      desc: 'Receive automated monthly revenue share payments up to 1.7× your investment',
+                      icon: '📈',
+                      delay: 0.4
+                    },
+                  ].map((step, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, x: -30 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: step.delay }}
+                      whileHover={{ x: 10, transition: { duration: 0.2 } }}
+                      className="relative"
+                    >
+                      <div className="flex items-start gap-4 bg-white/5 backdrop-blur-sm border border-blue-500/30 rounded-2xl p-6 hover:bg-white/10 hover:border-blue-400/50 transition-all duration-300 group">
+                        <div className="flex-shrink-0">
+                          <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg group-hover:scale-110 transition-transform">
+                            {step.num}
+                          </div>
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-2xl">{step.icon}</span>
+                            <h4 className="text-xl font-bold text-white">{step.title}</h4>
+                          </div>
+                          <p className="text-blue-100 leading-relaxed">{step.desc}</p>
+                        </div>
+                        <motion.div
+                          animate={{ x: [0, 5, 0] }}
+                          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                          className="flex-shrink-0"
+                        >
+                          <ArrowRight className="w-5 h-5 text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </motion.div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: 0.6 }}
+                  className="mt-8 text-center"
+                >
+                  <Link href="/register">
+                    <Button size="lg" className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white px-8 py-6 text-lg shadow-2xl hover:shadow-blue-500/50 transition-all">
+                      Start Investing Today
+                      <ArrowRight className="ml-2 w-5 h-5" />
+                    </Button>
+                  </Link>
+                </motion.div>
+              </motion.div>
+
+              {/* Vertical Divider */}
+              <div className="hidden lg:block absolute left-1/2 top-32 bottom-32 w-px bg-gradient-to-b from-transparent via-white/30 to-transparent"></div>
+
+              {/* For Businesses Side */}
+              <motion.div
+                initial={{ opacity: 0, x: 50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.7 }}
+              >
+                <div className="text-center mb-10">
+                  <motion.div
+                    animate={{ rotate: [0, -5, 5, 0] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                    className="inline-block mb-4"
+                  >
+                    <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-2xl flex items-center justify-center shadow-2xl">
+                      <Users className="w-8 h-8 text-white" />
                     </div>
-                    <h4 className="font-bold text-lg mb-2 text-slate-900 dark:text-white">Browse Deals</h4>
-                    <p className="text-slate-600 dark:text-slate-300 text-sm">Explore verified businesses seeking funding</p>
-                  </div>
+                  </motion.div>
+                  <h3 className="text-3xl md:text-4xl font-bold text-white mb-2">For Businesses</h3>
+                  <div className="w-24 h-1 bg-gradient-to-r from-indigo-500 to-purple-500 mx-auto rounded-full"></div>
                 </div>
-                <div className="relative">
-                  <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-lg border-2 border-blue-200 dark:border-blue-500/50 hover:shadow-xl transition-shadow">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4 shadow-lg">
-                      3
-                    </div>
-                    <h4 className="font-bold text-lg mb-2 text-slate-900 dark:text-white">Invest</h4>
-                    <p className="text-slate-600 dark:text-slate-300 text-sm">Choose your amount and confirm investment</p>
-                  </div>
+
+                <div className="space-y-8">
+                  {[
+                    { 
+                      num: '01', 
+                      title: 'Apply Fast', 
+                      desc: 'Submit your business details, financials, and growth plans online',
+                      icon: '📝',
+                      delay: 0.1
+                    },
+                    { 
+                      num: '02', 
+                      title: 'Get Verified', 
+                      desc: 'Complete KYC, FICA compliance and business verification checks',
+                      icon: '✅',
+                      delay: 0.2
+                    },
+                    { 
+                      num: '03', 
+                      title: 'Get Funded', 
+                      desc: 'Launch your deal and receive investments from verified investors',
+                      icon: '🚀',
+                      delay: 0.3
+                    },
+                    { 
+                      num: '04', 
+                      title: 'Share Revenue', 
+                      desc: 'Report monthly revenue transparently and share profits with investors',
+                      icon: '💼',
+                      delay: 0.4
+                    },
+                  ].map((step, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, x: 30 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: step.delay }}
+                      whileHover={{ x: -10, transition: { duration: 0.2 } }}
+                      className="relative"
+                    >
+                      <div className="flex items-start gap-4 bg-white/5 backdrop-blur-sm border border-indigo-500/30 rounded-2xl p-6 hover:bg-white/10 hover:border-indigo-400/50 transition-all duration-300 group">
+                        <motion.div
+                          animate={{ x: [0, -5, 0] }}
+                          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                          className="flex-shrink-0"
+                        >
+                          <ArrowRight className="w-5 h-5 text-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity rotate-180" />
+                        </motion.div>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-2xl">{step.icon}</span>
+                            <h4 className="text-xl font-bold text-white">{step.title}</h4>
+                          </div>
+                          <p className="text-indigo-100 leading-relaxed">{step.desc}</p>
+                        </div>
+                        <div className="flex-shrink-0">
+                          <div className="w-14 h-14 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg group-hover:scale-110 transition-transform">
+                            {step.num}
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
                 </div>
-                <div className="relative">
-                  <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-lg border-2 border-blue-200 dark:border-blue-500/50 hover:shadow-xl transition-shadow">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4 shadow-lg">
-                      4
-                    </div>
-                    <h4 className="font-bold text-lg mb-2 text-slate-900 dark:text-white">Earn Returns</h4>
-                    <p className="text-slate-600 dark:text-slate-300 text-sm">Receive monthly revenue share payments</p>
-                  </div>
-                </div>
-              </div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: 0.6 }}
+                  className="mt-8 text-center"
+                >
+                  <Link href="/register">
+                    <Button size="lg" className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-8 py-6 text-lg shadow-2xl hover:shadow-purple-500/50 transition-all">
+                      Apply for Funding
+                      <ArrowRight className="ml-2 w-5 h-5" />
+                    </Button>
+                  </Link>
+                </motion.div>
+              </motion.div>
+
             </div>
 
-            {/* For Businesses */}
-            <div>
-              <h3 className="text-3xl font-bold mb-8 text-center text-indigo-600 dark:text-indigo-400">For Businesses</h3>
-              <div className="grid md:grid-cols-4 gap-6">
-                <div className="relative">
-                  <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-lg border-2 border-indigo-200 dark:border-indigo-500/50 hover:shadow-xl transition-shadow">
-                    <div className="w-12 h-12 bg-gradient-to-br from-indigo-600 to-indigo-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4 shadow-lg">
-                      1
-                    </div>
-                    <h4 className="font-bold text-lg mb-2 text-slate-900 dark:text-white">Apply</h4>
-                    <p className="text-slate-600 dark:text-slate-300 text-sm">Submit your business details and documents</p>
-                  </div>
-                </div>
-                <div className="relative">
-                  <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-lg border-2 border-indigo-200 dark:border-indigo-500/50 hover:shadow-xl transition-shadow">
-                    <div className="w-12 h-12 bg-gradient-to-br from-indigo-600 to-indigo-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4 shadow-lg">
-                      2
-                    </div>
-                    <h4 className="font-bold text-lg mb-2 text-slate-900 dark:text-white">Get Verified</h4>
-                    <p className="text-slate-600 dark:text-slate-300 text-sm">Complete KYC and business verification</p>
-                  </div>
-                </div>
-                <div className="relative">
-                  <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-lg border-2 border-indigo-200 dark:border-indigo-500/50 hover:shadow-xl transition-shadow">
-                    <div className="w-12 h-12 bg-gradient-to-br from-indigo-600 to-indigo-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4 shadow-lg">
-                      3
-                    </div>
-                    <h4 className="font-bold text-lg mb-2 text-slate-900 dark:text-white">Get Funded</h4>
-                    <p className="text-slate-600 dark:text-slate-300 text-sm">Launch your deal and receive investments</p>
-                  </div>
-                </div>
-                <div className="relative">
-                  <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-lg border-2 border-indigo-200 dark:border-indigo-500/50 hover:shadow-xl transition-shadow">
-                    <div className="w-12 h-12 bg-gradient-to-br from-indigo-600 to-indigo-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4 shadow-lg">
-                      4
-                    </div>
-                    <h4 className="font-bold text-lg mb-2 text-slate-900 dark:text-white">Share Revenue</h4>
-                    <p className="text-slate-600 dark:text-slate-300 text-sm">Report monthly revenue and share profits</p>
-                  </div>
-                </div>
+            {/* Bottom CTA */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="mt-20 text-center"
+            >
+              <div className="bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-indigo-500/10 backdrop-blur-md border border-white/20 rounded-3xl p-8 md:p-12">
+                <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                  Ready to get started?
+                </h3>
+                <p className="text-lg text-blue-100 mb-6 max-w-2xl mx-auto">
+                  Join thousands of South Africans building wealth together through community investing
+                </p>
+                <Link href="/how-it-works">
+                  <Button variant="outline" size="lg" className="border-2 border-white/30 text-white hover:bg-white/10 backdrop-blur-sm">
+                    Learn More About Our Process
+                  </Button>
+                </Link>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
