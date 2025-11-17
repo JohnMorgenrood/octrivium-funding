@@ -808,20 +808,20 @@ export default function HomePage() {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="mt-20 text-center"
             >
-              <div className="bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-indigo-500/10 backdrop-blur-md border border-white/20 rounded-3xl p-8 md:p-12">
-                <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">
+              <div className="bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-indigo-500/10 backdrop-blur-md border border-white/20 rounded-3xl p-6 md:p-12">
+                <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-3 md:mb-4">
                   Ready to get started?
                 </h3>
-                <p className="text-lg text-blue-100 mb-6 max-w-2xl mx-auto">
+                <p className="text-base md:text-lg text-blue-100 mb-6 max-w-2xl mx-auto px-2">
                   Join thousands of South Africans building wealth together through community investing
                 </p>
                 <Link href="/how-it-works">
                   <Button 
-                    size="lg" 
-                    className="bg-white/10 border-2 border-white/50 text-white hover:bg-white/20 hover:border-white/70 backdrop-blur-md shadow-xl hover:shadow-2xl transition-all"
+                    className="w-full sm:w-auto text-sm md:text-base bg-white/10 border-2 border-white/50 text-white hover:bg-white/20 hover:border-white/70 backdrop-blur-md shadow-xl hover:shadow-2xl transition-all px-4 md:px-6 py-2 md:py-3 h-auto"
                   >
-                    Learn More About Our Process
-                    <ArrowRight className="ml-2 w-5 h-5" />
+                    <span className="hidden sm:inline">Learn More About Our Process</span>
+                    <span className="sm:hidden">Learn More</span>
+                    <ArrowRight className="ml-2 w-4 h-4 md:w-5 md:h-5" />
                   </Button>
                 </Link>
               </div>
