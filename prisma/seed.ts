@@ -444,6 +444,7 @@ async function main() {
       dealId: deal1.id,
       amount: 50000,
       sharePercentage: 0.5,
+      expectedReturn: 50000 * 1.7, // amount * repaymentCap
       status: 'ACTIVE',
     },
   });
@@ -454,6 +455,7 @@ async function main() {
       dealId: deal1.id,
       amount: 100000,
       sharePercentage: 1.0,
+      expectedReturn: 100000 * 1.7,
       status: 'ACTIVE',
     },
   });
@@ -464,6 +466,7 @@ async function main() {
       dealId: deal2.id,
       amount: 75000,
       sharePercentage: 0.6,
+      expectedReturn: 75000 * 1.7,
       status: 'ACTIVE',
     },
   });
