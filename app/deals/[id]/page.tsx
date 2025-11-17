@@ -5,19 +5,22 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft, Building2, Users, MapPin, ArrowUpRight, Clock, Shield, DollarSign } from 'lucide-react';
+import { ArrowLeft, Building2, Users, MapPin, ArrowUpRight, Clock, Shield, DollarSign, CreditCard } from 'lucide-react';
 import { useState } from 'react';
+import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 
 const fakeDeals: any[] = [
-  { id: 1, name: 'Green Energy Solutions', industry: 'Renewable Energy', description: 'Solar panel installation company', fundingGoal: 500000, funded: 425000, investors: 89, monthlyRevenue: 180000, revenueGrowth: 15.5, daysLeft: 12, minInvestment: 1000, targetReturn: 1.6, riskLevel: 'Medium', riskScore: 5, logo: '🔋', location: 'Cape Town', founded: 2020, employees: 24 },
-  { id: 2, name: 'Cape Town Coffee Co.', industry: 'Food & Beverage', description: 'Specialty coffee chain', fundingGoal: 750000, funded: 680000, investors: 124, monthlyRevenue: 320000, revenueGrowth: 22.3, daysLeft: 8, minInvestment: 1000, targetReturn: 1.4, riskLevel: 'Low', riskScore: 3, logo: '☕', location: 'Cape Town', founded: 2019, employees: 45 },
-  { id: 3, name: 'Tech Innovators SA', industry: 'FinTech', description: 'Mobile payment platform', fundingGoal: 1000000, funded: 340000, investors: 67, monthlyRevenue: 95000, revenueGrowth: 45.2, daysLeft: 25, minInvestment: 5000, targetReturn: 1.8, riskLevel: 'High', riskScore: 7, logo: '💳', location: 'Johannesburg', founded: 2021, employees: 18 },
-  { id: 4, name: 'African Fashion Hub', industry: 'E-commerce', description: 'Online fashion marketplace', fundingGoal: 350000, funded: 285000, investors: 52, monthlyRevenue: 125000, revenueGrowth: 18.7, daysLeft: 15, minInvestment: 1000, targetReturn: 1.5, riskLevel: 'Medium', riskScore: 5, logo: '👗', location: 'Durban', founded: 2020, employees: 12 },
-  { id: 5, name: 'Swift Logistics ZA', industry: 'Logistics', description: 'Electric delivery service', fundingGoal: 2000000, funded: 1250000, investors: 156, monthlyRevenue: 450000, revenueGrowth: 12.4, daysLeft: 18, minInvestment: 2500, targetReturn: 1.45, riskLevel: 'Medium', riskScore: 4, logo: '🚚', location: 'Johannesburg', founded: 2019, employees: 68 },
+  { id: 1, name: 'Green Energy Solutions', industry: 'Renewable Energy', description: 'Solar panel installation company', fundingGoal: 500000, funded: 425000, investors: 89, monthlyRevenue: 180000, revenueGrowth: 15.5, daysLeft: 12, minInvestment: 1000, targetReturn: 1.5, riskLevel: 'Medium', riskScore: 5, logo: '🔋', location: 'Cape Town', founded: 2020, employees: 24 },
+  { id: 2, name: 'Cape Town Coffee Co.', industry: 'Food & Beverage', description: 'Specialty coffee chain', fundingGoal: 750000, funded: 680000, investors: 124, monthlyRevenue: 320000, revenueGrowth: 22.3, daysLeft: 8, minInvestment: 1000, targetReturn: 1.3, riskLevel: 'Low', riskScore: 3, logo: '☕', location: 'Cape Town', founded: 2019, employees: 45 },
+  { id: 3, name: 'Tech Innovators SA', industry: 'FinTech', description: 'Mobile payment platform', fundingGoal: 1000000, funded: 340000, investors: 67, monthlyRevenue: 95000, revenueGrowth: 45.2, daysLeft: 25, minInvestment: 5000, targetReturn: 1.7, riskLevel: 'High', riskScore: 7, logo: '💳', location: 'Johannesburg', founded: 2021, employees: 18 },
+  { id: 4, name: 'African Fashion Hub', industry: 'E-commerce', description: 'Online fashion marketplace', fundingGoal: 350000, funded: 285000, investors: 52, monthlyRevenue: 125000, revenueGrowth: 18.7, daysLeft: 15, minInvestment: 1000, targetReturn: 1.4, riskLevel: 'Medium', riskScore: 5, logo: '👗', location: 'Durban', founded: 2020, employees: 12 },
+  { id: 5, name: 'Swift Logistics ZA', industry: 'Logistics', description: 'Electric delivery service', fundingGoal: 2000000, funded: 1250000, investors: 156, monthlyRevenue: 450000, revenueGrowth: 12.4, daysLeft: 18, minInvestment: 2500, targetReturn: 1.35, riskLevel: 'Medium', riskScore: 4, logo: '🚚', location: 'Johannesburg', founded: 2019, employees: 68 },
 ];
 
 export default function DealDetailPage({ params }: { params: { id: string } }) {
   const [investmentAmount, setInvestmentAmount] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState<'card' | 'paypal'>('card');
+  const [processing, setProcessing] = useState(false);
   const deal = fakeDeals.find(d => d.id === parseInt(params.id)) || fakeDeals[0];
   const percentFunded = (deal.funded / deal.fundingGoal) * 100;
 
@@ -122,15 +125,119 @@ export default function DealDetailPage({ params }: { params: { id: string } }) {
                   className="mb-4 text-base md:text-lg h-12 md:h-14" 
                 />
                 {investmentAmount && parseFloat(investmentAmount) >= deal.minInvestment && (
-                  <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 md:p-4 mb-4">
-                    <div className="text-xs md:text-sm text-slate-600 dark:text-slate-400">Potential Return</div>
-                    <div className="text-xl md:text-2xl font-bold text-blue-600 dark:text-blue-400">R{(parseFloat(investmentAmount) * deal.targetReturn).toFixed(2)}</div>
-                  </div>
+                  <>
+                    <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 md:p-4 mb-4">
+                      <div className="text-xs md:text-sm text-slate-600 dark:text-slate-400">Potential Return ({deal.targetReturn}x)</div>
+                      <div className="text-xl md:text-2xl font-bold text-blue-600 dark:text-blue-400">R{(parseFloat(investmentAmount) * deal.targetReturn).toFixed(2)}</div>
+                    </div>
+
+                    {/* Payment Method Selection */}
+                    <div className="mb-4">
+                      <Label className="text-sm text-slate-900 dark:text-white mb-3 block">Payment Method</Label>
+                      <div className="grid grid-cols-2 gap-3">
+                        <button
+                          onClick={() => setPaymentMethod('card')}
+                          className={`p-3 rounded-lg border-2 transition-all ${
+                            paymentMethod === 'card'
+                              ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                              : 'border-slate-200 dark:border-slate-700 hover:border-slate-300'
+                          }`}
+                        >
+                          <CreditCard className="h-5 w-5 mx-auto mb-1" />
+                          <div className="text-xs font-medium">Card</div>
+                        </button>
+                        <button
+                          onClick={() => setPaymentMethod('paypal')}
+                          className={`p-3 rounded-lg border-2 transition-all ${
+                            paymentMethod === 'paypal'
+                              ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                              : 'border-slate-200 dark:border-slate-700 hover:border-slate-300'
+                          }`}
+                        >
+                          <svg className="h-5 w-5 mx-auto mb-1" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 3.72a.77.77 0 0 1 .76-.633h7.2c3.135 0 5.26 1.885 5.26 4.657 0 3.44-2.315 5.86-5.645 5.86h-3.29l-1.153 7.733zm5.31-13.334h-2.82l-.966 6.465h2.82c2.083 0 3.445-1.365 3.445-3.465 0-1.574-.922-3-2.479-3z"/>
+                          </svg>
+                          <div className="text-xs font-medium">PayPal</div>
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Card Payment Button */}
+                    {paymentMethod === 'card' && (
+                      <Button 
+                        className="w-full h-12 md:h-14 text-base md:text-lg" 
+                        size="lg"
+                        disabled={processing}
+                      >
+                        <CreditCard className="h-5 w-5 mr-2" />
+                        {processing ? 'Processing...' : 'Pay with Card'}
+                      </Button>
+                    )}
+
+                    {/* PayPal Button */}
+                    {paymentMethod === 'paypal' && (
+                      <PayPalScriptProvider
+                        options={{
+                          clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || 'sb',
+                          currency: 'ZAR',
+                        }}
+                      >
+                        <PayPalButtons
+                          style={{ layout: 'vertical', label: 'pay' }}
+                          disabled={processing}
+                          createOrder={async () => {
+                            setProcessing(true);
+                            try {
+                              const response = await fetch('/api/paypal/create-order', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                  amount: parseFloat(investmentAmount),
+                                  dealId: deal.id,
+                                  dealName: deal.name,
+                                }),
+                              });
+                              const data = await response.json();
+                              return data.orderId;
+                            } catch (error) {
+                              console.error('Error creating order:', error);
+                              setProcessing(false);
+                              throw error;
+                            }
+                          }}
+                          onApprove={async (data) => {
+                            try {
+                              const response = await fetch('/api/paypal/capture-order', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                  orderId: data.orderID,
+                                  dealId: deal.id,
+                                  amount: parseFloat(investmentAmount),
+                                }),
+                              });
+                              const result = await response.json();
+                              if (result.success) {
+                                alert('Investment successful!');
+                                window.location.href = '/dashboard';
+                              }
+                            } catch (error) {
+                              console.error('Error capturing order:', error);
+                              alert('Payment failed. Please try again.');
+                            } finally {
+                              setProcessing(false);
+                            }
+                          }}
+                          onError={(err) => {
+                            console.error('PayPal error:', err);
+                            alert('Payment failed. Please try again.');
+                            setProcessing(false);
+                          }}
+                        />
+                      </PayPalScriptProvider>
+                    )}
+                  </>
                 )}
-                <Button className="w-full h-12 md:h-14 text-base md:text-lg" size="lg">
-                  <DollarSign className="h-5 w-5 mr-2" />
-                  Invest Now
-                </Button>
               </div>
             </div>
           </div>
