@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
         userId: session.user.id,
         dealId: dealId,
         amount: parseFloat(amount),
-        expectedReturn: parseFloat(amount) * deal.repaymentCap,
+        expectedReturn: parseFloat(amount) * Number(deal.repaymentCap),
         paymentMethod: 'PAYPAL',
         paymentReference: orderId,
         status: 'COMPLETED',
