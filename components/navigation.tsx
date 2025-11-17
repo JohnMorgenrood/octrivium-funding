@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -29,17 +30,28 @@ export function Navigation() {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2 group">
+          <Link href="/" className="flex items-center space-x-3 group">
             <motion.div 
-              whileHover={{ rotate: 360 }}
-              transition={{ duration: 0.6 }}
-              className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center text-white font-bold text-lg md:text-xl shadow-lg"
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.3 }}
+              className="relative w-10 h-10 md:w-12 md:h-12"
             >
-              O
+              <Image
+                src="/assets/logo.png"
+                alt="Octrivium Logo"
+                fill
+                className="object-contain"
+                priority
+              />
             </motion.div>
-            <span className="text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              Octrivium
-            </span>
+            <div className="flex flex-col">
+              <span className="text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent leading-tight tracking-tight">
+                Octrivium
+              </span>
+              <span className="text-xs md:text-sm font-semibold text-slate-500 dark:text-slate-400 tracking-wider uppercase leading-tight">
+                Funding
+              </span>
+            </div>
           </Link>
 
           {/* Desktop Navigation */}

@@ -146,14 +146,25 @@ export default function HomePage() {
       {/* Navigation */}
       <nav className="border-b bg-white/80 dark:bg-slate-900/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center shadow-lg">
-              <span className="text-white font-bold text-xl">O</span>
+          <Link href="/" className="flex items-center space-x-3">
+            <div className="relative w-10 h-10 md:w-12 md:h-12">
+              <Image
+                src="/assets/logo.png"
+                alt="Octrivium Logo"
+                fill
+                className="object-contain"
+                priority
+              />
             </div>
-            <span className="text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              Octrivium Funding
-            </span>
-          </div>
+            <div className="flex flex-col">
+              <span className="text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent leading-tight tracking-tight">
+                Octrivium
+              </span>
+              <span className="text-xs md:text-sm font-semibold text-slate-500 dark:text-slate-400 tracking-wider uppercase leading-tight">
+                Funding
+              </span>
+            </div>
+          </Link>
           <div className="hidden md:flex items-center space-x-8">
             <Link href="/deals" className="text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors">
               Browse Deals
@@ -737,11 +748,23 @@ export default function HomePage() {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
             <div className="col-span-2 md:col-span-1">
-              <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold">O</span>
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="relative w-10 h-10">
+                  <Image
+                    src="/assets/logo.png"
+                    alt="Octrivium Logo"
+                    fill
+                    className="object-contain"
+                  />
                 </div>
-                <span className="text-white font-bold text-xl">Octrivium</span>
+                <div className="flex flex-col">
+                  <span className="text-xl font-bold bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent leading-tight tracking-tight">
+                    Octrivium
+                  </span>
+                  <span className="text-xs font-semibold text-slate-400 tracking-wider uppercase leading-tight">
+                    Funding
+                  </span>
+                </div>
               </div>
               <p className="text-sm text-slate-400">
                 Empowering South African businesses through community investment.
