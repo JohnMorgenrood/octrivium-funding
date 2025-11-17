@@ -17,7 +17,8 @@ async function main() {
   const admin = await prisma.user.create({
     data: {
       email: 'admin@octrivium.co.za',
-      name: 'Admin User',
+      firstName: 'Admin',
+      lastName: 'User',
       password: await bcrypt.hash('admin123', 12),
       role: 'ADMIN',
       emailVerified: new Date(),
@@ -37,7 +38,8 @@ async function main() {
     prisma.user.create({
       data: {
         email: 'investor1@email.com',
-        name: 'Sarah Thompson',
+        firstName: 'Sarah',
+        lastName: 'Thompson',
         password: await bcrypt.hash('password123', 12),
         role: 'INVESTOR',
         emailVerified: new Date(),
@@ -54,7 +56,8 @@ async function main() {
     prisma.user.create({
       data: {
         email: 'investor2@email.com',
-        name: 'Michael Chen',
+        firstName: 'Michael',
+        lastName: 'Chen',
         password: await bcrypt.hash('password123', 12),
         role: 'INVESTOR',
         emailVerified: new Date(),
@@ -71,7 +74,8 @@ async function main() {
     prisma.user.create({
       data: {
         email: 'investor3@email.com',
-        name: 'Linda Nkosi',
+        firstName: 'Linda',
+        lastName: 'Nkosi',
         password: await bcrypt.hash('password123', 12),
         role: 'INVESTOR',
         emailVerified: new Date(),
@@ -91,7 +95,8 @@ async function main() {
   const greenEnergy = await prisma.user.create({
     data: {
       email: 'business1@email.com',
-      name: 'Green Energy Solutions',
+      firstName: 'Green Energy',
+      lastName: 'Solutions',
       password: await bcrypt.hash('password123', 12),
       role: 'BUSINESS',
       emailVerified: new Date(),
@@ -125,7 +130,8 @@ async function main() {
   const coffeeCo = await prisma.user.create({
     data: {
       email: 'business2@email.com',
-      name: 'Cape Town Coffee Co.',
+      firstName: 'Cape Town',
+      lastName: 'Coffee Co.',
       password: await bcrypt.hash('password123', 12),
       role: 'BUSINESS',
       emailVerified: new Date(),
@@ -159,7 +165,8 @@ async function main() {
   const techInnovators = await prisma.user.create({
     data: {
       email: 'business3@email.com',
-      name: 'Tech Innovators SA',
+      firstName: 'Tech Innovators',
+      lastName: 'SA',
       password: await bcrypt.hash('password123', 12),
       role: 'BUSINESS',
       emailVerified: new Date(),
@@ -193,7 +200,8 @@ async function main() {
   const fashionHub = await prisma.user.create({
     data: {
       email: 'business4@email.com',
-      name: 'African Fashion Hub',
+      firstName: 'African Fashion',
+      lastName: 'Hub',
       password: await bcrypt.hash('password123', 12),
       role: 'BUSINESS',
       emailVerified: new Date(),
@@ -227,7 +235,8 @@ async function main() {
   const logistics = await prisma.user.create({
     data: {
       email: 'business5@email.com',
-      name: 'Swift Logistics ZA',
+      firstName: 'Swift Logistics',
+      lastName: 'ZA',
       password: await bcrypt.hash('password123', 12),
       role: 'BUSINESS',
       emailVerified: new Date(),
@@ -261,7 +270,8 @@ async function main() {
   const healthTech = await prisma.user.create({
     data: {
       email: 'business6@email.com',
-      name: 'HealthTech Connect',
+      firstName: 'HealthTech',
+      lastName: 'Connect',
       password: await bcrypt.hash('password123', 12),
       role: 'BUSINESS',
       emailVerified: new Date(),
@@ -487,3 +497,5 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
+
+
