@@ -394,91 +394,174 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Features */}
-      <section className="py-12 md:py-20 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12 md:mb-16">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-slate-900 dark:text-white">
+      {/* Features - Why Choose Octrivium */}
+      <section className="py-20 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:via-indigo-950 dark:to-purple-950 relative overflow-hidden">
+        {/* Floating Background Elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <motion.div
+            animate={{ 
+              y: [0, 30, 0],
+              rotate: [0, 5, 0]
+            }}
+            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute top-20 -left-20 w-64 h-64 bg-blue-400/20 rounded-full blur-3xl"
+          />
+          <motion.div
+            animate={{ 
+              y: [0, -30, 0],
+              rotate: [0, -5, 0]
+            }}
+            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute bottom-20 -right-20 w-80 h-80 bg-purple-400/20 rounded-full blur-3xl"
+          />
+        </div>
+
+        <div className="container mx-auto px-4 relative z-10">
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-16"
+          >
+            <motion.div
+              initial={{ scale: 0 }}
+              whileInView={{ scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, type: "spring" }}
+              className="inline-block mb-4"
+            >
+              <div className="w-20 h-20 bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto shadow-2xl">
+                <Shield className="w-10 h-10 text-white" />
+              </div>
+            </motion.div>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
               Why Choose Octrivium?
             </h2>
-            <p className="text-lg md:text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto px-4">
+            <p className="text-lg md:text-xl text-slate-700 dark:text-slate-300 max-w-3xl mx-auto">
               A transparent, fair, and innovative way to fund growth and invest in your community
             </p>
-          </div>
+          </motion.div>
           
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto">
-            <div className="group">
-              <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 md:p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 h-full">
-                <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
-                  <TrendingUp className="h-7 w-7 text-white" />
-                </div>
-                <h3 className="text-xl md:text-2xl font-bold mb-3 text-slate-900 dark:text-white">Revenue-Based Returns</h3>
-                <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
-                  Earn returns proportional to business performance. No fixed debt, just fair revenue sharing up to 1.7× your investment.
-                </p>
-              </div>
-            </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 max-w-7xl mx-auto">
+            {[
+              {
+                icon: TrendingUp,
+                title: 'Revenue-Based Returns',
+                desc: 'Earn returns proportional to business performance. No fixed debt, just fair revenue sharing up to 1.7× your investment.',
+                gradient: 'from-blue-500 to-indigo-500',
+                delay: 0.1
+              },
+              {
+                icon: Shield,
+                title: 'Verified Businesses',
+                desc: 'Every business is thoroughly vetted with KYC/AML compliance, document verification, and financial health checks.',
+                gradient: 'from-emerald-500 to-green-500',
+                delay: 0.2
+              },
+              {
+                icon: Users,
+                title: 'Community Impact',
+                desc: 'Support local South African businesses while earning returns. Your investment creates jobs and drives economic growth.',
+                gradient: 'from-purple-500 to-pink-500',
+                delay: 0.3
+              },
+              {
+                icon: BarChart3,
+                title: 'Full Transparency',
+                desc: 'Track business performance with monthly revenue reports. See exactly how your investment is performing in real-time.',
+                gradient: 'from-orange-500 to-red-500',
+                delay: 0.4
+              },
+              {
+                icon: Zap,
+                title: 'Quick & Easy',
+                desc: 'Start investing with as little as R1,000. Simple onboarding, secure payments, and automated monthly payouts.',
+                gradient: 'from-cyan-500 to-blue-500',
+                delay: 0.5
+              },
+              {
+                icon: Heart,
+                title: 'Diversify Portfolio',
+                desc: 'Spread investments across multiple businesses and industries to minimize risk and maximize potential returns.',
+                gradient: 'from-rose-500 to-pink-500',
+                delay: 0.6
+              }
+            ].map((feature, index) => {
+              const Icon = feature.icon;
+              return (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: feature.delay }}
+                  whileHover={{ y: -10, transition: { duration: 0.2 } }}
+                  className="group"
+                >
+                  <div className="relative bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 border-2 border-slate-200/50 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-600 h-full overflow-hidden">
+                    {/* Hover gradient effect */}
+                    <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-300`}></div>
+                    
+                    <motion.div
+                      whileHover={{ rotate: [0, -10, 10, 0], scale: 1.1 }}
+                      transition={{ duration: 0.5 }}
+                      className="relative"
+                    >
+                      <div className={`w-16 h-16 bg-gradient-to-br ${feature.gradient} rounded-2xl flex items-center justify-center mb-6 shadow-lg group-hover:shadow-2xl transition-all`}>
+                        <Icon className="h-8 w-8 text-white" />
+                      </div>
+                    </motion.div>
+                    
+                    <h3 className="text-xl md:text-2xl font-bold mb-4 text-slate-900 dark:text-white group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:to-indigo-600 group-hover:bg-clip-text transition-all">
+                      {feature.title}
+                    </h3>
+                    <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
+                      {feature.desc}
+                    </p>
 
-            <div className="group">
-              <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 md:p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 h-full">
-                <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-green-500 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
-                  <Shield className="h-7 w-7 text-white" />
-                </div>
-                <h3 className="text-xl md:text-2xl font-bold mb-3 text-slate-900 dark:text-white">Verified Businesses</h3>
-                <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
-                  Every business is thoroughly vetted with KYC/AML compliance, document verification, and financial health checks.
-                </p>
-              </div>
-            </div>
-
-            <div className="group">
-              <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 md:p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 h-full">
-                <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
-                  <Users className="h-7 w-7 text-white" />
-                </div>
-                <h3 className="text-xl md:text-2xl font-bold mb-3 text-slate-900 dark:text-white">Community Impact</h3>
-                <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
-                  Support local South African businesses while earning returns. Your investment creates jobs and drives economic growth.
-                </p>
-              </div>
-            </div>
-
-            <div className="group">
-              <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 md:p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 h-full">
-                <div className="w-14 h-14 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
-                  <BarChart3 className="h-7 w-7 text-white" />
-                </div>
-                <h3 className="text-xl md:text-2xl font-bold mb-3 text-slate-900 dark:text-white">Full Transparency</h3>
-                <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
-                  Track business performance with monthly revenue reports. See exactly how your investment is performing in real-time.
-                </p>
-              </div>
-            </div>
-
-            <div className="group">
-              <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 md:p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 h-full">
-                <div className="w-14 h-14 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
-                  <Zap className="h-7 w-7 text-white" />
-                </div>
-                <h3 className="text-xl md:text-2xl font-bold mb-3 text-slate-900 dark:text-white">Quick & Easy</h3>
-                <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
-                  Start investing with as little as R1,000. Simple onboarding, secure payments, and automated monthly payouts.
-                </p>
-              </div>
-            </div>
-
-            <div className="group">
-              <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 md:p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-slate-200 dark:border-slate-700 h-full">
-                <div className="w-14 h-14 bg-gradient-to-br from-rose-500 to-pink-500 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
-                  <Heart className="h-7 w-7 text-white" />
-                </div>
-                <h3 className="text-xl md:text-2xl font-bold mb-3 text-slate-900 dark:text-white">Diversify Portfolio</h3>
-                <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
-                  Spread investments across multiple businesses and industries to minimize risk and maximize potential returns.
-                </p>
-              </div>
-            </div>
+                    {/* Animated corner accent */}
+                    <motion.div
+                      initial={{ scale: 0, opacity: 0 }}
+                      whileInView={{ scale: 1, opacity: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: feature.delay + 0.3 }}
+                      className={`absolute top-0 right-0 w-20 h-20 bg-gradient-to-br ${feature.gradient} opacity-10 rounded-bl-full`}
+                    />
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
+
+          {/* Bottom Stats */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.7 }}
+            className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-5xl mx-auto"
+          >
+            {[
+              { number: '500+', label: 'Active Investors' },
+              { number: 'R50M+', label: 'Capital Raised' },
+              { number: '150+', label: 'Businesses Funded' },
+              { number: '1.5x', label: 'Avg. Return' }
+            ].map((stat, index) => (
+              <motion.div
+                key={index}
+                whileHover={{ scale: 1.05 }}
+                className="text-center p-6 bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl rounded-2xl border-2 border-slate-200/50 dark:border-slate-700/50 shadow-lg"
+              >
+                <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2">
+                  {stat.number}
+                </div>
+                <div className="text-sm text-slate-600 dark:text-slate-400 font-medium">
+                  {stat.label}
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
       </section>
 
@@ -733,8 +816,12 @@ export default function HomePage() {
                   Join thousands of South Africans building wealth together through community investing
                 </p>
                 <Link href="/how-it-works">
-                  <Button variant="outline" size="lg" className="border-2 border-white/30 text-white hover:bg-white/10 backdrop-blur-sm">
+                  <Button 
+                    size="lg" 
+                    className="bg-white/10 border-2 border-white/50 text-white hover:bg-white/20 hover:border-white/70 backdrop-blur-md shadow-xl hover:shadow-2xl transition-all"
+                  >
                     Learn More About Our Process
+                    <ArrowRight className="ml-2 w-5 h-5" />
                   </Button>
                 </Link>
               </div>
