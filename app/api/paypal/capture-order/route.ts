@@ -57,9 +57,40 @@ export async function POST(req: NextRequest) {
         dealId: dealId,
         amount: parseFloat(amount),
         expectedReturn: parseFloat(amount) * Number(deal.repaymentCap),
-        paymentMethod: 'PAYPAL',
-        paymentReference: orderId,
+        status: 'ACTIVE',
+      },
+    });
+
+    // Create a transaction record for the PayPal payment
+    // First, ensure the user has a wallet
+    let wallet = await prisma.wallet.findUnique({
+      where: { userId: session.user.id },
+    });
+
+    if (!wallet) {
+      wallet = await prisma.wallet.create({
+        data: {
+          userId: session.user.id,
+          balance: 0,
+          availableBalance: 0,
+          lockedBalance: 0,
+        },
+      });
+    }
+
+    // Create transaction record with PayPal reference
+    await prisma.transaction.create({
+      data: {
+        walletId: wallet.id,
+        investmentId: investment.id,
+        type: 'INVESTMENT',
         status: 'COMPLETED',
+        amount: parseFloat(amount),
+        fee: 0,
+        netAmount: parseFloat(amount),
+        currency: 'ZAR',
+        reference: orderId,
+        description: `PayPal payment for investment ${investment.id}`,
       },
     });
 
@@ -67,7 +98,7 @@ export async function POST(req: NextRequest) {
     await prisma.deal.update({
       where: { id: dealId },
       data: {
-        currentAmount: {
+        currentFunding: {
           increment: parseFloat(amount),
         },
       },
