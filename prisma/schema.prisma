@@ -132,6 +132,12 @@ model Business {
   industry            String
   description         String     @db.Text
   website             String?
+  founderName         String?
+  founderTitle        String?    // CEO, Founder, Managing Director, etc.
+  founderBio          String?    @db.Text
+  teamSize            Int?
+  yearFounded         Int?
+  companyStory        String?    @db.Text
   address             String
   city                String
   province            String
