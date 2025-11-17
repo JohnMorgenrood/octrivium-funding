@@ -1,4 +1,4 @@
- APP THAT YOU BUILT MAKE SURE EVETYHING IS 100S
+import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
 
