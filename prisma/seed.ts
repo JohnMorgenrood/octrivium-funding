@@ -124,6 +124,9 @@ async function main() {
         }],
       },
     },
+    include: {
+      businesses: true,
+    },
   });
 
   const coffeeCo = await prisma.user.create({
@@ -157,6 +160,9 @@ async function main() {
           verified: true,
         }],
       },
+    },
+    include: {
+      businesses: true,
     },
   });
 
@@ -192,6 +198,9 @@ async function main() {
         }],
       },
     },
+    include: {
+      businesses: true,
+    },
   });
 
   const fashionHub = await prisma.user.create({
@@ -225,6 +234,9 @@ async function main() {
           verified: true,
         }],
       },
+    },
+    include: {
+      businesses: true,
     },
   });
 
@@ -260,6 +272,9 @@ async function main() {
         }],
       },
     },
+    include: {
+      businesses: true,
+    },
   });
 
   const healthTech = await prisma.user.create({
@@ -293,6 +308,9 @@ async function main() {
           verified: false,
         }],
       },
+    },
+    include: {
+      businesses: true,
     },
   });
 
