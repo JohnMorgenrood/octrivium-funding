@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -27,6 +28,7 @@ const fakeDeals = [
     logo: '🔋',
     location: 'Cape Town',
     founded: 2020,
+    image: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=600&h=400&fit=crop',
   },
   {
     id: 2,
@@ -46,6 +48,7 @@ const fakeDeals = [
     logo: '☕',
     location: 'Cape Town',
     founded: 2019,
+    image: 'https://images.unsplash.com/photo-1511920170033-f8396924c348?w=600&h=400&fit=crop',
   },
   {
     id: 3,
@@ -65,6 +68,7 @@ const fakeDeals = [
     logo: '💳',
     location: 'Johannesburg',
     founded: 2021,
+    image: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=600&h=400&fit=crop',
   },
   {
     id: 4,
@@ -84,6 +88,7 @@ const fakeDeals = [
     logo: '👗',
     location: 'Durban',
     founded: 2020,
+    image: 'https://images.unsplash.com/photo-1558769132-cb1aea1f162f?w=600&h=400&fit=crop',
   },
   {
     id: 5,
@@ -103,6 +108,7 @@ const fakeDeals = [
     logo: '🚚',
     location: 'Johannesburg',
     founded: 2019,
+    image: 'https://images.unsplash.com/photo-1566576721346-d4a3b4eaeb55?w=600&h=400&fit=crop',
   },
   {
     id: 6,
@@ -122,6 +128,7 @@ const fakeDeals = [
     logo: '🏥',
     location: 'Pretoria',
     founded: 2021,
+    image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600&h=400&fit=crop',
   },
 ];
 
@@ -240,30 +247,48 @@ export default function DealsPage() {
             return (
               <div
                 key={deal.id}
-                className={`group bg-white dark:bg-slate-800 rounded-2xl shadow-lg hover:shadow-2xl border-2 border-slate-100 dark:border-slate-700 hover:border-slate-200 dark:hover:border-slate-600 hover:-translate-y-1 transition-all duration-300 ${borderColor} backdrop-blur-sm overflow-hidden`}
+                className="group bg-white dark:bg-slate-800 rounded-2xl shadow-lg hover:shadow-2xl border border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-600 hover:-translate-y-2 transition-all duration-300 backdrop-blur-sm overflow-hidden"
               >
-                {/* Card Header */}
-                <div className="p-4 md:p-6 border-b border-slate-200 dark:border-slate-700">
-                  <div className="flex justify-between items-start mb-3">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-xl md:text-2xl shadow-lg ring-4 ring-white dark:ring-slate-800 flex-shrink-0 aspect-square">
+                {/* Business Image Header */}
+                <div className="relative h-48 overflow-hidden">
+                  <Image
+                    src={deal.image}
+                    alt={deal.name}
+                    fill
+                    className="object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+                  
+                  {/* Logo and Name Overlay */}
+                  <div className="absolute bottom-0 left-0 right-0 p-4">
+                    <div className="flex items-center space-x-3 mb-2">
+                      <div className="w-12 h-12 bg-white dark:bg-slate-900 rounded-full flex items-center justify-center text-2xl shadow-xl ring-2 ring-white/50">
                         {deal.logo}
                       </div>
-                      <div>
-                        <h3 className="font-bold text-base md:text-lg text-slate-900 dark:text-white leading-tight">
+                      <div className="flex-1">
+                        <h3 className="font-bold text-lg text-white leading-tight">
                           {deal.name}
                         </h3>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">{deal.industry}</p>
+                        <p className="text-xs text-white/90">{deal.industry}</p>
                       </div>
                     </div>
                   </div>
-                  <p className="text-sm text-slate-600 dark:text-slate-300 line-clamp-2">
-                    {deal.description}
-                  </p>
+
+                  {/* Return Badge */}
+                  <div className="absolute top-4 right-4">
+                    <Badge className="bg-emerald-500 text-white font-bold text-sm px-3 py-1 shadow-lg">
+                      {deal.targetReturn}x Return
+                    </Badge>
+                  </div>
                 </div>
 
-                {/* Metrics */}
+                {/* Card Content */}
                 <div className="p-4 md:p-6 space-y-4">
+                  {/* Description */}
+                  <p className="text-sm text-slate-600 dark:text-slate-300 line-clamp-2 leading-relaxed">
+                    {deal.description}
+                  </p>
+
                   {/* Progress Bar */}
                   <div>
                     <div className="flex justify-between items-center mb-2">
@@ -312,23 +337,32 @@ export default function DealsPage() {
                   </div>
 
                   {/* Bottom Info */}
-                  <div className="flex justify-between items-center pt-4 border-t border-slate-200 dark:border-slate-700">
-                    <div className="flex items-center space-x-2 md:space-x-3">
-                      <Badge className={getRiskColor(deal.riskLevel)}>
+                  <div className="flex justify-between items-center pt-2">
+                    <div className="flex items-center space-x-3">
+                      <Badge variant="outline" className={`${getRiskColor(deal.riskLevel)} border-0 text-xs`}>
                         {deal.riskLevel}
                       </Badge>
-                      <div className="flex items-center text-xs text-slate-600 dark:text-slate-400">
+                      <div className="flex items-center text-xs text-slate-500 dark:text-slate-400">
                         <Clock className="h-3 w-3 mr-1" />
-                        {deal.daysLeft}d
+                        {deal.daysLeft}d left
+                      </div>
+                      <div className="flex items-center text-xs text-slate-500 dark:text-slate-400">
+                        <Users className="h-3 w-3 mr-1" />
+                        {deal.investors}
                       </div>
                     </div>
-                    <Link href={`/deals/${deal.id}`}>
-                      <Button size="sm" className="shadow-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 group-hover:scale-105 transition-transform text-xs md:text-sm">
-                        View Deal
-                        <ArrowRight className="ml-1 md:ml-2 h-3 w-3 md:h-4 md:w-4" />
-                      </Button>
-                    </Link>
                   </div>
+
+                  {/* CTA Button */}
+                  <Link href={`/deals/${deal.id}`} className="block">
+                    <Button 
+                      size="lg" 
+                      className="w-full shadow-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 group-hover:shadow-xl transition-all text-base font-semibold"
+                    >
+                      View Investment Details
+                      <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                  </Link>
                 </div>
               </div>
             );

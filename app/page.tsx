@@ -21,7 +21,7 @@ const heroSlides = [
     image: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=1200&h=800&fit=crop',
     cta: 'Start Investing',
     ctaLink: '/register?role=investor',
-    gradient: 'from-blue-600/90 to-indigo-600/90',
+    gradient: 'from-black/80 via-slate-900/75 to-black/80',
   },
   {
     id: 2,
@@ -31,7 +31,7 @@ const heroSlides = [
     image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&h=800&fit=crop',
     cta: 'Explore Deals',
     ctaLink: '/deals',
-    gradient: 'from-purple-600/90 to-pink-600/90',
+    gradient: 'from-black/85 via-slate-900/80 to-slate-800/85',
   },
   {
     id: 3,
@@ -41,7 +41,7 @@ const heroSlides = [
     image: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=1200&h=800&fit=crop',
     cta: 'Raise Capital',
     ctaLink: '/register?role=business',
-    gradient: 'from-emerald-600/90 to-teal-600/90',
+    gradient: 'from-black/80 via-slate-800/75 to-black/80',
   },
 ];
 
@@ -299,19 +299,19 @@ export default function HomePage() {
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: 0.6, duration: 0.6 }}
-                          className="grid grid-cols-3 gap-6 mt-12 max-w-2xl"
+                          className="grid grid-cols-3 gap-3 md:gap-6 mt-12 max-w-2xl"
                         >
-                          <div className="backdrop-blur-md bg-white/10 rounded-xl p-4 border border-white/20">
-                            <div className="text-3xl md:text-4xl font-bold text-white mb-1">R50M+</div>
-                            <div className="text-sm text-white/80">Capital Raised</div>
+                          <div className="backdrop-blur-md bg-white/10 rounded-xl p-3 md:p-4 border border-white/20">
+                            <div className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-1">R50M+</div>
+                            <div className="text-xs md:text-sm text-white/80">Capital Raised</div>
                           </div>
-                          <div className="backdrop-blur-md bg-white/10 rounded-xl p-4 border border-white/20">
-                            <div className="text-3xl md:text-4xl font-bold text-white mb-1">500+</div>
-                            <div className="text-sm text-white/80">Businesses</div>
+                          <div className="backdrop-blur-md bg-white/10 rounded-xl p-3 md:p-4 border border-white/20">
+                            <div className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-1">500+</div>
+                            <div className="text-xs md:text-sm text-white/80">Businesses</div>
                           </div>
-                          <div className="backdrop-blur-md bg-white/10 rounded-xl p-4 border border-white/20">
-                            <div className="text-3xl md:text-4xl font-bold text-white mb-1">15%</div>
-                            <div className="text-sm text-white/80">Avg Returns</div>
+                          <div className="backdrop-blur-md bg-white/10 rounded-xl p-3 md:p-4 border border-white/20">
+                            <div className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-1">15%</div>
+                            <div className="text-xs md:text-sm text-white/80">Avg Returns</div>
                           </div>
                         </motion.div>
                       </motion.div>
