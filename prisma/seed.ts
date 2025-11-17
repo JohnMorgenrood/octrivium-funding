@@ -108,8 +108,8 @@ async function main() {
           lockedBalance: 0,
         },
       },
-      business: {
-        create: {
+      businesses: {
+        create: [{
           registrationNumber: 'REG2020/123456/23',
           industry: 'Renewable Energy',
           description: 'Leading provider of solar panel installations for homes and businesses across Gauteng and Western Cape.',
@@ -122,7 +122,7 @@ async function main() {
           province: 'Gauteng',
           postalCode: '2196',
           verified: true,
-        },
+        }],
       },
     },
   });
@@ -143,8 +143,8 @@ async function main() {
           lockedBalance: 0,
         },
       },
-      business: {
-        create: {
+      businesses: {
+        create: [{
           registrationNumber: 'REG2019/654321/07',
           industry: 'Food & Beverage',
           description: 'Artisan coffee roastery and café chain with 8 locations across Cape Town. Ethically sourced beans from African farmers.',
@@ -157,7 +157,7 @@ async function main() {
           province: 'Western Cape',
           postalCode: '8001',
           verified: true,
-        },
+        }],
       },
     },
   });
@@ -178,8 +178,8 @@ async function main() {
           lockedBalance: 0,
         },
       },
-      business: {
-        create: {
+      businesses: {
+        create: [{
           registrationNumber: 'REG2021/789012/23',
           industry: 'Technology',
           description: 'Software development company specializing in fintech solutions for African markets. Award-winning mobile banking apps.',
@@ -192,7 +192,7 @@ async function main() {
           province: 'Gauteng',
           postalCode: '2191',
           verified: true,
-        },
+        }],
       },
     },
   });
@@ -213,8 +213,8 @@ async function main() {
           lockedBalance: 0,
         },
       },
-      business: {
-        create: {
+      businesses: {
+        create: [{
           registrationNumber: 'REG2018/345678/23',
           industry: 'Fashion & Retail',
           description: 'Contemporary African fashion brand with online and retail presence. Celebrating African heritage through modern design.',
@@ -227,7 +227,7 @@ async function main() {
           province: 'Gauteng',
           postalCode: '2196',
           verified: true,
-        },
+        }],
       },
     },
   });
@@ -248,8 +248,8 @@ async function main() {
           lockedBalance: 0,
         },
       },
-      business: {
-        create: {
+      businesses: {
+        create: [{
           registrationNumber: 'REG2020/567890/23',
           industry: 'Logistics',
           description: 'Last-mile delivery service for e-commerce businesses. Operating in major metros with sustainable electric vehicle fleet.',
@@ -262,7 +262,7 @@ async function main() {
           province: 'Gauteng',
           postalCode: '0157',
           verified: true,
-        },
+        }],
       },
     },
   });
@@ -283,8 +283,8 @@ async function main() {
           lockedBalance: 0,
         },
       },
-      business: {
-        create: {
+      businesses: {
+        create: [{
           registrationNumber: 'REG2022/901234/23',
           industry: 'Healthcare Technology',
           description: 'Telemedicine platform connecting patients with doctors. Making healthcare accessible across South Africa.',
@@ -497,5 +497,7 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
+
+
 
 
