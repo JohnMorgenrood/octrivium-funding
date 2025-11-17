@@ -146,18 +146,18 @@ export default function DealsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-blue-950 dark:to-indigo-950">
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold mb-3 text-slate-900 dark:text-white">
+      <div className="container mx-auto px-4 py-6 md:py-8">
+        <div className="mb-6 md:mb-8">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-2 md:mb-3 text-slate-900 dark:text-white">
             Investment Opportunities
           </h1>
-          <p className="text-lg text-slate-600 dark:text-slate-300">
+          <p className="text-base md:text-lg text-slate-600 dark:text-slate-300">
             Discover vetted South African businesses raising capital through revenue-share agreements
           </p>
         </div>
 
         {/* Filters */}
-        <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 mb-8 shadow-lg">
+        <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 md:p-6 mb-6 md:mb-8 shadow-lg">
           <div className="grid md:grid-cols-4 gap-4">
             <div>
               <label className="text-sm font-medium mb-2 block text-slate-700 dark:text-slate-300">Industry</label>
@@ -243,14 +243,14 @@ export default function DealsPage() {
                 className={`group bg-white dark:bg-slate-800 rounded-2xl shadow-lg hover:shadow-2xl border-2 border-slate-100 dark:border-slate-700 hover:border-slate-200 dark:hover:border-slate-600 hover:-translate-y-1 transition-all duration-300 ${borderColor} backdrop-blur-sm overflow-hidden`}
               >
                 {/* Card Header */}
-                <div className="p-6 border-b border-slate-200 dark:border-slate-700">
+                <div className="p-4 md:p-6 border-b border-slate-200 dark:border-slate-700">
                   <div className="flex justify-between items-start mb-3">
                     <div className="flex items-center space-x-3">
-                      <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-2xl shadow-lg ring-4 ring-white dark:ring-slate-800">
+                      <div className="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-xl md:text-2xl shadow-lg ring-4 ring-white dark:ring-slate-800">
                         {deal.logo}
                       </div>
                       <div>
-                        <h3 className="font-bold text-lg text-slate-900 dark:text-white leading-tight">
+                        <h3 className="font-bold text-base md:text-lg text-slate-900 dark:text-white leading-tight">
                           {deal.name}
                         </h3>
                         <p className="text-xs text-slate-500 dark:text-slate-400">{deal.industry}</p>
@@ -263,14 +263,14 @@ export default function DealsPage() {
                 </div>
 
                 {/* Metrics */}
-                <div className="p-6 space-y-4">
+                <div className="p-4 md:p-6 space-y-4">
                   {/* Progress Bar */}
                   <div>
                     <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                      <span className="text-xs md:text-sm font-semibold text-slate-700 dark:text-slate-300">
                         Funding Progress
                       </span>
-                      <span className="text-sm font-bold text-blue-600 dark:text-blue-400">
+                      <span className="text-xs md:text-sm font-bold text-blue-600 dark:text-blue-400">
                         {percentFunded.toFixed(0)}%
                       </span>
                     </div>
@@ -292,9 +292,9 @@ export default function DealsPage() {
 
                   {/* Key Stats */}
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900/50 dark:to-slate-900/30 rounded-lg p-3 border border-slate-200 dark:border-slate-700">
+                    <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900/50 dark:to-slate-900/30 rounded-lg p-2.5 md:p-3 border border-slate-200 dark:border-slate-700">
                       <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Monthly Revenue</div>
-                      <div className="font-bold text-slate-900 dark:text-white">
+                      <div className="font-bold text-sm md:text-base text-slate-900 dark:text-white">
                         R{(deal.monthlyRevenue / 1000).toFixed(0)}k
                       </div>
                       <div className={`flex items-center text-xs mt-1 ${isGrowing ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
@@ -302,9 +302,9 @@ export default function DealsPage() {
                         {deal.revenueGrowth}%
                       </div>
                     </div>
-                    <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900/50 dark:to-slate-900/30 rounded-lg p-3 border border-slate-200 dark:border-slate-700">
+                    <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900/50 dark:to-slate-900/30 rounded-lg p-2.5 md:p-3 border border-slate-200 dark:border-slate-700">
                       <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Target Return</div>
-                      <div className="font-bold text-slate-900 dark:text-white">
+                      <div className="font-bold text-sm md:text-base text-slate-900 dark:text-white">
                         {deal.targetReturn}x
                       </div>
                       <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">Capped</div>
@@ -313,7 +313,7 @@ export default function DealsPage() {
 
                   {/* Bottom Info */}
                   <div className="flex justify-between items-center pt-4 border-t border-slate-200 dark:border-slate-700">
-                    <div className="flex items-center space-x-3">
+                    <div className="flex items-center space-x-2 md:space-x-3">
                       <Badge className={getRiskColor(deal.riskLevel)}>
                         {deal.riskLevel}
                       </Badge>
@@ -323,9 +323,9 @@ export default function DealsPage() {
                       </div>
                     </div>
                     <Link href={`/deals/${deal.id}`}>
-                      <Button size="sm" className="shadow-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 group-hover:scale-105 transition-transform">
+                      <Button size="sm" className="shadow-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 group-hover:scale-105 transition-transform text-xs md:text-sm">
                         View Deal
-                        <ArrowRight className="ml-2 h-4 w-4" />
+                        <ArrowRight className="ml-1 md:ml-2 h-3 w-3 md:h-4 md:w-4" />
                       </Button>
                     </Link>
                   </div>
