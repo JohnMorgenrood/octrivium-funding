@@ -114,7 +114,7 @@ const fakeDealss = [
     targetReturn: 1.4,
     status: 'active',
     logo: '👗',
-    image: 'https://images.unsplash.com/photo-1558769132-cb1aea1f162f?w=600&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&h=400&fit=crop',
   },
 ];
 
@@ -566,9 +566,9 @@ export default function HomePage() {
       </section>
 
       {/* How It Works - Interactive Timeline */}
-      <section className="py-20 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950 dark:from-slate-950 dark:via-indigo-950 dark:to-black relative overflow-hidden">
+      <section className="py-20 bg-gradient-to-br from-blue-100 via-indigo-100 to-purple-100 dark:from-slate-900 dark:via-indigo-950 dark:to-slate-950 relative overflow-hidden">
         {/* Animated Background Elements */}
-        <div className="absolute inset-0 opacity-20">
+        <div className="absolute inset-0 opacity-20 dark:opacity-20">
           <div className="absolute top-20 left-10 w-72 h-72 bg-blue-500 rounded-full blur-3xl animate-pulse"></div>
           <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-500 rounded-full blur-3xl animate-pulse delay-1000"></div>
         </div>
@@ -581,10 +581,10 @@ export default function HomePage() {
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 text-white">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 text-slate-900 dark:text-white">
               How It Works
             </h2>
-            <p className="text-xl md:text-2xl text-blue-200">Simple, transparent, and effective</p>
+            <p className="text-xl md:text-2xl text-slate-700 dark:text-blue-200">Simple, transparent, and effective</p>
           </motion.div>
 
           <div className="max-w-7xl mx-auto">
@@ -608,7 +608,7 @@ export default function HomePage() {
                       <TrendingUp className="w-8 h-8 text-white" />
                     </div>
                   </motion.div>
-                  <h3 className="text-3xl md:text-4xl font-bold text-white mb-2">For Investors</h3>
+                  <h3 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-2">For Investors</h3>
                   <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-cyan-500 mx-auto rounded-full"></div>
                 </div>
 
@@ -652,7 +652,7 @@ export default function HomePage() {
                       whileHover={{ x: 10, transition: { duration: 0.2 } }}
                       className="relative"
                     >
-                      <div className="flex items-start gap-4 bg-white/5 backdrop-blur-sm border border-blue-500/30 rounded-2xl p-6 hover:bg-white/10 hover:border-blue-400/50 transition-all duration-300 group">
+                      <div className="flex items-start gap-4 bg-white/80 dark:bg-white/5 backdrop-blur-sm border border-blue-500/30 dark:border-blue-500/30 rounded-2xl p-6 hover:bg-white/90 dark:hover:bg-white/10 hover:border-blue-500/50 dark:hover:border-blue-400/50 transition-all duration-300 group">
                         <div className="flex-shrink-0">
                           <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg group-hover:scale-110 transition-transform">
                             {step.num}
@@ -661,9 +661,9 @@ export default function HomePage() {
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-2">
                             <span className="text-2xl">{step.icon}</span>
-                            <h4 className="text-xl font-bold text-white">{step.title}</h4>
+                            <h4 className="text-xl font-bold text-slate-900 dark:text-white">{step.title}</h4>
                           </div>
-                          <p className="text-blue-100 leading-relaxed">{step.desc}</p>
+                          <p className="text-slate-700 dark:text-blue-100 leading-relaxed">{step.desc}</p>
                         </div>
                         <motion.div
                           animate={{ x: [0, 5, 0] }}
@@ -694,7 +694,7 @@ export default function HomePage() {
               </motion.div>
 
               {/* Vertical Divider */}
-              <div className="hidden lg:block absolute left-1/2 top-32 bottom-32 w-px bg-gradient-to-b from-transparent via-white/30 to-transparent"></div>
+              <div className="hidden lg:block absolute left-1/2 top-32 bottom-32 w-px bg-gradient-to-b from-transparent via-slate-300/50 dark:via-white/30 to-transparent"></div>
 
               {/* For Businesses Side */}
               <motion.div
@@ -713,7 +713,7 @@ export default function HomePage() {
                       <Users className="w-8 h-8 text-white" />
                     </div>
                   </motion.div>
-                  <h3 className="text-3xl md:text-4xl font-bold text-white mb-2">For Businesses</h3>
+                  <h3 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-2">For Businesses</h3>
                   <div className="w-24 h-1 bg-gradient-to-r from-indigo-500 to-purple-500 mx-auto rounded-full"></div>
                 </div>
 
@@ -757,7 +757,7 @@ export default function HomePage() {
                       whileHover={{ x: -10, transition: { duration: 0.2 } }}
                       className="relative"
                     >
-                      <div className="flex items-start gap-4 bg-white/5 backdrop-blur-sm border border-indigo-500/30 rounded-2xl p-6 hover:bg-white/10 hover:border-indigo-400/50 transition-all duration-300 group">
+                      <div className="flex items-start gap-4 bg-white/80 dark:bg-white/5 backdrop-blur-sm border border-indigo-500/30 dark:border-indigo-500/30 rounded-2xl p-6 hover:bg-white/90 dark:hover:bg-white/10 hover:border-indigo-400/50 transition-all duration-300 group">
                         <motion.div
                           animate={{ x: [0, -5, 0] }}
                           transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
@@ -768,9 +768,9 @@ export default function HomePage() {
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-2">
                             <span className="text-2xl">{step.icon}</span>
-                            <h4 className="text-xl font-bold text-white">{step.title}</h4>
+                            <h4 className="text-xl font-bold text-slate-900 dark:text-white">{step.title}</h4>
                           </div>
-                          <p className="text-indigo-100 leading-relaxed">{step.desc}</p>
+                          <p className="text-slate-700 dark:text-indigo-100 leading-relaxed">{step.desc}</p>
                         </div>
                         <div className="flex-shrink-0">
                           <div className="w-14 h-14 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg group-hover:scale-110 transition-transform">

@@ -95,7 +95,7 @@ const fakeDeals = [
     logo: '👗',
     location: 'Durban',
     founded: 2020,
-    image: 'https://images.unsplash.com/photo-1558769132-cb1aea1f162f?w=600&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&h=400&fit=crop',
     isFeatured: true,
     isTopListing: false,
   },
