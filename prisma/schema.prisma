@@ -50,6 +50,27 @@ enum TransactionStatus {
   CANCELLED
 }
 
+enum RevenueSourceType {
+  BANK_FEED      // Stitch bank integration
+  ACCOUNTING     // Sage, Xero, QuickBooks, Zoho
+  MANUAL_UPLOAD  // Manual statement upload
+}
+
+enum AccountingProvider {
+  SAGE_BUSINESS_CLOUD
+  XERO
+  QUICKBOOKS_ONLINE
+  ZOHO_BOOKS
+}
+
+enum VerificationStatus {
+  PENDING
+  VERIFIED
+  FLAGGED
+  FAILED
+  DISCONNECTED
+}
+
 model User {
   id            String    @id @default(uuid())
   email         String    @unique
@@ -155,6 +176,7 @@ model Business {
   user                User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   deals               Deal[]
   documents           BusinessDocument[]
+  revenueConnections  RevenueConnection[]
 
   @@index([userId])
   @@index([registrationNumber])
@@ -206,6 +228,7 @@ model Deal {
   investments           Investment[]
   revenueReports        RevenueReport[]
   revenuePayouts        RevenuePayout[]
+  revenueRecords        RevenueRecord[]
 
   @@index([businessId])
   @@index([status])
@@ -385,4 +408,266 @@ model AuditLog {
   @@index([userId])
   @@index([entity])
   @@index([createdAt])
+}
+
+// Revenue Verification System
+
+model RevenueConnection {
+  id                String              @id @default(uuid())
+  businessId        String
+  sourceType        RevenueSourceType
+  provider          AccountingProvider? // Only for ACCOUNTING type
+  
+  // Connection Status
+  isConnected       Boolean             @default(false)
+  status            VerificationStatus  @default(PENDING)
+  lastSyncAt        DateTime?
+  lastSyncStatus    String?             // SUCCESS, FAILED, PARTIAL
+  nextSyncAt        DateTime?
+  
+  // OAuth Tokens (encrypted)
+  accessToken       String?             @db.Text
+  refreshToken      String?             @db.Text
+  tokenExpiresAt    DateTime?
+  
+  // Connection Metadata
+  accountId         String?             // External account/org ID
+  accountName       String?             // Bank name or accounting org name
+  metadata          Json?               // Additional provider-specific data
+  
+  // Error Tracking
+  lastError         String?             @db.Text
+  errorCount        Int                 @default(0)
+  
+  connectedAt       DateTime?
+  disconnectedAt    DateTime?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+
+  // Relations
+  business          Business            @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  bankAccounts      BankAccount[]
+  revenueRecords    RevenueRecord[]
+  verificationLogs  VerificationLog[]
+
+  @@unique([businessId, sourceType])
+  @@index([businessId])
+  @@index([sourceType])
+  @@index([status])
+  @@index([lastSyncAt])
+}
+
+model BankAccount {
+  id                  String            @id @default(uuid())
+  connectionId        String
+  
+  // Bank Account Details
+  accountId           String            // External bank account ID from Stitch
+  accountName         String
+  accountNumber       String?
+  accountType         String?           // CURRENT, SAVINGS, CREDIT_CARD
+  bankName            String
+  currency            String            @default("ZAR")
+  
+  // Balance Info
+  currentBalance      Decimal?          @db.Decimal(15, 2)
+  availableBalance    Decimal?          @db.Decimal(15, 2)
+  
+  // Status
+  isActive            Boolean           @default(true)
+  lastTransactionDate DateTime?
+  
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+
+  // Relations
+  connection          RevenueConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  transactions        BankTransaction[]
+
+  @@unique([connectionId, accountId])
+  @@index([connectionId])
+  @@index([accountId])
+}
+
+model BankTransaction {
+  id                String      @id @default(uuid())
+  bankAccountId     String
+  
+  // Transaction Details
+  transactionId     String      // External transaction ID
+  date              DateTime
+  description       String
+  amount            Decimal     @db.Decimal(15, 2)
+  balance           Decimal?    @db.Decimal(15, 2)
+  category          String?
+  reference         String?
+  
+  // Classification
+  isRevenue         Boolean     @default(false)
+  isExpense         Boolean     @default(false)
+  isTransfer        Boolean     @default(false)
+  
+  metadata          Json?
+  createdAt         DateTime    @default(now())
+
+  // Relations
+  bankAccount       BankAccount @relation(fields: [bankAccountId], references: [id], onDelete: Cascade)
+
+  @@unique([bankAccountId, transactionId])
+  @@index([bankAccountId])
+  @@index([date])
+  @@index([isRevenue])
+}
+
+model RevenueRecord {
+  id                  String              @id @default(uuid())
+  dealId              String
+  connectionId        String
+  
+  // Period
+  month               DateTime            // First day of month
+  year                Int
+  
+  // Revenue Data
+  totalRevenue        Decimal             @db.Decimal(15, 2)
+  verifiedRevenue     Decimal?            @db.Decimal(15, 2)
+  revenueShareAmount  Decimal             @db.Decimal(15, 2) // Amount owed to investors
+  
+  // Source Info
+  sourceType          RevenueSourceType
+  sourceData          Json?               // Raw data from source
+  
+  // Verification
+  status              VerificationStatus  @default(PENDING)
+  verifiedAt          DateTime?
+  verifiedBy          String?             // Admin user ID
+  
+  // Discrepancy Detection
+  hasDiscrepancy      Boolean             @default(false)
+  discrepancyAmount   Decimal?            @db.Decimal(15, 2)
+  discrepancyNotes    String?             @db.Text
+  
+  // Payout Status
+  payoutScheduled     Boolean             @default(false)
+  payoutCompletedAt   DateTime?
+  
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+
+  // Relations
+  deal                Deal                @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  connection          RevenueConnection   @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+
+  @@unique([dealId, connectionId, month])
+  @@index([dealId])
+  @@index([connectionId])
+  @@index([month])
+  @@index([status])
+}
+
+model VerificationLog {
+  id                String            @id @default(uuid())
+  connectionId      String
+  
+  // Verification Details
+  verificationType  String            // BANK_SYNC, ACCOUNTING_SYNC, CROSS_REFERENCE, FRAUD_CHECK
+  status            String            // SUCCESS, FAILED, WARNING
+  
+  // Data
+  dataFetched       Json?
+  discrepancies     Json?
+  
+  // Results
+  message           String?           @db.Text
+  errorDetails      String?           @db.Text
+  
+  // Metadata
+  duration          Int?              // Sync duration in ms
+  recordsProcessed  Int?
+  recordsFailed     Int?
+  
+  createdAt         DateTime          @default(now())
+
+  // Relations
+  connection        RevenueConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+
+  @@index([connectionId])
+  @@index([verificationType])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model ManualUpload {
+  id                String            @id @default(uuid())
+  businessId        String
+  dealId            String?
+  
+  // File Details
+  fileName          String
+  fileUrl           String
+  fileSize          Int
+  mimeType          String
+  
+  // Upload Type
+  uploadType        String            // BANK_STATEMENT, ACCOUNTING_REPORT, INVOICE_EXPORT
+  month             DateTime          // Period this upload covers
+  
+  // Extracted Data
+  extractedRevenue  Decimal?          @db.Decimal(15, 2)
+  extractedData     Json?
+  
+  // Verification
+  status            VerificationStatus @default(PENDING)
+  verifiedAt        DateTime?
+  verifiedBy        String?
+  rejectionReason   String?           @db.Text
+  
+  // Notes
+  businessNotes     String?           @db.Text
+  adminNotes        String?           @db.Text
+  
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  @@index([businessId])
+  @@index([dealId])
+  @@index([month])
+  @@index([status])
+}
+
+model PayoutSchedule {
+  id                String            @id @default(uuid())
+  dealId            String
+  month             DateTime          // Payment month
+  
+  // Amounts
+  totalRevenue      Decimal           @db.Decimal(15, 2)
+  revenueShareAmount Decimal          @db.Decimal(15, 2)
+  platformFee       Decimal           @db.Decimal(15, 2)
+  netPayoutAmount   Decimal           @db.Decimal(15, 2)
+  
+  // Status
+  status            String            @default("SCHEDULED") // SCHEDULED, PROCESSING, COMPLETED, FAILED, PAUSED
+  scheduledDate     DateTime
+  processedDate     DateTime?
+  
+  // Flags
+  isPaused          Boolean           @default(false)
+  pauseReason       String?           @db.Text
+  
+  // References
+  revenueRecordIds  Json              // Array of RevenueRecord IDs used
+  
+  // Metadata
+  investorCount     Int?
+  metadata          Json?
+  
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  @@unique([dealId, month])
+  @@index([dealId])
+  @@index([month])
+  @@index([status])
+  @@index([scheduledDate])
 }
