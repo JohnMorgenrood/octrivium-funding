@@ -37,10 +37,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Get the deal to calculate expected return
+    // Get the deal to calculate expected return and share percentage
     const deal = await prisma.deal.findUnique({
       where: { id: dealId },
-      select: { repaymentCap: true },
+      select: { 
+        repaymentCap: true,
+        fundingGoal: true,
+        currentFunding: true,
+      },
     });
 
     if (!deal) {
@@ -50,13 +54,18 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Calculate share percentage based on investment amount and funding goal
+    const investmentAmount = parseFloat(amount);
+    const sharePercentage = (investmentAmount / Number(deal.fundingGoal)) * 100;
+
     // Create investment record in database
     const investment = await prisma.investment.create({
       data: {
         userId: session.user.id,
         dealId: dealId,
-        amount: parseFloat(amount),
-        expectedReturn: parseFloat(amount) * Number(deal.repaymentCap),
+        amount: investmentAmount,
+        sharePercentage: sharePercentage,
+        expectedReturn: investmentAmount * Number(deal.repaymentCap),
         status: 'ACTIVE',
       },
     });
