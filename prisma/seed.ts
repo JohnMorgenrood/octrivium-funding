@@ -111,12 +111,11 @@ async function main() {
       businesses: {
         create: [{
           registrationNumber: 'REG2020/123456/23',
+          tradingName: 'GreenEnergy Solutions',
+          legalName: 'GreenEnergy Solutions (Pty) Ltd',
           industry: 'Renewable Energy',
           description: 'Leading provider of solar panel installations for homes and businesses across Gauteng and Western Cape.',
           website: 'https://greenenergy.co.za',
-          employeeCount: 45,
-          monthlyRevenue: 850000,
-          yearFounded: 2020,
           address: '123 Solar Street, Sandton, Johannesburg',
           city: 'Johannesburg',
           province: 'Gauteng',
@@ -146,12 +145,11 @@ async function main() {
       businesses: {
         create: [{
           registrationNumber: 'REG2019/654321/07',
+          tradingName: 'Cape Town Coffee Co',
+          legalName: 'Cape Town Coffee Company (Pty) Ltd',
           industry: 'Food & Beverage',
           description: 'Artisan coffee roastery and café chain with 8 locations across Cape Town. Ethically sourced beans from African farmers.',
           website: 'https://ctcoffee.co.za',
-          employeeCount: 65,
-          monthlyRevenue: 1200000,
-          yearFounded: 2019,
           address: '45 Coffee Lane, V&A Waterfront',
           city: 'Cape Town',
           province: 'Western Cape',
@@ -181,12 +179,11 @@ async function main() {
       businesses: {
         create: [{
           registrationNumber: 'REG2021/789012/23',
+          tradingName: 'Tech Innovators SA',
+          legalName: 'Tech Innovators South Africa (Pty) Ltd',
           industry: 'Technology',
           description: 'Software development company specializing in fintech solutions for African markets. Award-winning mobile banking apps.',
           website: 'https://techinnovators.co.za',
-          employeeCount: 32,
-          monthlyRevenue: 950000,
-          yearFounded: 2021,
           address: '78 Innovation Drive, Bryanston',
           city: 'Johannesburg',
           province: 'Gauteng',
@@ -216,12 +213,11 @@ async function main() {
       businesses: {
         create: [{
           registrationNumber: 'REG2018/345678/23',
+          tradingName: 'African Fashion Hub',
+          legalName: 'African Fashion Hub (Pty) Ltd',
           industry: 'Fashion & Retail',
           description: 'Contemporary African fashion brand with online and retail presence. Celebrating African heritage through modern design.',
           website: 'https://africanfashionhub.co.za',
-          employeeCount: 28,
-          monthlyRevenue: 680000,
-          yearFounded: 2018,
           address: '234 Fashion Avenue, Rosebank',
           city: 'Johannesburg',
           province: 'Gauteng',
@@ -251,12 +247,11 @@ async function main() {
       businesses: {
         create: [{
           registrationNumber: 'REG2020/567890/23',
+          tradingName: 'Swift Logistics ZA',
+          legalName: 'Swift Logistics South Africa (Pty) Ltd',
           industry: 'Logistics',
           description: 'Last-mile delivery service for e-commerce businesses. Operating in major metros with sustainable electric vehicle fleet.',
           website: 'https://swiftlogistics.co.za',
-          employeeCount: 120,
-          monthlyRevenue: 1800000,
-          yearFounded: 2020,
           address: '567 Logistics Road, Centurion',
           city: 'Centurion',
           province: 'Gauteng',
@@ -286,18 +281,17 @@ async function main() {
       businesses: {
         create: [{
           registrationNumber: 'REG2022/901234/23',
+          tradingName: 'HealthTech Connect',
+          legalName: 'HealthTech Connect (Pty) Ltd',
           industry: 'Healthcare Technology',
           description: 'Telemedicine platform connecting patients with doctors. Making healthcare accessible across South Africa.',
           website: 'https://healthtechconnect.co.za',
-          employeeCount: 18,
-          monthlyRevenue: 420000,
-          yearFounded: 2022,
           address: '890 Health Street, Umhlanga',
           city: 'Durban',
           province: 'KwaZulu-Natal',
           postalCode: '4320',
           verified: false,
-        },
+        }],
       },
     },
   });
@@ -305,7 +299,7 @@ async function main() {
   // Create Active Deals
   const deal1 = await prisma.deal.create({
     data: {
-      businessId: greenEnergy.business!.id,
+      businessId: greenEnergy.businesses[0].id,
       title: 'Solar Panel Installation Expansion',
       description: 'Expanding our solar panel installation services to reach more homeowners and businesses. Funding will be used for equipment purchase, training new installers, and marketing campaigns.',
       fundingGoal: 500000,
@@ -329,7 +323,7 @@ async function main() {
 
   const deal2 = await prisma.deal.create({
     data: {
-      businessId: coffeeCo.business!.id,
+      businessId: coffeeCo.businesses[0].id,
       title: 'New Café Locations & Online Store',
       description: 'Opening 3 new café locations in high-traffic areas and launching an e-commerce platform for nationwide coffee bean delivery.',
       fundingGoal: 750000,
@@ -353,7 +347,7 @@ async function main() {
 
   const deal3 = await prisma.deal.create({
     data: {
-      businessId: techInnovators.business!.id,
+      businessId: techInnovators.businesses[0].id,
       title: 'Fintech App Development & Market Expansion',
       description: 'Developing next-generation mobile banking features and expanding to Kenya and Nigeria. Proven track record with 500K+ users.',
       fundingGoal: 1000000,
@@ -377,7 +371,7 @@ async function main() {
 
   const deal4 = await prisma.deal.create({
     data: {
-      businessId: fashionHub.business!.id,
+      businessId: fashionHub.businesses[0].id,
       title: 'Flagship Store & International Shipping',
       description: 'Opening a flagship store in Sandton City and launching international shipping to UK, USA, and Australia. Showcasing African designers globally.',
       fundingGoal: 350000,
@@ -401,7 +395,7 @@ async function main() {
 
   const deal5 = await prisma.deal.create({
     data: {
-      businessId: logistics.business!.id,
+      businessId: logistics.businesses[0].id,
       title: 'Electric Vehicle Fleet Expansion',
       description: 'Purchasing 50 additional electric delivery vehicles to meet growing demand and reduce carbon footprint. Scaling operations to Western Cape.',
       fundingGoal: 2000000,
@@ -425,7 +419,7 @@ async function main() {
 
   const deal6 = await prisma.deal.create({
     data: {
-      businessId: healthTech.business!.id,
+      businessId: healthTech.businesses[0].id,
       title: 'Telemedicine Platform Scale-Up',
       description: 'Expanding our telemedicine platform to rural areas with mobile clinics and partnerships with provincial health departments.',
       fundingGoal: 600000,
@@ -497,6 +491,8 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
+
+
 
 
 
