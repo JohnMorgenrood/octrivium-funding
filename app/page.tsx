@@ -1,11 +1,49 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { ArrowRight, TrendingUp, Shield, Users, BarChart3, Zap, Heart, ArrowUpRight, ArrowDownRight, Clock, DollarSign, Target, Menu } from 'lucide-react';
-import { useState } from 'react';
+import { ArrowRight, TrendingUp, Shield, Users, BarChart3, Zap, Heart, ArrowUpRight, ArrowDownRight, Clock, DollarSign, Target, Menu, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import useEmblaCarousel from 'embla-carousel-react';
+import Autoplay from 'embla-carousel-autoplay';
+import { motion, AnimatePresence } from 'framer-motion';
+
+// Hero Carousel Slides
+const heroSlides = [
+  {
+    id: 1,
+    title: 'Invest in South African Excellence',
+    subtitle: 'Fund tomorrow\'s success stories today',
+    description: 'Connect with high-growth businesses and earn revenue-based returns',
+    image: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=1200&h=800&fit=crop',
+    cta: 'Start Investing',
+    ctaLink: '/register?role=investor',
+    gradient: 'from-blue-600/90 to-indigo-600/90',
+  },
+  {
+    id: 2,
+    title: 'Empower Local Entrepreneurs',
+    subtitle: 'Be part of their growth journey',
+    description: 'Support verified businesses and share in their revenue growth',
+    image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&h=800&fit=crop',
+    cta: 'Explore Deals',
+    ctaLink: '/deals',
+    gradient: 'from-purple-600/90 to-pink-600/90',
+  },
+  {
+    id: 3,
+    title: 'Grow Your Business with Community',
+    subtitle: 'Raise capital without giving up equity',
+    description: 'Access funding from investors who believe in your vision',
+    image: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=1200&h=800&fit=crop',
+    cta: 'Raise Capital',
+    ctaLink: '/register?role=business',
+    gradient: 'from-emerald-600/90 to-teal-600/90',
+  },
+];
 
 // Fake deals data
 const fakeDealss = [
@@ -73,6 +111,26 @@ const fakeDealss = [
 
 export default function HomePage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 5000 })]);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
+  const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    
+    const onSelect = () => {
+      setSelectedIndex(emblaApi.selectedScrollSnap());
+    };
+    
+    emblaApi.on('select', onSelect);
+    onSelect();
+    
+    return () => {
+      emblaApi.off('select', onSelect);
+    };
+  }, [emblaApi]);
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-blue-950 dark:to-indigo-950">
@@ -152,59 +210,167 @@ export default function HomePage() {
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section className="container mx-auto px-4 py-12 md:py-20 lg:py-32">
-        <div className="max-w-5xl mx-auto text-center">
-          <div className="inline-flex items-center px-4 py-2 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 font-semibold text-sm mb-6 shadow-sm">
-            <span className="w-2 h-2 bg-blue-500 rounded-full mr-2 animate-pulse"></span>
-            Empowering South African Businesses
-          </div>
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
-            <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
-              Fund Growth,
-            </span>
-            <br />
-            <span className="text-slate-900 dark:text-white">Share Success</span>
-          </h1>
-          <p className="text-lg md:text-xl lg:text-2xl text-slate-600 dark:text-slate-300 mb-10 max-w-3xl mx-auto leading-relaxed px-4">
-            Revenue-based crowdfunding platform connecting small businesses with everyday investors.
-            Invest in your community, earn as they grow.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center px-4">
-            <Link href="/register?role=investor">
-              <Button size="lg" className="text-base md:text-lg px-6 md:px-8 py-4 md:py-6 w-full sm:w-auto">
-                Start Investing
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
-            <Link href="/register?role=business">
-              <Button size="lg" variant="outline" className="text-base md:text-lg px-6 md:px-8 py-4 md:py-6 w-full sm:w-auto">
-                Raise Capital
-              </Button>
-            </Link>
-          </div>
-          
-          {/* Stats */}
-          <div className="grid grid-cols-3 gap-4 md:gap-8 mt-12 md:mt-16 max-w-3xl mx-auto px-4">
-            <div className="text-center">
-              <div className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2">
-                R50M+
+      {/* Hero Carousel Section */}
+      <section className="relative h-[600px] md:h-[700px] lg:h-[800px] overflow-hidden">
+        <div className="embla h-full" ref={emblaRef}>
+          <div className="embla__container h-full flex">
+            {heroSlides.map((slide, index) => (
+              <div key={slide.id} className="embla__slide flex-[0_0_100%] min-w-0 relative h-full">
+                {/* Background Image with Overlay */}
+                <div className="absolute inset-0">
+                  <Image
+                    src={slide.image}
+                    alt={slide.title}
+                    fill
+                    className="object-cover"
+                    priority={index === 0}
+                    quality={90}
+                  />
+                  <div className={`absolute inset-0 bg-gradient-to-r ${slide.gradient}`} />
+                  <div className="absolute inset-0 bg-black/20" />
+                </div>
+
+                {/* Content */}
+                <div className="relative h-full container mx-auto px-4 flex items-center">
+                  <AnimatePresence mode="wait">
+                    {selectedIndex === index && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -30 }}
+                        transition={{ duration: 0.6, ease: 'easeOut' }}
+                        className="max-w-3xl"
+                      >
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ delay: 0.2, duration: 0.5 }}
+                          className="inline-block px-4 py-2 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white text-sm font-semibold mb-6"
+                        >
+                          {slide.subtitle}
+                        </motion.div>
+                        
+                        <motion.h1
+                          initial={{ opacity: 0, x: -30 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.3, duration: 0.6 }}
+                          className="text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-6 leading-tight drop-shadow-2xl"
+                        >
+                          {slide.title}
+                        </motion.h1>
+                        
+                        <motion.p
+                          initial={{ opacity: 0, x: -30 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.4, duration: 0.6 }}
+                          className="text-lg md:text-xl lg:text-2xl text-white/95 mb-8 max-w-2xl leading-relaxed drop-shadow-lg"
+                        >
+                          {slide.description}
+                        </motion.p>
+                        
+                        <motion.div
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.5, duration: 0.6 }}
+                          className="flex flex-col sm:flex-row gap-4"
+                        >
+                          <Link href={slide.ctaLink}>
+                            <Button 
+                              size="lg" 
+                              className="text-lg px-8 py-6 bg-white text-slate-900 hover:bg-slate-100 shadow-2xl w-full sm:w-auto group"
+                            >
+                              {slide.cta}
+                              <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                            </Button>
+                          </Link>
+                          <Link href="/how-it-works">
+                            <Button 
+                              size="lg" 
+                              variant="outline" 
+                              className="text-lg px-8 py-6 bg-transparent text-white border-white/50 hover:bg-white/10 backdrop-blur-sm w-full sm:w-auto"
+                            >
+                              Learn More
+                            </Button>
+                          </Link>
+                        </motion.div>
+
+                        {/* Stats on Carousel */}
+                        <motion.div
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.6, duration: 0.6 }}
+                          className="grid grid-cols-3 gap-6 mt-12 max-w-2xl"
+                        >
+                          <div className="backdrop-blur-md bg-white/10 rounded-xl p-4 border border-white/20">
+                            <div className="text-3xl md:text-4xl font-bold text-white mb-1">R50M+</div>
+                            <div className="text-sm text-white/80">Capital Raised</div>
+                          </div>
+                          <div className="backdrop-blur-md bg-white/10 rounded-xl p-4 border border-white/20">
+                            <div className="text-3xl md:text-4xl font-bold text-white mb-1">500+</div>
+                            <div className="text-sm text-white/80">Businesses</div>
+                          </div>
+                          <div className="backdrop-blur-md bg-white/10 rounded-xl p-4 border border-white/20">
+                            <div className="text-3xl md:text-4xl font-bold text-white mb-1">15%</div>
+                            <div className="text-sm text-white/80">Avg Returns</div>
+                          </div>
+                        </motion.div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               </div>
-              <div className="text-xs md:text-base text-slate-600 dark:text-slate-400 font-medium">Capital Raised</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2">
-                500+
-              </div>
-              <div className="text-xs md:text-base text-slate-600 dark:text-slate-400 font-medium">Businesses Funded</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2">
-                15%
-              </div>
-              <div className="text-xs md:text-base text-slate-600 dark:text-slate-400 font-medium">Avg. Returns</div>
-            </div>
+            ))}
           </div>
+        </div>
+
+        {/* Navigation Arrows */}
+        <button
+          onClick={scrollPrev}
+          className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white hover:bg-white/30 transition-all shadow-lg"
+          aria-label="Previous slide"
+        >
+          <ChevronLeft className="h-6 w-6" />
+        </button>
+        <button
+          onClick={scrollNext}
+          className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white hover:bg-white/30 transition-all shadow-lg"
+          aria-label="Next slide"
+        >
+          <ChevronRight className="h-6 w-6" />
+        </button>
+
+        {/* Dots Indicator */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex gap-2">
+          {heroSlides.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => emblaApi?.scrollTo(index)}
+              className={`h-2 rounded-full transition-all ${
+                selectedIndex === index ? 'w-8 bg-white' : 'w-2 bg-white/50'
+              }`}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
+        </div>
+
+        {/* Scroll Down Indicator */}
+        <div className="absolute bottom-20 left-1/2 -translate-x-1/2 hidden lg:block">
+          <motion.div
+            animate={{ y: [0, 10, 0] }}
+            transition={{ repeat: Infinity, duration: 1.5 }}
+            className="text-white/70 text-sm font-medium"
+          >
+            <div className="flex flex-col items-center">
+              <span className="mb-2">Scroll to explore</span>
+              <div className="w-6 h-10 border-2 border-white/50 rounded-full flex items-start justify-center p-2">
+                <motion.div
+                  animate={{ y: [0, 12, 0] }}
+                  transition={{ repeat: Infinity, duration: 1.5 }}
+                  className="w-1.5 h-1.5 bg-white rounded-full"
+                />
+              </div>
+            </div>
+          </motion.div>
         </div>
       </section>
 
@@ -614,6 +780,38 @@ export default function HomePage() {
           </div>
         </div>
       </footer>
+
+      {/* Structured Data for SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'FinancialService',
+            name: 'Octrivium Funding',
+            description: 'Revenue-based crowdfunding platform for South African businesses',
+            url: 'https://octrivium.co.za',
+            logo: 'https://octrivium.co.za/logo.png',
+            address: {
+              '@type': 'PostalAddress',
+              addressLocality: 'Cape Town',
+              addressCountry: 'ZA',
+            },
+            contactPoint: {
+              '@type': 'ContactPoint',
+              telephone: '+27-21-123-4567',
+              contactType: 'Customer Service',
+              areaServed: 'ZA',
+              availableLanguage: ['English', 'Afrikaans'],
+            },
+            sameAs: [
+              'https://twitter.com/octrivium',
+              'https://linkedin.com/company/octrivium',
+              'https://facebook.com/octrivium',
+            ],
+          }),
+        }}
+      />
     </div>
   );
 }
