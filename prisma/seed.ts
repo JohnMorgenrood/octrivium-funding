@@ -323,7 +323,7 @@ async function main() {
       fundingGoal: 500000,
       currentFunding: 425000,
       revenueSharePercentage: 5.0,
-      repaymentCap: 1.7,
+      repaymentCap: 1.6,
       minInvestment: 5000,
       status: 'ACTIVE',
       riskRating: 5,
@@ -331,7 +331,7 @@ async function main() {
       startDate: new Date('2024-06-01'),
       endDate: new Date('2025-12-01'),
       projectedMonthlyRevenue: 850000,
-      termsAndConditions: 'Standard revenue share agreement. Investors receive 5% of monthly revenue up to 1.7x return. Minimum investment R5,000. 18-month investment period.',
+      termsAndConditions: 'Standard revenue share agreement. Investors receive 5% of monthly revenue up to 1.6x return. Minimum investment R5,000. 18-month investment period.',
     },
   });
 
@@ -363,7 +363,7 @@ async function main() {
       fundingGoal: 1000000,
       currentFunding: 340000,
       revenueSharePercentage: 4.5,
-      repaymentCap: 1.7,
+      repaymentCap: 1.8,
       minInvestment: 25000,
       status: 'ACTIVE',
       riskRating: 5,
@@ -371,7 +371,7 @@ async function main() {
       startDate: new Date('2024-08-01'),
       endDate: new Date('2026-02-01'),
       projectedMonthlyRevenue: 950000,
-      termsAndConditions: 'Standard revenue share agreement. Investors receive 4.5% of monthly revenue up to 1.7x return. Minimum investment R25,000. 18-month investment period.',
+      termsAndConditions: 'Standard revenue share agreement. Investors receive 4.5% of monthly revenue up to 1.8x return. Minimum investment R25,000. 18-month investment period.',
     },
   });
 
@@ -488,6 +488,7 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
+
 
 
 
