@@ -440,7 +440,7 @@ async function main() {
   // Create some investments
   await prisma.investment.create({
     data: {
-      investorId: investors[0].id,
+      userId: investors[0].id,
       dealId: deal1.id,
       amount: 50000,
       sharePercentage: 0.5,
@@ -450,7 +450,7 @@ async function main() {
 
   await prisma.investment.create({
     data: {
-      investorId: investors[1].id,
+      userId: investors[1].id,
       dealId: deal1.id,
       amount: 100000,
       sharePercentage: 1.0,
@@ -460,7 +460,7 @@ async function main() {
 
   await prisma.investment.create({
     data: {
-      investorId: investors[2].id,
+      userId: investors[2].id,
       dealId: deal2.id,
       amount: 75000,
       sharePercentage: 0.6,
@@ -485,6 +485,7 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
+
 
 
 
