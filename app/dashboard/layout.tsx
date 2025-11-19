@@ -49,12 +49,13 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     session.user.role === 'INVESTOR' && { name: 'Browse Deals', href: '/deals', icon: TrendingUp },
-    session.user.role === 'INVESTOR' && { name: 'My Investments', href: '/dashboard/investments', icon: TrendingUp },
-    session.user.role === 'BUSINESS' && { name: 'My Deals', href: '/dashboard/deals', icon: Building2 },
-    session.user.role === 'BUSINESS' && { name: 'Create Deal', href: '/dashboard/deals/create', icon: Building2 },
+    session.user.role === 'INVESTOR' && { name: 'My Investments', href: '/dashboard/investor/portfolio', icon: TrendingUp },
+    session.user.role === 'BUSINESS' && { name: 'My Deals', href: '/dashboard/business/deals', icon: Building2 },
+    session.user.role === 'BUSINESS' && { name: 'Revenue', href: '/dashboard/revenue', icon: TrendingUp },
     session.user.role === 'ADMIN' && { name: 'Review Deals', href: '/admin/deals', icon: Shield },
     session.user.role === 'ADMIN' && { name: 'KYC Verification', href: '/admin/kyc', icon: Users },
     { name: 'Wallet', href: '/dashboard/wallet', icon: Wallet },
+    { name: 'KYC', href: '/dashboard/kyc', icon: Shield },
     { name: 'Settings', href: '/dashboard/settings', icon: Settings },
   ].filter(Boolean);
 
