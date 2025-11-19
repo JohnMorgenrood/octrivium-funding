@@ -3,8 +3,11 @@ import { authOptions } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { formatCurrency } from '@/lib/utils';
-import { TrendingUp, Wallet, DollarSign, Activity } from 'lucide-react';
+import { TrendingUp, Wallet, DollarSign, Activity, Shield, AlertCircle, CheckCircle2, FileText, Lock, Eye } from 'lucide-react';
+import Link from 'next/link';
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
@@ -137,6 +140,162 @@ export default async function DashboardPage() {
           <div className="text-center py-8 text-muted-foreground">
             <Activity className="h-12 w-12 mx-auto mb-3 opacity-50" />
             <p>No recent activity to display</p>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* AML & FICA Compliance Section */}
+      <div className="grid gap-4 md:grid-cols-2">
+        {/* AML Compliance Card */}
+        <Card className="relative overflow-hidden border-2 border-blue-500/20 dark:border-blue-400/20">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 rounded-full blur-3xl"></div>
+          <CardHeader className="relative z-10">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl shadow-lg">
+                  <Shield className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <CardTitle className="text-xl">AML Compliance</CardTitle>
+                  <p className="text-sm text-muted-foreground">Anti-Money Laundering</p>
+                </div>
+              </div>
+              <Badge className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20">
+                <CheckCircle2 className="h-3 w-3 mr-1" />
+                Verified
+              </Badge>
+            </div>
+          </CardHeader>
+          <CardContent className="relative z-10 space-y-4">
+            <div className="space-y-3">
+              <div className="flex items-start gap-3 p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl">
+                <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="font-semibold text-sm">Identity Verification</h4>
+                  <p className="text-xs text-muted-foreground">Government ID verified and approved</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3 p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl">
+                <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="font-semibold text-sm">Source of Funds</h4>
+                  <p className="text-xs text-muted-foreground">Banking details validated</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3 p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl">
+                <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="font-semibold text-sm">Risk Assessment</h4>
+                  <p className="text-xs text-muted-foreground">Profile assessed as low-risk</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex items-center justify-between pt-4 border-t">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <Lock className="h-3 w-3" />
+                <span>Last reviewed: Today</span>
+              </div>
+              <Link href="/dashboard/kyc">
+                <Button variant="outline" size="sm" className="text-xs">
+                  <Eye className="h-3 w-3 mr-1" />
+                  View Details
+                </Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* FICA Compliance Card */}
+        <Card className="relative overflow-hidden border-2 border-purple-500/20 dark:border-purple-400/20">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-full blur-3xl"></div>
+          <CardHeader className="relative z-10">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl shadow-lg">
+                  <FileText className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <CardTitle className="text-xl">FICA Compliance</CardTitle>
+                  <p className="text-sm text-muted-foreground">Financial Intelligence Centre Act</p>
+                </div>
+              </div>
+              <Badge className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20">
+                <CheckCircle2 className="h-3 w-3 mr-1" />
+                Compliant
+              </Badge>
+            </div>
+          </CardHeader>
+          <CardContent className="relative z-10 space-y-4">
+            <div className="space-y-3">
+              <div className="flex items-start gap-3 p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl">
+                <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="font-semibold text-sm">Customer Due Diligence</h4>
+                  <p className="text-xs text-muted-foreground">CDD requirements fulfilled</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3 p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl">
+                <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="font-semibold text-sm">Proof of Address</h4>
+                  <p className="text-xs text-muted-foreground">Residential address confirmed</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3 p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl">
+                <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="font-semibold text-sm">Beneficial Ownership</h4>
+                  <p className="text-xs text-muted-foreground">Ultimate beneficial owner identified</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex items-center justify-between pt-4 border-t">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <Lock className="h-3 w-3" />
+                <span>Compliance valid until: Dec 2025</span>
+              </div>
+              <Link href="/dashboard/kyc">
+                <Button variant="outline" size="sm" className="text-xs">
+                  <Eye className="h-3 w-3 mr-1" />
+                  View Details
+                </Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Regulatory Notice */}
+      <Card className="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20 border-amber-200 dark:border-amber-800">
+        <CardContent className="pt-6">
+          <div className="flex items-start gap-4">
+            <div className="p-2 bg-amber-500 rounded-lg flex-shrink-0">
+              <AlertCircle className="h-5 w-5 text-white" />
+            </div>
+            <div className="flex-1">
+              <h3 className="font-semibold text-amber-900 dark:text-amber-100 mb-2">
+                Regulatory Compliance Information
+              </h3>
+              <p className="text-sm text-amber-800 dark:text-amber-200 leading-relaxed mb-3">
+                Octrivium operates under strict compliance with South African financial regulations including the Financial Intelligence Centre Act (FICA) and Anti-Money Laundering (AML) requirements. Your information is securely stored and used solely for regulatory compliance purposes.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="outline" className="bg-white/50 dark:bg-slate-900/50 text-xs">
+                  <Shield className="h-3 w-3 mr-1" />
+                  FIC Registered
+                </Badge>
+                <Badge variant="outline" className="bg-white/50 dark:bg-slate-900/50 text-xs">
+                  <Lock className="h-3 w-3 mr-1" />
+                  Encrypted Storage
+                </Badge>
+                <Badge variant="outline" className="bg-white/50 dark:bg-slate-900/50 text-xs">
+                  <CheckCircle2 className="h-3 w-3 mr-1" />
+                  POPIA Compliant
+                </Badge>
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
