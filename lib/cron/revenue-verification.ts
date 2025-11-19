@@ -260,7 +260,7 @@ async function fetchBankRevenue(
       status: 'SUCCESS',
       message: `Fetched ${bankAccounts.length} bank account(s), calculated R${totalRevenue.toFixed(2)} revenue`,
       recordsProcessed: bankAccounts.length,
-      dataFetched: { totalRevenue, month: month.toISOString() },
+      dataFetched: { totalRevenue, month: month.toISOString() } as any,
     },
   });
 
@@ -318,7 +318,7 @@ async function fetchAccountingRevenue(
       verificationType: 'ACCOUNTING_SYNC',
       status: 'SUCCESS',
       message: `Fetched accounting data: R${revenueData.totalRevenue.toFixed(2)} revenue`,
-      dataFetched: revenueData,
+      dataFetched: revenueData as any,
     },
   });
 
