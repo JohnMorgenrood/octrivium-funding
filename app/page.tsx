@@ -215,12 +215,12 @@ export default function HomePage() {
                   >
                     About
                   </Link>
-                  <div className="border-t border-slate-200 dark:border-slate-700 pt-6 space-y-4">
+                  <div className="border-t border-slate-200 dark:border-slate-700 pt-6 mt-6 space-y-3">
                     <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
-                      <Button variant="outline" className="w-full">Sign In</Button>
+                      <Button variant="outline" className="w-full h-12 text-base">Sign In</Button>
                     </Link>
                     <Link href="/register" onClick={() => setMobileMenuOpen(false)}>
-                      <Button className="w-full shadow-lg">Get Started</Button>
+                      <Button className="w-full h-12 text-base shadow-lg">Get Started</Button>
                     </Link>
                   </div>
                 </div>
@@ -231,7 +231,7 @@ export default function HomePage() {
       </nav>
 
       {/* Hero Carousel Section */}
-      <section className="relative h-[600px] md:h-[700px] lg:h-[800px] overflow-hidden">
+      <section className="relative h-[650px] md:h-[750px] lg:h-[850px] overflow-hidden">
         <div className="embla h-full" ref={emblaRef}>
           <div className="embla__container h-full flex">
             {heroSlides.map((slide, index) => (
@@ -319,19 +319,19 @@ export default function HomePage() {
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: 0.6, duration: 0.6 }}
-                          className="grid grid-cols-3 gap-3 md:gap-6 mt-12 max-w-2xl"
+                          className="grid grid-cols-3 gap-4 md:gap-6 mt-12 max-w-2xl"
                         >
-                          <div className="backdrop-blur-md bg-white/10 rounded-xl p-3 md:p-4 border border-white/20">
+                          <div className="backdrop-blur-xl bg-white/15 rounded-2xl p-4 md:p-5 border border-white/30 shadow-2xl hover:bg-white/20 transition-all duration-300">
                             <div className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-1">R50M+</div>
-                            <div className="text-xs md:text-sm text-white/80">Capital Raised</div>
+                            <div className="text-xs md:text-sm text-white/90 font-medium">Capital Raised</div>
                           </div>
-                          <div className="backdrop-blur-md bg-white/10 rounded-xl p-3 md:p-4 border border-white/20">
+                          <div className="backdrop-blur-xl bg-white/15 rounded-2xl p-4 md:p-5 border border-white/30 shadow-2xl hover:bg-white/20 transition-all duration-300">
                             <div className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-1">500+</div>
-                            <div className="text-xs md:text-sm text-white/80">Businesses</div>
+                            <div className="text-xs md:text-sm text-white/90 font-medium">Businesses</div>
                           </div>
-                          <div className="backdrop-blur-md bg-white/10 rounded-xl p-3 md:p-4 border border-white/20">
+                          <div className="backdrop-blur-xl bg-white/15 rounded-2xl p-4 md:p-5 border border-white/30 shadow-2xl hover:bg-white/20 transition-all duration-300">
                             <div className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-1">15%</div>
-                            <div className="text-xs md:text-sm text-white/80">Avg Returns</div>
+                            <div className="text-xs md:text-sm text-white/90 font-medium">Avg Returns</div>
                           </div>
                         </motion.div>
                       </motion.div>
@@ -432,14 +432,15 @@ export default function HomePage() {
               className="inline-block mb-6"
             >
               {/* Octrivium Logo */}
-              <div className="mb-6">
-                <div className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                  Octrivium
-                </div>
-              </div>
-              
-              <div className="w-20 h-20 bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto shadow-2xl">
-                <Shield className="w-10 h-10 text-white" />
+              <div className="mb-8">
+                <Image
+                  src="/assets/logo.png"
+                  alt="Octrivium Logo"
+                  width={180}
+                  height={180}
+                  className="mx-auto drop-shadow-2xl"
+                  priority
+                />
               </div>
             </motion.div>
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
@@ -807,30 +808,111 @@ export default function HomePage() {
 
             </div>
 
-            {/* Bottom CTA */}
+            {/* Bottom CTA - Premium Redesign */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="mt-20 text-center"
+              className="mt-24"
             >
-              <div className="bg-gradient-to-r from-slate-800/90 via-slate-900/90 to-slate-800/90 dark:from-blue-900/90 dark:via-purple-900/90 dark:to-indigo-900/90 backdrop-blur-md border-2 border-slate-700 dark:border-white/20 rounded-3xl p-6 md:p-12 shadow-2xl">
-                <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-3 md:mb-4">
-                  Ready to get started?
-                </h3>
-                <p className="text-base md:text-lg text-slate-200 dark:text-blue-100 mb-6 max-w-2xl mx-auto px-2">
-                  Join thousands of South Africans building wealth together through community investing
-                </p>
-                <Link href="/how-it-works">
-                  <Button 
-                    className="w-full sm:w-auto text-sm md:text-base bg-white hover:bg-slate-100 text-slate-900 border-2 border-white shadow-xl hover:shadow-2xl transition-all px-6 md:px-8 py-3 md:py-4 h-auto font-semibold"
-                  >
-                    <span className="hidden sm:inline">Learn More About Our Process</span>
-                    <span className="sm:hidden">Learn More</span>
-                    <ArrowRight className="ml-2 w-4 h-4 md:w-5 md:h-5" />
-                  </Button>
-                </Link>
+              <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-700 dark:from-indigo-700 dark:via-purple-700 dark:to-blue-800 p-[2px] shadow-2xl">
+                <div className="relative bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl rounded-3xl p-8 md:p-16">
+                  {/* Decorative Background Elements */}
+                  <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 rounded-full blur-3xl"></div>
+                  <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-blue-500/10 to-indigo-500/10 rounded-full blur-3xl"></div>
+                  
+                  <div className="relative z-10 max-w-4xl mx-auto text-center">
+                    {/* Badge */}
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: 0.2 }}
+                      className="inline-block mb-6"
+                    >
+                      <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 dark:border-indigo-400/30">
+                        <Zap className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                        <span className="text-sm font-semibold text-indigo-900 dark:text-indigo-300">Start Building Wealth Today</span>
+                      </div>
+                    </motion.div>
+                    
+                    {/* Heading */}
+                    <motion.h3
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: 0.3 }}
+                      className="text-3xl md:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-slate-900 via-indigo-900 to-slate-900 dark:from-white dark:via-indigo-200 dark:to-white bg-clip-text text-transparent leading-tight"
+                    >
+                      Ready to get started?
+                    </motion.h3>
+                    
+                    {/* Description */}
+                    <motion.p
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: 0.4 }}
+                      className="text-lg md:text-xl text-slate-600 dark:text-slate-300 mb-10 max-w-2xl mx-auto leading-relaxed"
+                    >
+                      Join thousands of South Africans building wealth together through community investing
+                    </motion.p>
+                    
+                    {/* CTA Buttons */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: 0.5 }}
+                      className="flex flex-col sm:flex-row items-center justify-center gap-4"
+                    >
+                      <Link href="/register">
+                        <Button 
+                          size="lg"
+                          className="w-full sm:w-auto bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-8 py-6 text-base md:text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl group"
+                        >
+                          Get Started Now
+                          <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                        </Button>
+                      </Link>
+                      
+                      <Link href="/how-it-works">
+                        <Button 
+                          size="lg"
+                          variant="outline"
+                          className="w-full sm:w-auto border-2 border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-900 dark:text-slate-100 px-8 py-6 text-base md:text-lg font-semibold rounded-xl transition-all duration-300"
+                        >
+                          Learn How It Works
+                        </Button>
+                      </Link>
+                    </motion.div>
+                    
+                    {/* Trust Indicators */}
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: 0.6 }}
+                      className="mt-12 pt-8 border-t border-slate-200 dark:border-slate-700"
+                    >
+                      <div className="flex flex-wrap items-center justify-center gap-8 text-sm text-slate-500 dark:text-slate-400">
+                        <div className="flex items-center gap-2">
+                          <Shield className="w-5 h-5 text-green-600 dark:text-green-400" />
+                          <span className="font-medium">Bank-Level Security</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Users className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                          <span className="font-medium">5,000+ Active Investors</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <TrendingUp className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                          <span className="font-medium">R50M+ Funded</span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  </div>
+                </div>
               </div>
             </motion.div>
           </div>
