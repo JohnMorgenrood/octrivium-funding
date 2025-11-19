@@ -15,11 +15,13 @@ enum UserRole {
 }
 
 enum KYCStatus {
+  NOT_SUBMITTED
   PENDING
   SUBMITTED
   UNDER_REVIEW
   APPROVED
   REJECTED
+  VERIFIED
 }
 
 enum DealStatus {
@@ -82,7 +84,7 @@ model User {
   idNumber      String?   @unique
   avatar        String?
   emailVerified DateTime?
-  kycStatus     KYCStatus @default(PENDING)
+  kycStatus     KYCStatus @default(NOT_SUBMITTED)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
