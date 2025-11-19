@@ -15,7 +15,7 @@ export default function KYCVerificationPage() {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [kycStatus, setKycStatus] = useState('PENDING');
+  const [kycStatus, setKycStatus] = useState('NOT_SUBMITTED');
   const [formData, setFormData] = useState({
     // Personal Information
     firstName: '',
@@ -59,6 +59,8 @@ export default function KYCVerificationPage() {
   useEffect(() => {
     if (session?.user?.kycStatus) {
       setKycStatus(session.user.kycStatus);
+    } else {
+      setKycStatus('NOT_SUBMITTED');
     }
   }, [session]);
 

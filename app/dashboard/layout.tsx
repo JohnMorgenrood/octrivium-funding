@@ -200,19 +200,24 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             <div className="bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-amber-950/30 dark:to-yellow-950/30 border-2 border-amber-200 dark:border-amber-900/50 rounded-xl p-3 sm:p-4 mb-4 sm:mb-6 shadow-lg">
               <h3 className="font-semibold text-amber-900 dark:text-amber-300 mb-1 text-sm sm:text-base flex items-center gap-2">
                 <Shield className="w-5 h-5" />
-                KYC/FICA Verification Required
+                {session.user.kycStatus === 'PENDING' ? 'KYC/FICA Verification Pending' : 'KYC/FICA Verification Required'}
               </h3>
               <p className="text-xs sm:text-sm text-amber-800 dark:text-amber-400 mb-3">
-                {session.user.role === 'INVESTOR' 
-                  ? 'Complete your KYC/FICA verification to start investing in deals. This is required by law to prevent fraud and money laundering.'
-                  : 'Complete your KYC/FICA verification and provide your business registration documents to create and manage deals. This ensures compliance with South African financial regulations.'
-                }
+                {session.user.kycStatus === 'PENDING' ? (
+                  'Your documents are being reviewed. This usually takes 1-2 business days. You\'ll be notified once verification is complete.'
+                ) : session.user.role === 'INVESTOR' ? (
+                  'Complete your KYC/FICA verification to start investing in deals. Upload your ID document, proof of address, and banking details.'
+                ) : (
+                  'Complete your KYC/FICA verification and provide your business registration documents to create and manage deals. Upload your ID, business registration (CIPC), and bank statement.'
+                )}
               </p>
-              <Link href="/dashboard/kyc">
-                <Button size="sm" className="bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-700 hover:to-yellow-700 text-white text-xs sm:text-sm shadow-lg">
-                  Complete Verification Now
-                </Button>
-              </Link>
+              {session.user.kycStatus !== 'PENDING' && (
+                <Link href="/dashboard/kyc">
+                  <Button size="sm" className="bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-700 hover:to-yellow-700 text-white text-xs sm:text-sm shadow-lg">
+                    Complete Verification Now
+                  </Button>
+                </Link>
+              )}
             </div>
           )}
           
