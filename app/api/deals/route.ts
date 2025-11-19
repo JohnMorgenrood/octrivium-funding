@@ -18,13 +18,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Only businesses can create deals' }, { status: 403 });
     }
 
-    // Check if user has completed KYC
-    if (session.user.kycStatus !== 'VERIFIED') {
-      return NextResponse.json(
-        { error: 'Please complete KYC verification before creating deals' },
-        { status: 403 }
-      );
-    }
+    // Note: KYC check removed - deals can be created but won't be investable until KYC verified
+    // The deal status will be PENDING_APPROVAL which prevents investment until admin approves
 
     const formData = await req.formData();
     
@@ -132,7 +127,11 @@ export async function POST(req: NextRequest) {
         id: deal.id,
         title: deal.title,
         status: deal.status,
-      }
+      },
+      needsKyc: session.user.kycStatus !== 'VERIFIED',
+      message: session.user.kycStatus !== 'VERIFIED' 
+        ? 'Deal created successfully! Complete KYC verification to make it investable.'
+        : 'Deal created successfully and is now pending approval.'
     });
 
   } catch (error) {

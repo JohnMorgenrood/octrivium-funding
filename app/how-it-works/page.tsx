@@ -305,16 +305,16 @@ export default function HowItWorksPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6, duration: 0.6 }}
-              className="grid grid-cols-3 gap-4 md:gap-8 mt-12 max-w-3xl mx-auto"
+              className="grid grid-cols-3 gap-2 sm:gap-4 md:gap-8 mt-12 max-w-3xl mx-auto px-2"
             >
               {[
                 { number: '9', label: 'Simple Steps' },
                 { number: '0%', label: 'Equity Taken' },
                 { number: '100%', label: 'Transparent' }
               ].map((stat, index) => (
-                <div key={index} className="backdrop-blur-xl bg-white/60 dark:bg-slate-900/60 rounded-2xl p-4 md:p-6 border border-white/40 dark:border-slate-700/40 shadow-xl">
-                  <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-1">{stat.number}</div>
-                  <div className="text-sm md:text-base text-slate-600 dark:text-slate-400 font-medium">{stat.label}</div>
+                <div key={index} className="backdrop-blur-xl bg-white/60 dark:bg-slate-900/60 rounded-2xl p-3 md:p-6 border border-white/40 dark:border-slate-700/40 shadow-xl">
+                  <div className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-1">{stat.number}</div>
+                  <div className="text-xs sm:text-sm md:text-base text-slate-600 dark:text-slate-400 font-medium leading-tight">{stat.label}</div>
                 </div>
               ))}
             </motion.div>
@@ -323,14 +323,14 @@ export default function HowItWorksPage() {
       </section>
 
       {/* Main Steps - Redesigned with Modern Cards */}
-      <section className="py-20 px-4">
+      <section className="py-20 px-2 sm:px-4">
         <div className="container mx-auto max-w-6xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-16"
+            className="text-center mb-16 px-4"
           >
             <h2 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-4">
               The Complete Journey
@@ -345,7 +345,7 @@ export default function HowItWorksPage() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
-            className="grid gap-8 md:gap-10 max-w-5xl mx-auto"
+            className="grid gap-6 sm:gap-8 md:gap-10 max-w-5xl mx-auto"
           >
             {steps.map((step, index) => (
               <motion.div

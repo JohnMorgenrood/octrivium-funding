@@ -87,6 +87,11 @@ export default function CreateDealPage() {
         return;
       }
 
+      // Show KYC reminder if needed, then redirect
+      if (data.needsKyc) {
+        alert('Deal created successfully! ✅\n\nReminder: Complete your KYC verification to make this deal investable.\n\nYour deal will appear on the deals page but won\'t be available for investment until KYC is approved.');
+      }
+
       router.push('/dashboard/business/deals');
     } catch (err) {
       setError('An error occurred. Please try again.');
