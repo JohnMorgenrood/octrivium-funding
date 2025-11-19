@@ -194,6 +194,31 @@ export default function DealsPage() {
     }
   };
 
+  // Helper functions to safely access properties from both real and fake deals
+  const getDealProperty = (deal: any, realProp: string, fakeProp: string) => {
+    if (realProp in deal) return deal[realProp];
+    if (fakeProp in deal) return deal[fakeProp];
+    return null;
+  };
+
+  const getDealName = (deal: any) => 
+    'business' in deal ? deal.business?.tradingName : ('name' in deal ? deal.name : 'Untitled');
+  
+  const getDealIndustry = (deal: any) => 
+    'business' in deal ? deal.business?.industry : ('industry' in deal ? deal.industry : 'Other');
+  
+  const getDealFunded = (deal: any) => 
+    'currentFunding' in deal ? deal.currentFunding : ('funded' in deal ? deal.funded : 0);
+  
+  const getDealInvestors = (deal: any) => 
+    '_count' in deal ? deal._count.investments : ('investors' in deal ? deal.investors : 0);
+  
+  const getDealImage = (deal: any) => 
+    'imageUrl' in deal && deal.imageUrl ? deal.imageUrl : ('image' in deal ? deal.image : '/placeholder-business.jpg');
+  
+  const getDealLogo = (deal: any) => 
+    'logo' in deal ? deal.logo : '🏢';
+
   // Combine real deals with fake deals for demo
   const allDeals = [...deals, ...fakeDeals];
 
@@ -317,8 +342,21 @@ export default function DealsPage() {
         {/* Deals Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {filteredDeals.map((deal, index) => {
-            const percentFunded = (deal.funded / deal.fundingGoal) * 100;
-            const isGrowing = deal.revenueGrowth > 0;
+            const funded = getDealFunded(deal);
+            const percentFunded = (funded / deal.fundingGoal) * 100;
+            const revenueGrowth = 'revenueGrowth' in deal ? deal.revenueGrowth : 0;
+            const isGrowing = revenueGrowth > 0;
+            const monthlyRevenue = 'monthlyRevenue' in deal ? deal.monthlyRevenue : 0;
+            const targetReturn = 'targetReturn' in deal ? deal.targetReturn : ('revenueSharePercentage' in deal ? deal.revenueSharePercentage / 100 : 1.5);
+            const riskLevel = 'riskLevel' in deal ? deal.riskLevel : 'Medium';
+            const daysLeft = 'daysLeft' in deal ? deal.daysLeft : 30;
+            const isTopListing = 'isTopListing' in deal ? deal.isTopListing : false;
+            const isFeatured = 'isFeatured' in deal ? deal.isFeatured : false;
+            const dealName = getDealName(deal);
+            const dealIndustry = getDealIndustry(deal);
+            const dealImage = getDealImage(deal);
+            const dealLogo = getDealLogo(deal);
+            const investors = getDealInvestors(deal);
             
             // Assign colorful borders
             const borderColors = [
@@ -334,9 +372,9 @@ export default function DealsPage() {
               <div
                 key={deal.id}
                 className={`group bg-white dark:bg-slate-800 rounded-2xl shadow-lg hover:shadow-2xl border-2 ${
-                  deal.isTopListing
+                  isTopListing
                     ? 'border-purple-400 dark:border-purple-500 ring-2 ring-purple-300 dark:ring-purple-600'
-                    : deal.isFeatured
+                    : isFeatured
                     ? 'border-amber-400 dark:border-amber-500 ring-2 ring-amber-300 dark:ring-amber-600'
                     : 'border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-600'
                 } hover:-translate-y-2 transition-all duration-300 backdrop-blur-sm overflow-hidden`}
@@ -344,8 +382,8 @@ export default function DealsPage() {
                 {/* Business Image Header */}
                 <div className="relative h-48 overflow-hidden">
                   <Image
-                    src={deal.image}
-                    alt={deal.name}
+                    src={dealImage}
+                    alt={dealName}
                     fill
                     className="object-cover group-hover:scale-110 transition-transform duration-500"
                   />
@@ -355,13 +393,13 @@ export default function DealsPage() {
                   <div className="absolute bottom-0 left-0 right-0 p-4">
                     <div className="flex items-center space-x-3 mb-2">
                       <div className="w-12 h-12 bg-white dark:bg-slate-900 rounded-full flex items-center justify-center text-2xl shadow-xl ring-2 ring-white/50">
-                        {deal.logo}
+                        {dealLogo}
                       </div>
                       <div className="flex-1">
                         <h3 className="font-bold text-lg text-white leading-tight">
-                          {deal.name}
+                          {dealName}
                         </h3>
-                        <p className="text-xs text-white/90">{deal.industry}</p>
+                        <p className="text-xs text-white/90">{dealIndustry}</p>
                       </div>
                     </div>
                   </div>
@@ -369,14 +407,14 @@ export default function DealsPage() {
                   {/* Return Badge and Featured Badge */}
                   <div className="absolute top-4 right-4 flex flex-col gap-2 items-end">
                     <Badge className="bg-emerald-500 text-white font-bold text-sm px-3 py-1 shadow-lg">
-                      {deal.targetReturn}x Return
+                      {targetReturn}x Return
                     </Badge>
-                    {deal.isFeatured && (
+                    {isFeatured && (
                       <Badge className="bg-gradient-to-r from-amber-500 to-yellow-500 text-white font-bold text-xs px-3 py-1 shadow-lg flex items-center gap-1">
                         <span className="text-white">⭐</span> Recommended
                       </Badge>
                     )}
-                    {deal.isTopListing && (
+                    {isTopListing && (
                       <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold text-xs px-3 py-1 shadow-lg flex items-center gap-1">
                         <span className="text-white">👑</span> Top Deal
                       </Badge>
@@ -409,7 +447,7 @@ export default function DealsPage() {
                     </div>
                     <div className="flex justify-between items-center mt-1">
                       <span className="text-xs text-slate-500 dark:text-slate-400">
-                        R{(deal.funded / 1000).toFixed(0)}k raised
+                        R{(funded / 1000).toFixed(0)}k raised
                       </span>
                       <span className="text-xs text-slate-500 dark:text-slate-400">
                         R{(deal.fundingGoal / 1000).toFixed(0)}k goal
@@ -422,17 +460,17 @@ export default function DealsPage() {
                     <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900/50 dark:to-slate-900/30 rounded-lg p-2.5 md:p-3 border border-slate-200 dark:border-slate-700">
                       <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Monthly Revenue</div>
                       <div className="font-bold text-sm md:text-base text-slate-900 dark:text-white">
-                        R{(deal.monthlyRevenue / 1000).toFixed(0)}k
+                        R{(monthlyRevenue / 1000).toFixed(0)}k
                       </div>
                       <div className={`flex items-center text-xs mt-1 ${isGrowing ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
                         {isGrowing ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
-                        {deal.revenueGrowth}%
+                        {revenueGrowth}%
                       </div>
                     </div>
                     <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900/50 dark:to-slate-900/30 rounded-lg p-2.5 md:p-3 border border-slate-200 dark:border-slate-700">
                       <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Target Return</div>
                       <div className="font-bold text-sm md:text-base text-slate-900 dark:text-white">
-                        {deal.targetReturn}x
+                        {targetReturn}x
                       </div>
                       <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">Capped</div>
                     </div>
@@ -441,16 +479,16 @@ export default function DealsPage() {
                   {/* Bottom Info */}
                   <div className="flex justify-between items-center pt-2">
                     <div className="flex items-center space-x-3">
-                      <Badge variant="outline" className={`${getRiskColor(deal.riskLevel)} border-0 text-xs`}>
-                        {deal.riskLevel}
+                      <Badge variant="outline" className={`${getRiskColor(riskLevel)} border-0 text-xs`}>
+                        {riskLevel}
                       </Badge>
                       <div className="flex items-center text-xs text-slate-500 dark:text-slate-400">
                         <Clock className="h-3 w-3 mr-1" />
-                        {deal.daysLeft}d left
+                        {daysLeft}d left
                       </div>
                       <div className="flex items-center text-xs text-slate-500 dark:text-slate-400">
                         <Users className="h-3 w-3 mr-1" />
-                        {deal.investors}
+                        {investors}
                       </div>
                     </div>
                   </div>
