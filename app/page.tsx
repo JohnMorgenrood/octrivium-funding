@@ -881,7 +881,7 @@ export default function HomePage() {
                         <Button 
                           size="lg"
                           variant="outline"
-                          className="w-full sm:w-auto border-2 border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-900 dark:text-slate-100 px-8 py-6 text-base md:text-lg font-semibold rounded-xl transition-all duration-300"
+                          className="w-full sm:w-auto border-2 border-slate-300 dark:border-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 bg-white/50 dark:bg-slate-800/80 text-slate-900 dark:text-white px-8 py-6 text-base md:text-lg font-semibold rounded-xl transition-all duration-300 shadow-md dark:shadow-slate-900"
                         >
                           Learn How It Works
                         </Button>

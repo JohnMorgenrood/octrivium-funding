@@ -5,7 +5,7 @@ const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElemen
   ({ className, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn('rounded-xl border border-slate-200 bg-white text-card-foreground shadow-sm hover:shadow-md transition-all duration-200 backdrop-blur-sm', className)}
+      className={cn('rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 backdrop-blur-sm text-card-foreground dark:text-slate-100 shadow-sm dark:shadow-slate-900/50 hover:shadow-md dark:hover:shadow-slate-900/70 transition-all duration-200', className)}
       {...props}
     />
   )
@@ -14,7 +14,7 @@ Card.displayName = 'Card';
 
 const CardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn('flex flex-col space-y-1.5 p-6 bg-gradient-to-br from-slate-50 to-transparent rounded-t-xl', className)} {...props} />
+    <div ref={ref} className={cn('flex flex-col space-y-1.5 p-6 bg-gradient-to-br from-slate-50 to-transparent dark:from-slate-800/50 dark:to-transparent rounded-t-xl', className)} {...props} />
   )
 );
 CardHeader.displayName = 'CardHeader';
@@ -23,7 +23,7 @@ const CardTitle = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HT
   ({ className, ...props }, ref) => (
     <h3
       ref={ref}
-      className={cn('text-2xl font-semibold leading-none tracking-tight', className)}
+      className={cn('text-2xl font-semibold leading-none tracking-tight text-slate-900 dark:text-slate-100', className)}
       {...props}
     />
   )
@@ -34,7 +34,7 @@ const CardDescription = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => (
-  <p ref={ref} className={cn('text-sm text-muted-foreground', className)} {...props} />
+  <p ref={ref} className={cn('text-sm text-slate-600 dark:text-slate-400', className)} {...props} />
 ));
 CardDescription.displayName = 'CardDescription';
 
