@@ -429,8 +429,15 @@ export default function HomePage() {
               whileInView={{ scale: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, type: "spring" }}
-              className="inline-block mb-4"
+              className="inline-block mb-6"
             >
+              {/* Octrivium Logo */}
+              <div className="mb-6">
+                <div className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                  Octrivium
+                </div>
+              </div>
+              
               <div className="w-20 h-20 bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto shadow-2xl">
                 <Shield className="w-10 h-10 text-white" />
               </div>
@@ -808,16 +815,16 @@ export default function HomePage() {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="mt-20 text-center"
             >
-              <div className="bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-indigo-500/10 backdrop-blur-md border border-white/20 rounded-3xl p-6 md:p-12">
+              <div className="bg-gradient-to-r from-slate-800/90 via-slate-900/90 to-slate-800/90 dark:from-blue-900/90 dark:via-purple-900/90 dark:to-indigo-900/90 backdrop-blur-md border-2 border-slate-700 dark:border-white/20 rounded-3xl p-6 md:p-12 shadow-2xl">
                 <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-3 md:mb-4">
                   Ready to get started?
                 </h3>
-                <p className="text-base md:text-lg text-blue-100 mb-6 max-w-2xl mx-auto px-2">
+                <p className="text-base md:text-lg text-slate-200 dark:text-blue-100 mb-6 max-w-2xl mx-auto px-2">
                   Join thousands of South Africans building wealth together through community investing
                 </p>
                 <Link href="/how-it-works">
                   <Button 
-                    className="w-full sm:w-auto text-sm md:text-base bg-white/10 border-2 border-white/50 text-white hover:bg-white/20 hover:border-white/70 backdrop-blur-md shadow-xl hover:shadow-2xl transition-all px-4 md:px-6 py-2 md:py-3 h-auto"
+                    className="w-full sm:w-auto text-sm md:text-base bg-white hover:bg-slate-100 text-slate-900 border-2 border-white shadow-xl hover:shadow-2xl transition-all px-6 md:px-8 py-3 md:py-4 h-auto font-semibold"
                   >
                     <span className="hidden sm:inline">Learn More About Our Process</span>
                     <span className="sm:hidden">Learn More</span>

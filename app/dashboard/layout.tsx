@@ -79,8 +79,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       onClick={onClick}
       className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
         isActiveRoute(item.href)
-          ? 'bg-primary text-white'
-          : 'hover:bg-gray-100 text-gray-700'
+          ? 'bg-primary text-white dark:bg-primary'
+          : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
       }`}
     >
       <item.icon className="h-5 w-5" />
@@ -89,9 +89,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Top Navigation */}
-      <header className="bg-white border-b sticky top-0 z-50 shadow-sm">
+      <header className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 sticky top-0 z-50 shadow-sm">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-3">
@@ -103,9 +103,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="left" className="w-[280px] sm:w-[320px] p-0">
-                  <SheetHeader className="border-b p-6 pb-4">
+                  <SheetHeader className="border-b dark:border-gray-700 p-6 pb-4">
                     <SheetTitle className="text-left">
-                      <Link href="/" className="text-xl font-bold text-primary">
+                      <Link href="/" className="text-xl font-bold text-primary dark:text-white">
                         Octrivium Funding
                       </Link>
                     </SheetTitle>
@@ -114,8 +114,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                         {session.user.name?.charAt(0).toUpperCase()}
                       </div>
                       <div className="text-left">
-                        <p className="text-sm font-semibold">{session.user.name}</p>
-                        <p className="text-xs text-muted-foreground capitalize">
+                        <p className="text-sm font-semibold dark:text-white">{session.user.name}</p>
+                        <p className="text-xs text-muted-foreground dark:text-gray-400 capitalize">
                           {session.user.role.toLowerCase()}
                         </p>
                       </div>
@@ -132,7 +132,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                         setMobileMenuOpen(false);
                         router.push('/api/auth/signout');
                       }}
-                      className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-red-50 transition-colors w-full text-left text-red-600 font-medium mt-4"
+                      className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors w-full text-left text-red-600 dark:text-red-400 font-medium mt-4"
                     >
                       <LogOut className="h-5 w-5" />
                       <span>Logout</span>
@@ -141,7 +141,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 </SheetContent>
               </Sheet>
 
-              <Link href="/dashboard" className="text-lg sm:text-xl font-bold text-primary">
+              <Link href="/dashboard" className="text-lg sm:text-xl font-bold text-primary dark:text-white">
                 Octrivium
               </Link>
             </div>
@@ -178,7 +178,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
       <div className="flex">
         {/* Desktop Sidebar */}
-        <aside className="w-64 bg-white border-r min-h-[calc(100vh-4rem)] hidden md:block">
+        <aside className="w-64 bg-white dark:bg-gray-800 border-r dark:border-gray-700 min-h-[calc(100vh-4rem)] hidden md:block">
           <nav className="p-4 space-y-1">
             {navigation.map((item: any) => (
               <NavLink key={item.href} item={item} />
@@ -186,7 +186,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             
             <button
               onClick={() => router.push('/api/auth/signout')}
-              className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-red-50 transition-colors w-full text-left text-red-600 font-medium mt-4"
+              className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors w-full text-left text-red-600 dark:text-red-400 font-medium mt-4"
             >
               <LogOut className="h-5 w-5" />
               <span>Logout</span>
