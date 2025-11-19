@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { Wallet as WalletIcon, ArrowDownToLine, ArrowUpFromLine, History } from 'lucide-react';
+import { BankCardManager } from '@/components/BankCardManager';
 
 export default function WalletPage() {
   const { data: session } = useSession();
@@ -189,11 +190,24 @@ export default function WalletPage() {
               Withdraw Funds
             </Button>
             <p className="text-xs text-muted-foreground">
-              Withdrawals are processed within 1-3 business days.
+              Withdrawals are processed to your default card within 1-3 business days.
             </p>
           </CardContent>
         </Card>
       </div>
+
+      {/* Bank Cards */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Linked Bank Cards</CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Link your bank card for easy withdrawals. Your card information is encrypted and secure.
+          </p>
+        </CardHeader>
+        <CardContent>
+          <BankCardManager />
+        </CardContent>
+      </Card>
 
       {/* Transaction History */}
       <Card>

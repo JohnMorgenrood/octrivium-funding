@@ -93,6 +93,7 @@ model User {
   kycDocuments  KYCDocument[]
   notifications Notification[]
   auditLogs     AuditLog[]
+  bankCards     BankCard[]
 
   @@index([email])
   @@index([role])
@@ -113,6 +114,26 @@ model Wallet {
   transactions   Transaction[]
 
   @@index([userId])
+}
+
+model BankCard {
+  id             String   @id @default(uuid())
+  userId         String
+  bankName       String   // Capitec, FNB, Nedbank, Standard Bank, Discovery, Custom
+  cardHolderName String
+  cardNumber     String   // Last 4 digits only for security
+  expiryMonth    String
+  expiryYear     String
+  cardType       String   // Visa, Mastercard, etc.
+  isDefault      Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isDefault])
 }
 
 model Transaction {
