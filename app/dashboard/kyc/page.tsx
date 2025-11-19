@@ -163,22 +163,64 @@ export default function KYCVerificationPage() {
 
   if (kycStatus === 'VERIFIED') {
     return (
-      <div className="max-w-2xl mx-auto space-y-6">
+      <div className="max-w-2xl mx-auto space-y-4 sm:space-y-6">
         <div>
-          <h1 className="text-3xl font-bold">KYC Verification</h1>
-          <p className="text-muted-foreground">Your identity verification status</p>
+          <h1 className="text-2xl sm:text-3xl font-bold">KYC/FICA Verification</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">Your identity verification status</p>
         </div>
 
         <Card>
-          <CardContent className="flex flex-col items-center justify-center py-16">
-            <div className="h-20 w-20 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center mb-4">
-              <CheckCircle className="h-10 w-10 text-green-600 dark:text-green-400" />
+          <CardContent className="py-8 sm:py-16 px-4 sm:px-6">
+            <div className="text-center space-y-4 sm:space-y-6">
+              <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center mx-auto">
+                <CheckCircle className="h-8 w-8 sm:h-10 sm:w-10 text-green-600 dark:text-green-400" />
+              </div>
+              <div>
+                <h3 className="text-xl sm:text-2xl font-semibold mb-2">✓ Verification Complete</h3>
+                <p className="text-muted-foreground mb-1">
+                  Your identity has been successfully verified
+                </p>
+                {getStatusBadge(kycStatus)}
+              </div>
+              
+              <div className="max-w-md mx-auto text-left bg-slate-50 dark:bg-slate-900 rounded-lg p-6 space-y-3">
+                <h4 className="font-semibold text-sm text-muted-foreground uppercase">Verified Documents</h4>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <span>Identity Document (ID/Passport)</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <span>Proof of Residential Address</span>
+                  </div>
+                  {session?.user?.role === 'BUSINESS' && (
+                    <>
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="h-4 w-4 text-green-600" />
+                        <span>Business Registration (CIPC)</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="h-4 w-4 text-green-600" />
+                        <span>Business Bank Statement</span>
+                      </div>
+                    </>
+                  )}
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <span>Banking Details</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <span>FICA/POPIA Compliance</span>
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-sm text-muted-foreground">
+                You can now {session?.user?.role === 'INVESTOR' ? 'invest in deals' : 'create funding campaigns'} on the platform.
+              </p>
             </div>
-            <h3 className="text-2xl font-semibold mb-2">Verification Complete</h3>
-            <p className="text-muted-foreground text-center mb-4">
-              Your identity has been successfully verified
-            </p>
-            {getStatusBadge(kycStatus)}
           </CardContent>
         </Card>
       </div>
@@ -212,9 +254,34 @@ export default function KYCVerificationPage() {
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">KYC Verification</h1>
-        <p className="text-muted-foreground">Complete your identity verification to start investing or raising funds</p>
+        <h1 className="text-3xl font-bold">KYC/FICA Verification</h1>
+        <p className="text-muted-foreground">Complete your identity verification to comply with South African financial regulations</p>
       </div>
+
+      {/* Info Banner */}
+      <Card className="border-blue-200 bg-blue-50 dark:bg-blue-950">
+        <CardContent className="pt-6">
+          <div className="flex gap-4">
+            <div className="flex-shrink-0">
+              <AlertCircle className="h-6 w-6 text-blue-600" />
+            </div>
+            <div className="space-y-2">
+              <h3 className="font-semibold text-blue-900 dark:text-blue-100">Why do we need this information?</h3>
+              <p className="text-sm text-blue-800 dark:text-blue-200">
+                Under the Financial Intelligence Centre Act (FICA) and Protection of Personal Information Act (POPIA), 
+                we are legally required to verify the identity of all users. This helps prevent fraud, money laundering, 
+                and protects both investors and businesses on our platform.
+              </p>
+              <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1 ml-4">
+                <li>✓ All information is encrypted and stored securely</li>
+                <li>✓ Your data is never shared with third parties</li>
+                <li>✓ Verification typically takes 1-2 business days</li>
+                <li>✓ Required for compliance with SA financial regulations</li>
+              </ul>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>
@@ -642,6 +709,75 @@ export default function KYCVerificationPage() {
                 <strong>Note:</strong> All documents must be clear, unaltered, and less than 3 months old. 
                 This information is kept secure and confidential in accordance with POPIA regulations.
               </p>
+            </div>
+
+            {/* FICA Consent */}
+            <div className="space-y-4 p-6 bg-slate-50 dark:bg-slate-900 rounded-lg">
+              <h3 className="text-lg font-semibold">Consent & Declarations</h3>
+              
+              <div className="space-y-3">
+                <div className="flex items-start gap-3">
+                  <input
+                    type="checkbox"
+                    id="ficaConsent"
+                    required
+                    className="w-4 h-4 mt-1 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <label htmlFor="ficaConsent" className="text-sm">
+                    I consent to Octrivium Funding processing my personal information in accordance with the 
+                    <strong> Financial Intelligence Centre Act (FICA)</strong> and the 
+                    <strong> Protection of Personal Information Act (POPIA)</strong>. I understand this is required 
+                    for legal compliance and fraud prevention.
+                  </label>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <input
+                    type="checkbox"
+                    id="accuracyDeclaration"
+                    required
+                    className="w-4 h-4 mt-1 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <label htmlFor="accuracyDeclaration" className="text-sm">
+                    I declare that all information provided is true, accurate, and complete to the best of my knowledge. 
+                    I understand that providing false information may result in account suspension and legal action.
+                  </label>
+                </div>
+
+                {session?.user?.role === 'BUSINESS' && (
+                  <div className="flex items-start gap-3">
+                    <input
+                      type="checkbox"
+                      id="businessAuthorization"
+                      required
+                      className="w-4 h-4 mt-1 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <label htmlFor="businessAuthorization" className="text-sm">
+                      I confirm that I am an authorized representative of the business and have the authority to 
+                      enter into agreements on behalf of the business.
+                    </label>
+                  </div>
+                )}
+
+                <div className="flex items-start gap-3">
+                  <input
+                    type="checkbox"
+                    id="termsAgreement"
+                    required
+                    className="w-4 h-4 mt-1 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <label htmlFor="termsAgreement" className="text-sm">
+                    I have read and agree to the{' '}
+                    <a href="/terms" target="_blank" className="text-blue-600 hover:underline font-medium">
+                      Terms of Service
+                    </a>
+                    {' '}and{' '}
+                    <a href="/privacy" target="_blank" className="text-blue-600 hover:underline font-medium">
+                      Privacy Policy
+                    </a>.
+                  </label>
+                </div>
+              </div>
             </div>
 
             <Button type="submit" disabled={loading} className="w-full">
