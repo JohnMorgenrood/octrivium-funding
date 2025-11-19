@@ -80,7 +80,11 @@ export async function POST(req: Request) {
     );
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: 'Invalid input data' }, { status: 400 });
+      const firstError = error.errors[0];
+      return NextResponse.json({ 
+        error: firstError?.message || 'Invalid input data',
+        field: firstError?.path?.[0] 
+      }, { status: 400 });
     }
 
     console.error('Registration error:', error);
