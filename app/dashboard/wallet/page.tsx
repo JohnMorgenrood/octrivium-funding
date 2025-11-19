@@ -199,9 +199,10 @@ export default function WalletPage() {
       {/* Bank Cards */}
       <Card>
         <CardHeader>
-          <CardTitle>Linked Bank Cards</CardTitle>
+          <CardTitle>Bank Account for Payments</CardTitle>
           <p className="text-sm text-muted-foreground">
-            Link your bank card for easy withdrawals. Your card information is encrypted and secure.
+            Add your South African bank account details so admins can pay you via EFT when deals complete. 
+            Your banking information is securely encrypted and only used for processing payments.
           </p>
         </CardHeader>
         <CardContent>

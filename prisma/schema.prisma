@@ -119,13 +119,14 @@ model Wallet {
 model BankCard {
   id             String   @id @default(uuid())
   userId         String
-  bankName       String   // Capitec, FNB, Nedbank, Standard Bank, Discovery, Custom
-  cardHolderName String
-  cardNumber     String   // Last 4 digits only for security
-  expiryMonth    String
-  expiryYear     String
-  cardType       String   // Visa, Mastercard, etc.
+  bankName       String   // Capitec, FNB, Nedbank, Standard Bank, etc.
+  accountHolder  String   // Account holder name
+  accountNumber  String   // Bank account number
+  accountType    String   // Cheque, Savings, Business
+  branchCode     String   // Branch code for EFT
+  branchName     String?  // Optional branch name
   isDefault      Boolean  @default(false)
+  verified       Boolean  @default(false) // Admin can verify after first successful payment
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 

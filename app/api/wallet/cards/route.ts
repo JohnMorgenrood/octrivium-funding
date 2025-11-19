@@ -39,20 +39,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { bankName, cardHolderName, cardNumber, expiryMonth, expiryYear, cardType, isDefault } = await req.json();
+    const { bankName, accountHolder, accountNumber, accountType, branchCode, branchName, isDefault } = await req.json();
 
     // Validate required fields
-    if (!bankName || !cardHolderName || !cardNumber || !expiryMonth || !expiryYear || !cardType) {
+    if (!bankName || !accountHolder || !accountNumber || !accountType || !branchCode) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
       );
     }
 
-    // Store only last 4 digits for security
-    const last4Digits = cardNumber.replace(/\s/g, '').slice(-4);
-
-    // If this card should be default, unset any existing default
+    // If this account should be default, unset any existing default
     if (isDefault) {
       await prisma.bankCard.updateMany({
         where: {
@@ -65,24 +62,24 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const card = await prisma.bankCard.create({
+    const account = await prisma.bankCard.create({
       data: {
         userId: session.user.id,
         bankName,
-        cardHolderName,
-        cardNumber: last4Digits,
-        expiryMonth,
-        expiryYear,
-        cardType,
+        accountHolder,
+        accountNumber,
+        accountType,
+        branchCode,
+        branchName: branchName || null,
         isDefault: isDefault || false,
       },
     });
 
-    return NextResponse.json(card);
+    return NextResponse.json(account);
   } catch (error) {
-    console.error('Bank card creation error:', error);
+    console.error('Bank account creation error:', error);
     return NextResponse.json(
-      { error: 'Failed to add bank card' },
+      { error: 'Failed to add bank account' },
       { status: 500 }
     );
   }
