@@ -276,10 +276,10 @@ export default function RevenueVerificationPage() {
               </div>
             ) : (
               <div className="space-y-2">
-                <Button onClick={() => handleConnectAccounting('XERO')} variant="outline" className="w-full">
+                <Button onClick={() => handleConnectAccounting('XERO')} className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white">
                   Connect Xero
                 </Button>
-                <Button onClick={() => handleConnectAccounting('SAGE_BUSINESS_CLOUD')} variant="outline" className="w-full">
+                <Button onClick={() => handleConnectAccounting('SAGE_BUSINESS_CLOUD')} className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white">
                   Connect Sage
                 </Button>
               </div>
@@ -298,7 +298,7 @@ export default function RevenueVerificationPage() {
           </CardHeader>
           <CardContent>
             <Link href="/dashboard/revenue/upload">
-              <Button variant="outline" className="w-full">
+              <Button className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white">
                 <Upload className="w-4 h-4 mr-2" />
                 Upload Documents
               </Button>
