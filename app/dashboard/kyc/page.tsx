@@ -17,12 +17,43 @@ export default function KYCVerificationPage() {
   const [uploading, setUploading] = useState(false);
   const [kycStatus, setKycStatus] = useState('PENDING');
   const [formData, setFormData] = useState({
+    // Personal Information
+    firstName: '',
+    lastName: '',
     idNumber: '',
+    dateOfBirth: '',
+    nationality: 'South African',
+    
+    // Contact Information
+    phoneNumber: '',
+    email: '',
+    
+    // Address Information
     address: '',
+    suburb: '',
     city: '',
+    province: '',
     postalCode: '',
+    country: 'South Africa',
+    
+    // Business Information (for BUSINESS role)
+    businessName: '',
+    registrationNumber: '',
+    vatNumber: '',
+    businessType: '',
+    industry: '',
+    
+    // Banking Information
+    bankName: '',
+    accountNumber: '',
+    accountType: '',
+    branchCode: '',
+    
+    // Documents
     idDocument: null as File | null,
     proofOfAddress: null as File | null,
+    businessRegistration: null as File | null,
+    bankStatement: null as File | null,
   });
 
   useEffect(() => {
@@ -31,7 +62,7 @@ export default function KYCVerificationPage() {
     }
   }, [session]);
 
-  const handleFileChange = (field: 'idDocument' | 'proofOfAddress', file: File | null) => {
+  const handleFileChange = (field: 'idDocument' | 'proofOfAddress' | 'businessRegistration' | 'bankStatement', file: File | null) => {
     setFormData({ ...formData, [field]: file });
   };
 
@@ -46,10 +77,28 @@ export default function KYCVerificationPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
           idNumber: formData.idNumber,
+          dateOfBirth: formData.dateOfBirth,
+          nationality: formData.nationality,
+          phoneNumber: formData.phoneNumber,
+          email: formData.email,
           address: formData.address,
+          suburb: formData.suburb,
           city: formData.city,
+          province: formData.province,
           postalCode: formData.postalCode,
+          country: formData.country,
+          businessName: formData.businessName,
+          registrationNumber: formData.registrationNumber,
+          vatNumber: formData.vatNumber,
+          businessType: formData.businessType,
+          industry: formData.industry,
+          bankName: formData.bankName,
+          accountNumber: formData.accountNumber,
+          accountType: formData.accountType,
+          branchCode: formData.branchCode,
         }),
       });
 
@@ -189,50 +238,319 @@ export default function KYCVerificationPage() {
               </div>
             )}
 
-            <div className="space-y-2">
-              <Label htmlFor="idNumber">ID / Passport Number *</Label>
-              <Input
-                id="idNumber"
-                placeholder="Enter your ID or passport number"
-                value={formData.idNumber}
-                onChange={(e) => setFormData({ ...formData, idNumber: e.target.value })}
-                required
-              />
-            </div>
+            {/* Personal Information */}
+            <div className="space-y-4 p-6 bg-slate-50 dark:bg-slate-900 rounded-lg">
+              <h3 className="text-lg font-semibold">Personal Information</h3>
+              
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="firstName">First Name *</Label>
+                  <Input
+                    id="firstName"
+                    placeholder="John"
+                    value={formData.firstName}
+                    onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="lastName">Last Name *</Label>
+                  <Input
+                    id="lastName"
+                    placeholder="Doe"
+                    value={formData.lastName}
+                    onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                    required
+                  />
+                </div>
+              </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="address">Street Address *</Label>
-              <Input
-                id="address"
-                placeholder="123 Main Street"
-                value={formData.address}
-                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                required
-              />
-            </div>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="idNumber">ID / Passport Number *</Label>
+                  <Input
+                    id="idNumber"
+                    placeholder="9001015009087"
+                    value={formData.idNumber}
+                    onChange={(e) => setFormData({ ...formData, idNumber: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="dateOfBirth">Date of Birth *</Label>
+                  <Input
+                    id="dateOfBirth"
+                    type="date"
+                    value={formData.dateOfBirth}
+                    onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
+                    required
+                  />
+                </div>
+              </div>
 
-            <div className="grid md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="city">City *</Label>
+                <Label htmlFor="nationality">Nationality *</Label>
                 <Input
-                  id="city"
-                  placeholder="Cape Town"
-                  value={formData.city}
-                  onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                  id="nationality"
+                  placeholder="South African"
+                  value={formData.nationality}
+                  onChange={(e) => setFormData({ ...formData, nationality: e.target.value })}
                   required
                 />
               </div>
+            </div>
+
+            {/* Contact Information */}
+            <div className="space-y-4 p-6 bg-slate-50 dark:bg-slate-900 rounded-lg">
+              <h3 className="text-lg font-semibold">Contact Information</h3>
+              
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="phoneNumber">Phone Number *</Label>
+                  <Input
+                    id="phoneNumber"
+                    type="tel"
+                    placeholder="+27 82 123 4567"
+                    value={formData.phoneNumber}
+                    onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email Address *</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="john@example.com"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Residential Address */}
+            <div className="space-y-4 p-6 bg-slate-50 dark:bg-slate-900 rounded-lg">
+              <h3 className="text-lg font-semibold">Residential Address</h3>
+              
               <div className="space-y-2">
-                <Label htmlFor="postalCode">Postal Code *</Label>
+                <Label htmlFor="address">Street Address *</Label>
                 <Input
-                  id="postalCode"
-                  placeholder="8001"
-                  value={formData.postalCode}
-                  onChange={(e) => setFormData({ ...formData, postalCode: e.target.value })}
+                  id="address"
+                  placeholder="123 Main Street"
+                  value={formData.address}
+                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                   required
                 />
               </div>
+
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="suburb">Suburb</Label>
+                  <Input
+                    id="suburb"
+                    placeholder="Gardens"
+                    value={formData.suburb}
+                    onChange={(e) => setFormData({ ...formData, suburb: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="city">City *</Label>
+                  <Input
+                    id="city"
+                    placeholder="Cape Town"
+                    value={formData.city}
+                    onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="province">Province *</Label>
+                  <select
+                    id="province"
+                    value={formData.province}
+                    onChange={(e) => setFormData({ ...formData, province: e.target.value })}
+                    className="w-full px-3 py-2 border rounded-md"
+                    required
+                  >
+                    <option value="">Select Province</option>
+                    <option value="Eastern Cape">Eastern Cape</option>
+                    <option value="Free State">Free State</option>
+                    <option value="Gauteng">Gauteng</option>
+                    <option value="KwaZulu-Natal">KwaZulu-Natal</option>
+                    <option value="Limpopo">Limpopo</option>
+                    <option value="Mpumalanga">Mpumalanga</option>
+                    <option value="Northern Cape">Northern Cape</option>
+                    <option value="North West">North West</option>
+                    <option value="Western Cape">Western Cape</option>
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="postalCode">Postal Code *</Label>
+                  <Input
+                    id="postalCode"
+                    placeholder="8001"
+                    value={formData.postalCode}
+                    onChange={(e) => setFormData({ ...formData, postalCode: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="country">Country *</Label>
+                  <Input
+                    id="country"
+                    value={formData.country}
+                    onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                    required
+                  />
+                </div>
+              </div>
             </div>
+
+            {/* Business Information (show only for BUSINESS role) */}
+            {session?.user?.role === 'BUSINESS' && (
+              <div className="space-y-4 p-6 bg-slate-50 dark:bg-slate-900 rounded-lg">
+                <h3 className="text-lg font-semibold">Business Information</h3>
+                
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="businessName">Business Name *</Label>
+                    <Input
+                      id="businessName"
+                      placeholder="ABC Trading (Pty) Ltd"
+                      value={formData.businessName}
+                      onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
+                      required={session?.user?.role === 'BUSINESS'}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="registrationNumber">Registration Number *</Label>
+                    <Input
+                      id="registrationNumber"
+                      placeholder="2020/123456/07"
+                      value={formData.registrationNumber}
+                      onChange={(e) => setFormData({ ...formData, registrationNumber: e.target.value })}
+                      required={session?.user?.role === 'BUSINESS'}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="vatNumber">VAT Number (if applicable)</Label>
+                    <Input
+                      id="vatNumber"
+                      placeholder="4123456789"
+                      value={formData.vatNumber}
+                      onChange={(e) => setFormData({ ...formData, vatNumber: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="businessType">Business Type *</Label>
+                    <select
+                      id="businessType"
+                      value={formData.businessType}
+                      onChange={(e) => setFormData({ ...formData, businessType: e.target.value })}
+                      className="w-full px-3 py-2 border rounded-md"
+                      required={session?.user?.role === 'BUSINESS'}
+                    >
+                      <option value="">Select Type</option>
+                      <option value="Sole Proprietor">Sole Proprietor</option>
+                      <option value="Partnership">Partnership</option>
+                      <option value="Private Company">Private Company (Pty Ltd)</option>
+                      <option value="Public Company">Public Company (Ltd)</option>
+                      <option value="Close Corporation">Close Corporation (CC)</option>
+                      <option value="Trust">Trust</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="industry">Industry *</Label>
+                  <Input
+                    id="industry"
+                    placeholder="e.g., E-commerce, Manufacturing, Services"
+                    value={formData.industry}
+                    onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
+                    required={session?.user?.role === 'BUSINESS'}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Banking Information */}
+            <div className="space-y-4 p-6 bg-slate-50 dark:bg-slate-900 rounded-lg">
+              <h3 className="text-lg font-semibold">Banking Information</h3>
+              
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="bankName">Bank Name *</Label>
+                  <select
+                    id="bankName"
+                    value={formData.bankName}
+                    onChange={(e) => setFormData({ ...formData, bankName: e.target.value })}
+                    className="w-full px-3 py-2 border rounded-md"
+                    required
+                  >
+                    <option value="">Select Bank</option>
+                    <option value="ABSA">ABSA</option>
+                    <option value="Capitec">Capitec</option>
+                    <option value="FNB">First National Bank (FNB)</option>
+                    <option value="Nedbank">Nedbank</option>
+                    <option value="Standard Bank">Standard Bank</option>
+                    <option value="African Bank">African Bank</option>
+                    <option value="Discovery Bank">Discovery Bank</option>
+                    <option value="TymeBank">TymeBank</option>
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="accountType">Account Type *</Label>
+                  <select
+                    id="accountType"
+                    value={formData.accountType}
+                    onChange={(e) => setFormData({ ...formData, accountType: e.target.value })}
+                    className="w-full px-3 py-2 border rounded-md"
+                    required
+                  >
+                    <option value="">Select Type</option>
+                    <option value="Savings">Savings</option>
+                    <option value="Cheque">Cheque/Current</option>
+                    <option value="Business">Business</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="accountNumber">Account Number *</Label>
+                  <Input
+                    id="accountNumber"
+                    placeholder="1234567890"
+                    value={formData.accountNumber}
+                    onChange={(e) => setFormData({ ...formData, accountNumber: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="branchCode">Branch Code *</Label>
+                  <Input
+                    id="branchCode"
+                    placeholder="250655"
+                    value={formData.branchCode}
+                    onChange={(e) => setFormData({ ...formData, branchCode: e.target.value })}
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Document Uploads */}
+            <div className="space-y-4 p-6 bg-slate-50 dark:bg-slate-900 rounded-lg">
+              <h3 className="text-lg font-semibold">Required Documents</h3>
 
             <div className="space-y-2">
               <Label htmlFor="idDocument">ID Document / Passport Copy *</Label>
@@ -272,6 +590,51 @@ export default function KYCVerificationPage() {
                   <p className="text-xs text-muted-foreground">Utility bill or bank statement (max. 10MB)</p>
                 </label>
               </div>
+            </div>
+
+            {session?.user?.role === 'BUSINESS' && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="businessRegistration">Business Registration Certificate *</Label>
+                  <div className="border-2 border-dashed rounded-lg p-6 text-center hover:border-primary transition-colors cursor-pointer">
+                    <input
+                      type="file"
+                      id="businessRegistration"
+                      accept="image/*,.pdf"
+                      onChange={(e) => handleFileChange('businessRegistration', e.target.files?.[0] || null)}
+                      className="hidden"
+                    />
+                    <label htmlFor="businessRegistration" className="cursor-pointer">
+                      <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+                      <p className="text-sm font-medium">
+                        {formData.businessRegistration ? formData.businessRegistration.name : 'Click to upload business registration'}
+                      </p>
+                      <p className="text-xs text-muted-foreground">CIPC certificate or registration docs (max. 10MB)</p>
+                    </label>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="bankStatement">Business Bank Statement *</Label>
+                  <div className="border-2 border-dashed rounded-lg p-6 text-center hover:border-primary transition-colors cursor-pointer">
+                    <input
+                      type="file"
+                      id="bankStatement"
+                      accept="image/*,.pdf"
+                      onChange={(e) => handleFileChange('bankStatement', e.target.files?.[0] || null)}
+                      className="hidden"
+                    />
+                    <label htmlFor="bankStatement" className="cursor-pointer">
+                      <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+                      <p className="text-sm font-medium">
+                        {formData.bankStatement ? formData.bankStatement.name : 'Click to upload bank statement'}
+                      </p>
+                      <p className="text-xs text-muted-foreground">Last 3 months bank statement (max. 10MB)</p>
+                    </label>
+                  </div>
+                </div>
+              </>
+            )}
             </div>
 
             <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg dark:bg-blue-900/20 dark:border-blue-800">
