@@ -6,9 +6,10 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Navigation } from '@/components/navigation';
-import { ArrowLeft, Building2, Users, MapPin, ArrowUpRight, Clock, Shield, DollarSign, CreditCard } from 'lucide-react';
+import { ArrowLeft, Building2, Users, MapPin, ArrowUpRight, Clock, Shield, DollarSign, CreditCard, ChevronDown, ChevronUp, FileText, TrendingUp, Target, Award, Calendar, Briefcase, Lock, Info } from 'lucide-react';
 import { useState } from 'react';
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const fakeDeals: any[] = [
   { id: 1, name: 'Green Energy Solutions', industry: 'Renewable Energy', description: 'Solar panel installation company', fundingGoal: 500000, funded: 425000, investors: 89, monthlyRevenue: 180000, revenueGrowth: 15.5, daysLeft: 12, minInvestment: 1000, targetReturn: 1.5, riskLevel: 'Medium', riskScore: 5, logo: '🔋', location: 'Cape Town', founded: 2020, employees: 24 },
@@ -22,8 +23,14 @@ export default function DealDetailPage({ params }: { params: { id: string } }) {
   const [investmentAmount, setInvestmentAmount] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<'card' | 'paypal'>('card');
   const [processing, setProcessing] = useState(false);
+  const [expandedSection, setExpandedSection] = useState<'about' | 'terms' | 'risk' | null>(null);
+  const [showRevenueTooltip, setShowRevenueTooltip] = useState(false);
   const deal = fakeDeals.find(d => d.id === parseInt(params.id)) || fakeDeals[0];
   const percentFunded = (deal.funded / deal.fundingGoal) * 100;
+
+  const toggleSection = (section: 'about' | 'terms' | 'risk') => {
+    setExpandedSection(expandedSection === section ? null : section);
+  };
 
   const getRiskColor = (risk: string) => {
     switch (risk) {
@@ -37,68 +44,367 @@ export default function DealDetailPage({ params }: { params: { id: string } }) {
   return (
     <>
       <Navigation />
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-blue-950 dark:to-indigo-950">
-        <div className="container mx-auto px-4 py-6 md:py-8">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-slate-50 to-gray-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+        <div className="container mx-auto px-4 py-6 md:py-8 max-w-7xl">
         <Link href="/deals">
-          <Button variant="ghost" className="mb-4 md:mb-6">
+          <Button variant="ghost" className="mb-6 hover:bg-slate-100 dark:hover:bg-slate-800">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Deals
           </Button>
         </Link>
 
-        <div className="grid lg:grid-cols-3 gap-6 md:gap-8">
-          <div className="lg:col-span-2">
-            <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 md:p-6 lg:p-8 shadow-xl border-l-4 border-emerald-500 dark:border-emerald-400">
-              <div className="flex flex-col sm:flex-row items-start justify-between mb-4 md:mb-6 gap-4">
-                <div className="flex items-center space-x-3 md:space-x-4">
-                  <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-3xl md:text-4xl shadow-lg ring-4 ring-white dark:ring-slate-800 flex-shrink-0">
+        <div className="grid lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-6">
+            {/* Hero Card */}
+            <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-slate-200/50 dark:border-slate-700/50">
+              <div className="flex items-start justify-between mb-6">
+                <div className="flex items-center space-x-4">
+                  <div className="w-20 h-20 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-2xl flex items-center justify-center text-4xl shadow-lg">
                     {deal.logo}
                   </div>
                   <div>
-                    <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-2">{deal.name}</h1>
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-3 text-sm md:text-base text-slate-600 dark:text-slate-400 gap-1 sm:gap-0">
-                      <span className="flex items-center"><Building2 className="h-4 w-4 mr-1" />{deal.industry}</span>
-                      <span className="flex items-center"><MapPin className="h-4 w-4 mr-1" />{deal.location}</span>
+                    <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent mb-2">
+                      {deal.name}
+                    </h1>
+                    <div className="flex flex-wrap items-center gap-3 text-slate-600 dark:text-slate-400">
+                      <span className="flex items-center gap-1.5 px-3 py-1 bg-slate-100 dark:bg-slate-700/50 rounded-full text-sm">
+                        <Building2 className="h-4 w-4" />{deal.industry}
+                      </span>
+                      <span className="flex items-center gap-1.5 px-3 py-1 bg-slate-100 dark:bg-slate-700/50 rounded-full text-sm">
+                        <MapPin className="h-4 w-4" />{deal.location}
+                      </span>
+                      <span className="flex items-center gap-1.5 px-3 py-1 bg-slate-100 dark:bg-slate-700/50 rounded-full text-sm">
+                        <Calendar className="h-4 w-4" />Est. {deal.founded}
+                      </span>
                     </div>
                   </div>
                 </div>
                 <Badge className={getRiskColor(deal.riskLevel)}>{deal.riskLevel} Risk</Badge>
               </div>
 
-              <p className="text-base md:text-lg text-slate-600 dark:text-slate-300 mb-4 md:mb-6">{deal.description}</p>
+              {/* Key Metrics */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-4 border border-blue-200/50 dark:border-blue-700/50">
+                  <Users className="h-5 w-5 text-blue-600 dark:text-blue-400 mb-2" />
+                  <div className="text-sm text-slate-600 dark:text-slate-400 mb-1">Employees</div>
+                  <div className="text-2xl font-bold text-slate-900 dark:text-white">{deal.employees}</div>
+                </div>
+                
+                <div className="relative bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-xl p-4 border border-emerald-200/50 dark:border-emerald-700/50">
+                  <div 
+                    className="absolute inset-0 bg-gradient-to-br from-slate-900/80 to-slate-800/80 dark:from-slate-700/80 dark:to-slate-600/80 backdrop-blur-sm rounded-xl flex items-center justify-center cursor-pointer"
+                    onMouseEnter={() => setShowRevenueTooltip(true)}
+                    onMouseLeave={() => setShowRevenueTooltip(false)}
+                  >
+                    <div className="text-center">
+                      <Lock className="h-6 w-6 text-white mx-auto mb-2" />
+                      <div className="text-xs text-white font-medium">Private</div>
+                    </div>
+                  </div>
+                  
+                  {showRevenueTooltip && (
+                    <div className="absolute -top-24 left-1/2 transform -translate-x-1/2 z-50 w-64 bg-slate-900 dark:bg-slate-700 text-white text-xs rounded-lg p-3 shadow-xl">
+                      <div className="flex items-start gap-2">
+                        <Info className="h-4 w-4 text-blue-400 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <div className="font-semibold mb-1">Revenue Information</div>
+                          <div className="text-slate-300">Only visible to investors who have funded this deal</div>
+                        </div>
+                      </div>
+                      <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-3 h-3 bg-slate-900 dark:bg-slate-700 rotate-45"></div>
+                    </div>
+                  )}
+                  
+                  <DollarSign className="h-5 w-5 text-emerald-600 dark:text-emerald-400 mb-2 opacity-20" />
+                  <div className="text-sm text-slate-600 dark:text-slate-400 mb-1 opacity-20">Revenue</div>
+                  <div className="text-2xl font-bold text-slate-900 dark:text-white opacity-20">R***k</div>
+                </div>
+                
+                <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl p-4 border border-purple-200/50 dark:border-purple-700/50">
+                  <TrendingUp className="h-5 w-5 text-purple-600 dark:text-purple-400 mb-2" />
+                  <div className="text-sm text-slate-600 dark:text-slate-400 mb-1">Growth</div>
+                  <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 flex items-center">
+                    <ArrowUpRight className="h-5 w-5 mr-1" />{deal.revenueGrowth}%
+                  </div>
+                </div>
+                
+                <div className="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-xl p-4 border border-amber-200/50 dark:border-amber-700/50">
+                  <Target className="h-5 w-5 text-amber-600 dark:text-amber-400 mb-2" />
+                  <div className="text-sm text-slate-600 dark:text-slate-400 mb-1">Target Return</div>
+                  <div className="text-2xl font-bold text-slate-900 dark:text-white">{deal.targetReturn}x</div>
+                </div>
+              </div>
+            </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-                <div className="bg-slate-50 dark:bg-slate-900/50 rounded-xl p-3 md:p-4">
-                  <div className="text-xs md:text-sm text-slate-500 dark:text-slate-400 mb-1">Founded</div>
-                  <div className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white">{deal.founded}</div>
+            {/* About Business Section */}
+            <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl shadow-xl border border-slate-200/50 dark:border-slate-700/50 overflow-hidden">
+              <button
+                onClick={() => toggleSection('about')}
+                className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <Briefcase className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                  <h2 className="text-xl font-bold text-slate-900 dark:text-white">About the Business</h2>
                 </div>
-                <div className="bg-slate-50 dark:bg-slate-900/50 rounded-xl p-3 md:p-4">
-                  <div className="text-xs md:text-sm text-slate-500 dark:text-slate-400 mb-1">Employees</div>
-                  <div className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white">{deal.employees}</div>
+                {expandedSection === 'about' ? (
+                  <ChevronUp className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+                ) : (
+                  <ChevronDown className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+                )}
+              </button>
+              
+              <AnimatePresence>
+                {expandedSection === 'about' && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="px-6 pb-6 space-y-4">
+                      <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
+                        {deal.description}
+                      </p>
+                      <div className="bg-slate-50 dark:bg-slate-900/50 rounded-xl p-4">
+                        <h3 className="font-semibold text-slate-900 dark:text-white mb-2">Company Highlights</h3>
+                        <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+                          <li className="flex items-start gap-2">
+                            <span className="text-emerald-500">✓</span>
+                            <span>Established in {deal.founded} with {deal.employees} dedicated team members</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-emerald-500">✓</span>
+                            <span>Strong growth trajectory with {deal.revenueGrowth}% revenue increase</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-emerald-500">✓</span>
+                            <span>Verified business operations and KYC compliance</span>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Terms & Conditions Section */}
+            <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl shadow-xl border border-slate-200/50 dark:border-slate-700/50 overflow-hidden">
+              <button
+                onClick={() => toggleSection('terms')}
+                className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  <h2 className="text-xl font-bold text-slate-900 dark:text-white">Terms & Conditions</h2>
                 </div>
-                <div className="bg-slate-50 dark:bg-slate-900/50 rounded-xl p-3 md:p-4">
-                  <div className="text-xs md:text-sm text-slate-500 dark:text-slate-400 mb-1">Revenue</div>
-                  <div className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white">R{(deal.monthlyRevenue / 1000).toFixed(0)}k</div>
+                {expandedSection === 'terms' ? (
+                  <ChevronUp className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+                ) : (
+                  <ChevronDown className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+                )}
+              </button>
+              
+              <AnimatePresence>
+                {expandedSection === 'terms' && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="px-6 pb-6 space-y-4">
+                      <div className="space-y-3 text-sm text-slate-600 dark:text-slate-400">
+                        <div>
+                          <h3 className="font-semibold text-slate-900 dark:text-white mb-2">Investment Terms</h3>
+                          <ul className="space-y-2">
+                            <li className="flex items-start gap-2">
+                              <span className="text-blue-500 mt-1">•</span>
+                              <span><strong>Minimum Investment:</strong> R{deal.minInvestment.toLocaleString()}</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <span className="text-blue-500 mt-1">•</span>
+                              <span><strong>Target Return:</strong> {deal.targetReturn}x of your investment</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <span className="text-blue-500 mt-1">•</span>
+                              <span><strong>Revenue Share:</strong> Monthly payments based on business revenue</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <span className="text-blue-500 mt-1">•</span>
+                              <span><strong>Repayment Cap:</strong> Fixed at {deal.targetReturn}x - you never pay more</span>
+                            </li>
+                          </ul>
+                        </div>
+                        
+                        <div className="border-t border-slate-200 dark:border-slate-700 pt-4">
+                          <div className="flex items-start gap-3 mb-3">
+                            <Shield className="h-5 w-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+                            <h3 className="font-semibold text-slate-900 dark:text-white">Important to Understand</h3>
+                          </div>
+                          <ul className="space-y-2 text-sm">
+                            <li className="flex items-start gap-2">
+                              <span className="text-amber-500 mt-1">•</span>
+                              <span>All investments carry risk. You could lose some or all of your capital.</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <span className="text-amber-500 mt-1">•</span>
+                              <span>Returns are based on business performance and are not guaranteed.</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <span className="text-amber-500 mt-1">•</span>
+                              <span>Your investment is not protected by deposit insurance schemes.</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <span className="text-amber-500 mt-1">•</span>
+                              <span>Investments are illiquid - you may not be able to sell your position easily.</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <span className="text-amber-500 mt-1">•</span>
+                              <span>Tax treatment depends on individual circumstances and may change.</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <span className="text-amber-500 mt-1">•</span>
+                              <span>Only invest money you can afford to lose without affecting your lifestyle.</span>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Risk Assessment Section */}
+            <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl shadow-xl border border-slate-200/50 dark:border-slate-700/50 overflow-hidden">
+              <button
+                onClick={() => toggleSection('risk')}
+                className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg">
+                    <Shield className="h-5 w-5 text-white" />
+                  </div>
+                  <div className="text-left">
+                    <h2 className="text-xl font-bold text-slate-900 dark:text-white">Risk Assessment</h2>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">Risk Score: {deal.riskScore}/10</p>
+                  </div>
                 </div>
-                <div className="bg-slate-50 dark:bg-slate-900/50 rounded-xl p-3 md:p-4">
-                  <div className="text-xs md:text-sm text-slate-500 dark:text-slate-400 mb-1">Growth</div>
-                  <div className="text-xl md:text-2xl font-bold flex items-center text-emerald-600 dark:text-emerald-400">
-                    <ArrowUpRight className="h-4 w-4 md:h-5 md:w-5 mr-1" />{deal.revenueGrowth}%
+                {expandedSection === 'risk' ? (
+                  <ChevronUp className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+                ) : (
+                  <ChevronDown className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+                )}
+              </button>
+              
+              <AnimatePresence>
+                {expandedSection === 'risk' && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="px-6 pb-6 space-y-4">
+                      <div>
+                        <div className="flex justify-between mb-2 text-sm">
+                          <span className="text-slate-600 dark:text-slate-400">Risk Level</span>
+                          <span className="font-semibold text-slate-900 dark:text-white">{deal.riskScore}/10</span>
+                        </div>
+                        <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                          <div 
+                            className={`h-full rounded-full ${
+                              deal.riskScore <= 3 ? 'bg-gradient-to-r from-emerald-500 to-emerald-600' :
+                              deal.riskScore <= 6 ? 'bg-gradient-to-r from-yellow-500 to-amber-600' :
+                              'bg-gradient-to-r from-orange-500 to-red-600'
+                            }`}
+                            style={{ width: `${(deal.riskScore / 10) * 100}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-3 text-sm">
+                        <h3 className="font-semibold text-slate-900 dark:text-white">Risk Factors</h3>
+                        <ul className="space-y-2 text-slate-600 dark:text-slate-400">
+                          <li className="flex items-start gap-2">
+                            <span className="text-slate-400 mt-1">•</span>
+                            <span><strong>Market Risk:</strong> Industry competition and market conditions may impact performance</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-slate-400 mt-1">•</span>
+                            <span><strong>Business Risk:</strong> Operational challenges may affect revenue generation</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-slate-400 mt-1">•</span>
+                            <span><strong>Liquidity Risk:</strong> Limited ability to exit investment before full repayment</span>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Trust Badges */}
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6 border border-blue-200/50 dark:border-blue-700/50">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                <Award className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                Why Invest with Confidence
+              </h3>
+              <div className="grid md:grid-cols-3 gap-4">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 bg-emerald-500 rounded-lg">
+                    <Shield className="h-4 w-4 text-white" />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-slate-900 dark:text-white text-sm">Verified Business</div>
+                    <div className="text-xs text-slate-600 dark:text-slate-400">Full KYC & due diligence completed</div>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="p-2 bg-blue-500 rounded-lg">
+                    <FileText className="h-4 w-4 text-white" />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-slate-900 dark:text-white text-sm">Transparent Reporting</div>
+                    <div className="text-xs text-slate-600 dark:text-slate-400">Monthly updates on performance</div>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="p-2 bg-purple-500 rounded-lg">
+                    <Lock className="h-4 w-4 text-white" />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-slate-900 dark:text-white text-sm">Secure Payments</div>
+                    <div className="text-xs text-slate-600 dark:text-slate-400">Bank-grade encryption</div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
+          {/* Investment Sidebar */}
           <div className="space-y-6">
-            <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 md:p-6 shadow-xl border-2 border-yellow-500 dark:border-yellow-400 lg:sticky lg:top-8">
-              <div className="mb-4 md:mb-6">
+            <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl border-2 border-indigo-500/50 dark:border-indigo-400/50 lg:sticky lg:top-8">
+              <div className="mb-6">
                 <div className="flex justify-between mb-3">
-                  <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Progress</span>
-                  <span className="text-base md:text-lg font-bold text-blue-600 dark:text-blue-400">{percentFunded.toFixed(0)}%</span>
+                  <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Campaign Progress</span>
+                  <span className="text-lg font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                    {percentFunded.toFixed(0)}%
+                  </span>
                 </div>
-                <div className="h-3 md:h-4 bg-slate-200 dark:bg-slate-700 rounded-full mb-3">
-                  <div className="h-full bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full" style={{ width: `${Math.min(percentFunded, 100)}%` }}></div>
+                <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded-full mb-3 overflow-hidden">
+                  <motion.div 
+                    className="h-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-full"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${Math.min(percentFunded, 100)}%` }}
+                    transition={{ duration: 1, ease: "easeOut" }}
+                  ></motion.div>
                 </div>
                 <div className="flex justify-between text-sm text-slate-600 dark:text-slate-400">
                   <span>R{(deal.funded / 1000).toFixed(0)}k</span>
