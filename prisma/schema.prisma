@@ -96,6 +96,11 @@ model User {
   notifications Notification[]
   auditLogs     AuditLog[]
   bankCards     BankCard[]
+  customers     Customer[]
+  invoices      Invoice[]
+  expenses      Expense[]
+  accountingTransactions AccountingTransaction[]
+  chartOfAccounts ChartOfAccounts[]
 
   @@index([email])
   @@index([role])
@@ -695,4 +700,221 @@ model PayoutSchedule {
   @@index([month])
   @@index([status])
   @@index([scheduledDate])
+}
+
+// ============================================
+// ACCOUNTING SYSTEM MODELS
+// ============================================
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  VIEWED
+  PARTIAL
+  PAID
+  OVERDUE
+  CANCELLED
+  REFUNDED
+}
+
+enum ExpenseCategory {
+  ADVERTISING
+  BANK_FEES
+  OFFICE_SUPPLIES
+  RENT
+  UTILITIES
+  TRAVEL
+  MEALS
+  PROFESSIONAL_SERVICES
+  SOFTWARE
+  INSURANCE
+  TAXES
+  PAYROLL
+  OTHER
+}
+
+enum TransactionCategory {
+  INCOME
+  EXPENSE
+  TRANSFER
+}
+
+model Customer {
+  id                String            @id @default(uuid())
+  userId            String
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Customer Details
+  name              String
+  email             String?
+  phone             String?
+  company           String?
+  
+  // Address
+  addressLine1      String?
+  addressLine2      String?
+  city              String?
+  province          String?
+  postalCode        String?
+  country           String            @default("South Africa")
+  
+  // Financial
+  vatNumber         String?
+  
+  // Relations
+  invoices          Invoice[]
+  
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  @@index([userId])
+  @@index([email])
+}
+
+model Invoice {
+  id                String            @id @default(uuid())
+  userId            String
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  customerId        String?
+  customer          Customer?         @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  
+  // Invoice Details
+  invoiceNumber     String            @unique
+  status            InvoiceStatus     @default(DRAFT)
+  
+  // Dates
+  issueDate         DateTime          @default(now())
+  dueDate           DateTime
+  paidDate          DateTime?
+  
+  // Amounts
+  subtotal          Decimal           @db.Decimal(15, 2)
+  taxRate           Decimal           @db.Decimal(5, 2) @default(15.00) // VAT 15%
+  taxAmount         Decimal           @db.Decimal(15, 2)
+  total             Decimal           @db.Decimal(15, 2)
+  amountPaid        Decimal           @db.Decimal(15, 2) @default(0.00)
+  amountDue         Decimal           @db.Decimal(15, 2)
+  
+  // Content
+  notes             String?           @db.Text
+  terms             String?           @db.Text
+  
+  // Relations
+  items             InvoiceItem[]
+  
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  @@index([userId])
+  @@index([customerId])
+  @@index([status])
+  @@index([dueDate])
+  @@index([invoiceNumber])
+}
+
+model InvoiceItem {
+  id                String            @id @default(uuid())
+  invoiceId         String
+  invoice           Invoice           @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  
+  // Item Details
+  description       String
+  quantity          Decimal           @db.Decimal(10, 2)
+  unitPrice         Decimal           @db.Decimal(15, 2)
+  total             Decimal           @db.Decimal(15, 2)
+  
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  @@index([invoiceId])
+}
+
+model Expense {
+  id                String            @id @default(uuid())
+  userId            String
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Expense Details
+  description       String
+  category          ExpenseCategory
+  amount            Decimal           @db.Decimal(15, 2)
+  date              DateTime          @default(now())
+  
+  // Vendor
+  vendor            String?
+  
+  // Receipt
+  receiptUrl        String?
+  
+  // Tax
+  taxAmount         Decimal?          @db.Decimal(15, 2)
+  taxDeductible     Boolean           @default(true)
+  
+  // Notes
+  notes             String?           @db.Text
+  
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  @@index([userId])
+  @@index([category])
+  @@index([date])
+}
+
+model AccountingTransaction {
+  id                String            @id @default(uuid())
+  userId            String
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Transaction Details
+  date              DateTime          @default(now())
+  description       String
+  category          TransactionCategory
+  amount            Decimal           @db.Decimal(15, 2)
+  
+  // Bank Details (from Stitch integration)
+  bankTransactionId String?           @unique
+  bankName          String?
+  accountNumber     String?
+  
+  // Reconciliation
+  isReconciled      Boolean           @default(false)
+  reconciledDate    DateTime?
+  invoiceId         String?
+  expenseId         String?
+  
+  // Notes
+  notes             String?           @db.Text
+  
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  @@index([userId])
+  @@index([date])
+  @@index([category])
+  @@index([isReconciled])
+}
+
+model ChartOfAccounts {
+  id                String            @id @default(uuid())
+  userId            String
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Account Details
+  code              String
+  name              String
+  type              String            // ASSET, LIABILITY, EQUITY, INCOME, EXPENSE
+  
+  // Status
+  isActive          Boolean           @default(true)
+  
+  // Description
+  description       String?           @db.Text
+  
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  @@unique([userId, code])
+  @@index([userId])
+  @@index([type])
 }
