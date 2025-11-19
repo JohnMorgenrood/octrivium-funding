@@ -100,89 +100,102 @@ export default function AccountingOverview({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6 px-2 sm:px-0">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="space-y-3">
         <div>
-          <h1 className="text-3xl font-bold">Accounting Overview</h1>
-          <p className="text-muted-foreground mt-1">
-            Track your finances, invoices, and expenses
+          <h1 className="text-2xl sm:text-3xl font-bold">Accounting</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Track finances & invoices
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={() => router.push('/dashboard/accounting/customers')}>
-            <Users className="h-4 w-4 mr-2" />
-            Customers
+        <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+          <Button 
+            onClick={() => router.push('/dashboard/accounting/invoices/create')}
+            className="w-full sm:w-auto"
+          >
+            <Plus className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Create Invoice</span>
+            <span className="sm:hidden text-xs">Invoice</span>
           </Button>
-          <Button onClick={() => router.push('/dashboard/accounting/expenses')}>
-            <Plus className="h-4 w-4 mr-2" />
-            Add Expense
+          <Button 
+            variant="outline" 
+            onClick={() => router.push('/dashboard/accounting/customers')}
+            className="w-full sm:w-auto"
+          >
+            <Users className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Customers</span>
+            <span className="sm:hidden text-xs">Customers</span>
           </Button>
-          <Button onClick={() => router.push('/dashboard/accounting/invoices/create')}>
-            <Plus className="h-4 w-4 mr-2" />
-            Create Invoice
+          <Button 
+            variant="outline" 
+            onClick={() => router.push('/dashboard/accounting/expenses')}
+            className="w-full sm:w-auto col-span-2 sm:col-span-1"
+          >
+            <Plus className="h-4 w-4 sm:mr-2" />
+            <span className="text-xs sm:text-sm">Add Expense</span>
           </Button>
         </div>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Income</CardTitle>
-            <TrendingUp className="h-4 w-4 text-green-600" />
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 sm:p-6">
+            <CardTitle className="text-xs sm:text-sm font-medium">Income</CardTitle>
+            <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-green-600" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-600">
+          <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
+            <div className="text-lg sm:text-2xl font-bold text-green-600">
               {formatCurrency(stats.totalIncome)}
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">
               This month
             </p>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Expenses</CardTitle>
-            <TrendingDown className="h-4 w-4 text-red-600" />
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 sm:p-6">
+            <CardTitle className="text-xs sm:text-sm font-medium">Expenses</CardTitle>
+            <TrendingDown className="h-3 w-3 sm:h-4 sm:w-4 text-red-600" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-red-600">
+          <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
+            <div className="text-lg sm:text-2xl font-bold text-red-600">
               {formatCurrency(stats.totalExpenses)}
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">
               This month
             </p>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Net Profit</CardTitle>
-            <DollarSign className="h-4 w-4 text-blue-600" />
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 sm:p-6">
+            <CardTitle className="text-xs sm:text-sm font-medium">Profit</CardTitle>
+            <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600" />
           </CardHeader>
-          <CardContent>
-            <div className={`text-2xl font-bold ${stats.profit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+          <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
+            <div className={`text-lg sm:text-2xl font-bold ${stats.profit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
               {formatCurrency(stats.profit)}
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">
               {stats.profit >= 0 ? 'Profitable' : 'Loss'}
             </p>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Overdue Invoices</CardTitle>
-            <AlertCircle className="h-4 w-4 text-orange-600" />
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 sm:p-6">
+            <CardTitle className="text-xs sm:text-sm font-medium">Overdue</CardTitle>
+            <AlertCircle className="h-3 w-3 sm:h-4 sm:w-4 text-orange-600" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-orange-600">
+          <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
+            <div className="text-lg sm:text-2xl font-bold text-orange-600">
               {stats.overdueInvoices}
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              {formatCurrency(stats.unpaidAmount)} unpaid
+            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 truncate">
+              {formatCurrency(stats.unpaidAmount)}
             </p>
           </CardContent>
         </Card>
@@ -190,11 +203,11 @@ export default function AccountingOverview({
 
       {/* Invoice Summary */}
       <Card>
-        <CardHeader>
+        <CardHeader className="p-4 sm:p-6">
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>Invoice Summary</CardTitle>
-              <CardDescription>Overview of your invoicing activity</CardDescription>
+              <CardTitle className="text-base sm:text-lg">Invoices</CardTitle>
+              <CardDescription className="text-xs sm:text-sm">Overview of invoicing</CardDescription>
             </div>
             <Button variant="outline" onClick={() => router.push('/dashboard/accounting/invoices')}>
               View All

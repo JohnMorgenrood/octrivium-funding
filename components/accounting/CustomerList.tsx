@@ -184,16 +184,16 @@ export default function CustomerList({ customers: initialCustomers }: CustomerLi
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6 px-2 sm:px-0">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold">Customers</h1>
-          <p className="text-muted-foreground mt-1">
-            Manage your customer database
+          <h1 className="text-2xl sm:text-3xl font-bold">Customers</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+            Manage customer database
           </p>
         </div>
-        <Button onClick={handleOpenAdd}>
+        <Button onClick={handleOpenAdd} size="sm" className="w-full sm:w-auto">
           <Plus className="h-4 w-4 mr-2" />
           Add Customer
         </Button>

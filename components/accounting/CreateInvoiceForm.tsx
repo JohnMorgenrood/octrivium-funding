@@ -247,13 +247,13 @@ export default function CreateInvoiceForm({ customers, invoiceNumber }: CreateIn
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6 px-2 sm:px-0">
       {/* Preview Dialog */}
       <Dialog open={showPreview} onOpenChange={setShowPreview}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-[95vw] sm:max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Preview {formData.documentType === 'QUOTE' ? 'Quote' : 'Invoice'}</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-lg sm:text-xl">Preview {formData.documentType === 'QUOTE' ? 'Quote' : 'Invoice'}</DialogTitle>
+            <DialogDescription className="text-xs sm:text-sm">
               Review before sending to customer
             </DialogDescription>
           </DialogHeader>
@@ -367,19 +367,19 @@ export default function CreateInvoiceForm({ customers, invoiceNumber }: CreateIn
       </Dialog>
 
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => router.back()}>
-            <ArrowLeft className="h-5 w-5" />
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="icon" onClick={() => router.back()} className="h-8 w-8 sm:h-10 sm:w-10">
+            <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
           </Button>
           <div>
-            <h1 className="text-3xl font-bold">Create {formData.documentType === 'QUOTE' ? 'Quote' : 'Invoice'}</h1>
-            <p className="text-muted-foreground mt-1">Fill in the details below</p>
+            <h1 className="text-xl sm:text-3xl font-bold">Create {formData.documentType === 'QUOTE' ? 'Quote' : 'Invoice'}</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-1">Fill in details below</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Select value={formData.documentType} onValueChange={(value: 'INVOICE' | 'QUOTE') => setFormData({ ...formData, documentType: value })}>
-            <SelectTrigger className="w-[140px]">
+            <SelectTrigger className="w-[110px] sm:w-[140px]">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -387,13 +387,13 @@ export default function CreateInvoiceForm({ customers, invoiceNumber }: CreateIn
               <SelectItem value="QUOTE">Quote</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="outline" onClick={() => handleSubmit('DRAFT')} disabled={loading}>
-            <Save className="h-4 w-4 mr-2" />
-            Save Draft
+          <Button variant="outline" size="sm" onClick={() => handleSubmit('DRAFT')} disabled={loading}>
+            <Save className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+            <span className="text-xs sm:text-sm">Draft</span>
           </Button>
-          <Button onClick={() => handleSubmit('SENT')} disabled={loading}>
-            <Send className="h-4 w-4 mr-2" />
-            {loading ? 'Creating...' : `Send ${formData.documentType === 'QUOTE' ? 'Quote' : 'Invoice'}`}
+          <Button size="sm" onClick={() => handleSubmit('SENT')} disabled={loading}>
+            <Send className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+            <span className="text-xs sm:text-sm">{loading ? 'Creating...' : 'Send'}</span>
           </Button>
         </div>
       </div>
