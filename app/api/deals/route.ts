@@ -87,9 +87,15 @@ export async function POST(req: NextRequest) {
       business = await prisma.business.create({
         data: {
           userId: session.user.id,
-          businessName: session.user.name || 'My Business',
-          registrationNumber: '',
+          tradingName: session.user.name || 'My Business',
+          legalName: session.user.name || 'My Business',
+          registrationNumber: 'PENDING',
           industry: 'Other',
+          description: 'Business profile pending completion',
+          address: 'TBA',
+          city: 'TBA',
+          province: 'Gauteng',
+          postalCode: '0000',
         }
       });
     }
@@ -180,7 +186,7 @@ export async function GET(req: NextRequest) {
         include: {
           business: {
             select: {
-              businessName: true,
+              tradingName: true,
               industry: true,
             }
           },
@@ -201,7 +207,7 @@ export async function GET(req: NextRequest) {
         include: {
           business: {
             select: {
-              businessName: true,
+              tradingName: true,
               industry: true,
             }
           },
