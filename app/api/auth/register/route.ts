@@ -6,11 +6,15 @@ import { z } from 'zod';
 const registerSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
-  firstName: z.string().min(1),
-  lastName: z.string().min(1),
+  name: z.string().min(1).optional(),
+  firstName: z.string().min(1).optional(),
+  lastName: z.string().min(1).optional(),
   phone: z.string().optional(),
   role: z.enum(['INVESTOR', 'BUSINESS', 'ADMIN']),
-});
+}).refine(
+  (data) => data.name || (data.firstName && data.lastName),
+  { message: 'Either name or firstName and lastName must be provided' }
+);
 
 export async function POST(req: Request) {
   try {
@@ -29,14 +33,24 @@ export async function POST(req: Request) {
     // Hash password
     const hashedPassword = await bcrypt.hash(validated.password, 12);
 
+    // Parse name if provided as single field
+    let firstName = validated.firstName;
+    let lastName = validated.lastName;
+    
+    if (validated.name && !firstName && !lastName) {
+      const nameParts = validated.name.trim().split(' ');
+      firstName = nameParts[0];
+      lastName = nameParts.slice(1).join(' ') || nameParts[0];
+    }
+
     // Create user and wallet in a transaction
     const user = await prisma.$transaction(async (tx: any) => {
       const newUser = await tx.user.create({
         data: {
           email: validated.email,
           password: hashedPassword,
-          firstName: validated.firstName,
-          lastName: validated.lastName,
+          firstName: firstName!,
+          lastName: lastName!,
           phone: validated.phone,
           role: validated.role,
         },
