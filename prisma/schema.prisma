@@ -187,6 +187,7 @@ model Deal {
   businessId            String
   title                 String
   description           String     @db.Text
+  imageUrl              String?    // Deal card image
   fundingGoal           Decimal    @db.Decimal(15, 2)
   currentFunding        Decimal    @default(0) @db.Decimal(15, 2)
   minInvestment         Decimal    @default(100) @db.Decimal(15, 2)

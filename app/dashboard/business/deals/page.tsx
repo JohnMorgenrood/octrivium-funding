@@ -6,8 +6,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Plus, TrendingUp, Users, Calendar, DollarSign } from 'lucide-react';
+import { Plus, TrendingUp, Users, Calendar, DollarSign, Clock } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
+import Image from 'next/image';
 
 interface Deal {
   id: string;
@@ -17,6 +18,7 @@ interface Deal {
   currentFunding: number;
   revenueSharePercentage: number;
   status: string;
+  imageUrl?: string;
   createdAt: string;
   _count: {
     investments: number;
@@ -48,10 +50,38 @@ export default function MyDealsPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'ACTIVE': return 'default';
-      case 'FUNDED': return 'secondary';
-      case 'CLOSED': return 'destructive';
-      default: return 'outline';
+      case 'ACTIVE': 
+      case 'APPROVED': 
+        return 'default';
+      case 'FUNDED': 
+        return 'secondary';
+      case 'CLOSED': 
+      case 'CANCELLED':
+        return 'destructive';
+      case 'PENDING_APPROVAL':
+      case 'PENDING': 
+        return 'outline';
+      default: 
+        return 'outline';
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'PENDING_APPROVAL':
+      case 'PENDING': 
+        return 'Pending Approval';
+      case 'APPROVED':
+      case 'ACTIVE': 
+        return 'Active';
+      case 'FUNDED': 
+        return 'Fully Funded';
+      case 'CLOSED': 
+        return 'Closed';
+      case 'CANCELLED':
+        return 'Cancelled';
+      default: 
+        return status;
     }
   };
 
@@ -96,61 +126,100 @@ export default function MyDealsPage() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
           {deals.map((deal) => {
             const fundingProgress = (deal.currentFunding / deal.fundingGoal) * 100;
+            const isPending = deal.status === 'PENDING_APPROVAL' || deal.status === 'PENDING';
             
             return (
-              <Card key={deal.id} className="hover:shadow-lg transition-shadow cursor-pointer"
-                    onClick={() => router.push(`/deals/${deal.id}`)}>
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <CardTitle className="line-clamp-1">{deal.title}</CardTitle>
-                      <CardDescription className="line-clamp-2 mt-2">
+              <Card 
+                key={deal.id} 
+                className={`hover:shadow-lg transition-all cursor-pointer overflow-hidden group ${
+                  isPending ? 'border-yellow-200 bg-yellow-50/30' : ''
+                }`}
+                onClick={() => router.push(`/deals/${deal.id}`)}
+              >
+                {/* Deal Image */}
+                {deal.imageUrl && (
+                  <div className="relative w-full h-48 overflow-hidden bg-gray-100">
+                    <Image
+                      src={deal.imageUrl}
+                      alt={deal.title}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    {isPending && (
+                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                        <div className="bg-yellow-500 text-white px-4 py-2 rounded-full flex items-center gap-2 font-semibold">
+                          <Clock className="h-4 w-4" />
+                          Coming Soon
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+                
+                <CardHeader className={deal.imageUrl ? 'pb-3' : ''}>
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <CardTitle className="line-clamp-1 text-lg">{deal.title}</CardTitle>
+                      <CardDescription className="line-clamp-2 mt-1.5 text-sm">
                         {deal.description}
                       </CardDescription>
                     </div>
-                    <Badge variant={getStatusColor(deal.status)}>
-                      {deal.status}
+                    <Badge variant={getStatusColor(deal.status)} className="shrink-0">
+                      {getStatusLabel(deal.status)}
                     </Badge>
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                
+                <CardContent className="space-y-4 pt-0">
                   {/* Funding Progress */}
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Funding Progress</span>
-                      <span className="font-semibold">{fundingProgress.toFixed(0)}%</span>
+                      <span className="text-muted-foreground">
+                        {isPending ? 'Target' : 'Funding Progress'}
+                      </span>
+                      {!isPending && (
+                        <span className="font-semibold text-primary">{fundingProgress.toFixed(0)}%</span>
+                      )}
                     </div>
-                    <Progress value={fundingProgress} />
+                    {!isPending && <Progress value={fundingProgress} className="h-2" />}
                     <div className="flex justify-between text-sm">
-                      <span className="font-semibold">{formatCurrency(deal.currentFunding)}</span>
-                      <span className="text-muted-foreground">of {formatCurrency(deal.fundingGoal)}</span>
+                      <span className="font-semibold text-lg">
+                        {formatCurrency(isPending ? deal.fundingGoal : deal.currentFunding)}
+                      </span>
+                      {!isPending && (
+                        <span className="text-muted-foreground">of {formatCurrency(deal.fundingGoal)}</span>
+                      )}
                     </div>
                   </div>
 
                   {/* Stats */}
-                  <div className="grid grid-cols-3 gap-4 pt-4 border-t">
-                    <div className="flex items-center gap-2">
-                      <Users className="h-4 w-4 text-muted-foreground" />
-                      <div>
+                  <div className="grid grid-cols-3 gap-3 pt-3 border-t">
+                    <div className="flex items-start gap-2">
+                      <Users className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+                      <div className="min-w-0">
                         <p className="text-xs text-muted-foreground">Investors</p>
-                        <p className="font-semibold">{deal._count.investments}</p>
+                        <p className="font-semibold text-sm">
+                          {isPending ? 'TBA' : deal._count.investments}
+                        </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <DollarSign className="h-4 w-4 text-muted-foreground" />
-                      <div>
+                    <div className="flex items-start gap-2">
+                      <DollarSign className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+                      <div className="min-w-0">
                         <p className="text-xs text-muted-foreground">Rev Share</p>
-                        <p className="font-semibold">{deal.revenueSharePercentage}%</p>
+                        <p className="font-semibold text-sm">{deal.revenueSharePercentage}%</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-muted-foreground" />
-                      <div>
-                        <p className="text-xs text-muted-foreground">Created</p>
-                        <p className="font-semibold">
+                    <div className="flex items-start gap-2">
+                      <Calendar className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+                      <div className="min-w-0">
+                        <p className="text-xs text-muted-foreground">
+                          {isPending ? 'Submitted' : 'Created'}
+                        </p>
+                        <p className="font-semibold text-sm">
                           {new Date(deal.createdAt).toLocaleDateString('en-ZA', { month: 'short', day: 'numeric' })}
                         </p>
                       </div>

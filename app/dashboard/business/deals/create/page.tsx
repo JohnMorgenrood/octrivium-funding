@@ -1,18 +1,23 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { ArrowLeft, Loader2 } from 'lucide-react';
+import { ArrowLeft, Loader2, Upload, X, Image as ImageIcon } from 'lucide-react';
+import Image from 'next/image';
 
 export default function CreateDealPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -21,22 +26,58 @@ export default function CreateDealPage() {
     duration: '12',
   });
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        setError('Image must be less than 5MB');
+        return;
+      }
+      
+      if (!file.type.startsWith('image/')) {
+        setError('Please upload an image file');
+        return;
+      }
+
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+      setError('');
+    }
+  };
+
+  const removeImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
     try {
+      // Create FormData to handle file upload
+      const submitData = new FormData();
+      submitData.append('title', formData.title);
+      submitData.append('description', formData.description);
+      submitData.append('fundingGoal', formData.fundingGoal);
+      submitData.append('revenueSharePercentage', formData.revenueSharePercentage);
+      submitData.append('duration', formData.duration);
+      
+      if (imageFile) {
+        submitData.append('image', imageFile);
+      }
+
       const res = await fetch('/api/deals', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: formData.title,
-          description: formData.description,
-          fundingGoal: parseFloat(formData.fundingGoal),
-          revenueSharePercentage: parseFloat(formData.revenueSharePercentage),
-          duration: parseInt(formData.duration),
-        }),
+        body: submitData,
       });
 
       const data = await res.json();
@@ -94,6 +135,61 @@ export default function CreateDealPage() {
               />
               <p className="text-xs text-muted-foreground">
                 A clear, compelling title that describes your funding goal
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="image">Deal Image *</Label>
+              <div className="space-y-4">
+                {imagePreview ? (
+                  <div className="relative w-full h-64 rounded-lg overflow-hidden border-2 border-dashed border-gray-300 bg-gray-50">
+                    <Image
+                      src={imagePreview}
+                      alt="Deal preview"
+                      fill
+                      className="object-cover"
+                    />
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon"
+                      className="absolute top-2 right-2 h-8 w-8"
+                      onClick={removeImage}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <div
+                    onClick={() => fileInputRef.current?.click()}
+                    className="w-full h-64 rounded-lg border-2 border-dashed border-gray-300 hover:border-primary bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer flex flex-col items-center justify-center gap-3"
+                  >
+                    <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+                      <ImageIcon className="h-6 w-6 text-primary" />
+                    </div>
+                    <div className="text-center">
+                      <p className="font-medium text-gray-700">Click to upload deal image</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        PNG, JPG up to 5MB
+                      </p>
+                    </div>
+                    <Button type="button" variant="outline" size="sm">
+                      <Upload className="h-4 w-4 mr-2" />
+                      Browse Files
+                    </Button>
+                  </div>
+                )}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="hidden"
+                  id="image"
+                />
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Upload an attractive image that represents your business or funding goal
               </p>
             </div>
 
