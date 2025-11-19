@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { User, Lock, Bell, Loader2 } from 'lucide-react';
+import { User, Lock, Bell, Building2, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export default function SettingsPage() {
@@ -20,6 +20,12 @@ export default function SettingsPage() {
     email: '',
     phone: '',
   });
+  const [companyData, setCompanyData] = useState({
+    companyName: '',
+    companyLogo: '',
+  });
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreview, setLogoPreview] = useState<string>('');
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',
     newPassword: '',
@@ -35,8 +41,109 @@ export default function SettingsPage() {
         email: session.user.email || '',
         phone: '',
       });
+      
+      // Fetch company data
+      fetchCompanyData();
     }
   }, [session]);
+
+  const fetchCompanyData = async () => {
+    try {
+      const res = await fetch('/api/user/company');
+      if (res.ok) {
+        const data = await res.json();
+        setCompanyData({
+          companyName: data.companyName || '',
+          companyLogo: data.companyLogo || '',
+        });
+        if (data.companyLogo) {
+          setLogoPreview(data.companyLogo);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch company data:', error);
+    }
+  };
+
+  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        toast({
+          title: 'Error',
+          description: 'Logo must be less than 2MB',
+          variant: 'destructive',
+        });
+        return;
+      }
+      
+      setLogoFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLogoPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleCompanyUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      let logoUrl = companyData.companyLogo;
+      
+      // Upload logo if new file selected
+      if (logoFile) {
+        const formData = new FormData();
+        formData.append('file', logoFile);
+        
+        const uploadRes = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+        
+        if (uploadRes.ok) {
+          const uploadData = await uploadRes.json();
+          logoUrl = uploadData.url;
+        } else {
+          throw new Error('Failed to upload logo');
+        }
+      }
+      
+      const res = await fetch('/api/user/company', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          companyName: companyData.companyName,
+          companyLogo: logoUrl,
+        }),
+      });
+
+      if (res.ok) {
+        toast({
+          title: 'Success',
+          description: 'Company settings updated successfully',
+        });
+        await update();
+        setLogoFile(null);
+      } else {
+        toast({
+          title: 'Error',
+          description: 'Failed to update company settings',
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'An error occurred while updating',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -148,6 +255,10 @@ export default function SettingsPage() {
             <User className="h-4 w-4 mr-2" />
             Profile
           </TabsTrigger>
+          <TabsTrigger value="company">
+            <Building2 className="h-4 w-4 mr-2" />
+            Company
+          </TabsTrigger>
           <TabsTrigger value="security">
             <Lock className="h-4 w-4 mr-2" />
             Security
@@ -212,6 +323,61 @@ export default function SettingsPage() {
                 <Button type="submit" disabled={loading}>
                   {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                   Save Changes
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="company">
+          <Card>
+            <CardHeader>
+              <CardTitle>Company Settings</CardTitle>
+              <CardDescription>Manage your company information for invoices and quotes</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleCompanyUpdate} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="companyName">Company Name</Label>
+                  <Input
+                    id="companyName"
+                    placeholder="Your Company Name"
+                    value={companyData.companyName}
+                    onChange={(e) => setCompanyData({ ...companyData, companyName: e.target.value })}
+                  />
+                  <p className="text-xs text-muted-foreground">This will appear on your invoices and quotes</p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="logo">Company Logo</Label>
+                  <div className="flex items-start gap-4">
+                    <div className="flex-1">
+                      <Input
+                        id="logo"
+                        type="file"
+                        accept="image/png,image/jpeg,image/jpg"
+                        onChange={handleLogoChange}
+                        className="cursor-pointer"
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        PNG, JPG or JPEG. Max 2MB. Recommended: 200x200px
+                      </p>
+                    </div>
+                    {logoPreview && (
+                      <div className="w-24 h-24 border rounded-lg overflow-hidden bg-muted flex items-center justify-center">
+                        <img 
+                          src={logoPreview} 
+                          alt="Logo preview" 
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <Button type="submit" disabled={loading}>
+                  {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                  Save Company Settings
                 </Button>
               </form>
             </CardContent>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -16,6 +16,14 @@ import {
 } from '@/components/ui/select';
 import { Plus, Trash2, ArrowLeft, Save, Send } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 interface Customer {
   id: string;
@@ -41,10 +49,18 @@ export default function CreateInvoiceForm({ customers, invoiceNumber }: CreateIn
   const router = useRouter();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [companyData, setCompanyData] = useState<{
+    companyName: string | null;
+    companyLogo: string | null;
+  }>({
+    companyName: null,
+    companyLogo: null,
+  });
 
   const [formData, setFormData] = useState({
     customerId: '',
     invoiceNumber,
+    documentType: 'INVOICE' as 'INVOICE' | 'QUOTE',
     issueDate: new Date().toISOString().split('T')[0],
     dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
     taxRate: '15.00',
@@ -62,6 +78,24 @@ export default function CreateInvoiceForm({ customers, invoiceNumber }: CreateIn
     email: '',
     company: '',
   });
+  const [showPreview, setShowPreview] = useState(false);
+
+  // Fetch company data on mount
+  useEffect(() => {
+    fetchCompanyData();
+  }, []);
+
+  const fetchCompanyData = async () => {
+    try {
+      const res = await fetch('/api/user/company');
+      if (res.ok) {
+        const data = await res.json();
+        setCompanyData(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch company data:', error);
+    }
+  };
 
   const addItem = () => {
     setItems([
@@ -165,6 +199,15 @@ export default function CreateInvoiceForm({ customers, invoiceNumber }: CreateIn
       return;
     }
 
+    if (status === 'SENT') {
+      setShowPreview(true);
+      return;
+    }
+
+    await saveInvoice(status);
+  };
+
+  const saveInvoice = async (status: 'DRAFT' | 'SENT') => {
     setLoading(true);
 
     try {
@@ -188,14 +231,14 @@ export default function CreateInvoiceForm({ customers, invoiceNumber }: CreateIn
 
       toast({
         title: 'Success',
-        description: `Invoice ${status === 'DRAFT' ? 'saved as draft' : 'created and sent'}`,
+        description: `${formData.documentType === 'QUOTE' ? 'Quote' : 'Invoice'} ${status === 'DRAFT' ? 'saved as draft' : 'created and sent'}`,
       });
 
       router.push(`/dashboard/accounting/invoices/${invoice.id}`);
     } catch (error) {
       toast({
         title: 'Error',
-        description: 'Failed to create invoice',
+        description: `Failed to create ${formData.documentType.toLowerCase()}`,
         variant: 'destructive',
       });
     } finally {
@@ -205,6 +248,124 @@ export default function CreateInvoiceForm({ customers, invoiceNumber }: CreateIn
 
   return (
     <div className="space-y-6">
+      {/* Preview Dialog */}
+      <Dialog open={showPreview} onOpenChange={setShowPreview}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Preview {formData.documentType === 'QUOTE' ? 'Quote' : 'Invoice'}</DialogTitle>
+            <DialogDescription>
+              Review before sending to customer
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="border rounded-lg p-8 bg-white">
+            {/* Invoice Preview */}
+            <div className="space-y-6">
+              {/* Header */}
+              <div className="flex justify-between items-start">
+                <div className="flex items-start gap-4">
+                  {companyData.companyLogo && (
+                    <img 
+                      src={companyData.companyLogo} 
+                      alt="Company Logo" 
+                      className="w-16 h-16 object-contain"
+                    />
+                  )}
+                  <div>
+                    {companyData.companyName && (
+                      <h3 className="text-lg font-semibold text-gray-900">{companyData.companyName}</h3>
+                    )}
+                    <h2 className="text-3xl font-bold text-gray-900">
+                      {formData.documentType === 'QUOTE' ? 'QUOTE' : 'INVOICE'}
+                    </h2>
+                    <p className="text-sm text-gray-600 mt-2">{formData.invoiceNumber}</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm text-gray-600">Date: {new Date(formData.issueDate).toLocaleDateString()}</p>
+                  <p className="text-sm text-gray-600">Due: {new Date(formData.dueDate).toLocaleDateString()}</p>
+                </div>
+              </div>
+
+              {/* Customer */}
+              <div>
+                <p className="text-sm font-semibold text-gray-900">Bill To:</p>
+                <p className="text-sm text-gray-600">
+                  {customers.find(c => c.id === formData.customerId)?.name}
+                </p>
+                <p className="text-sm text-gray-600">
+                  {customers.find(c => c.id === formData.customerId)?.email}
+                </p>
+              </div>
+
+              {/* Items Table */}
+              <table className="w-full">
+                <thead className="border-b-2 border-gray-300">
+                  <tr>
+                    <th className="text-left py-2 text-sm font-semibold text-gray-900">Description</th>
+                    <th className="text-right py-2 text-sm font-semibold text-gray-900">Qty</th>
+                    <th className="text-right py-2 text-sm font-semibold text-gray-900">Price</th>
+                    <th className="text-right py-2 text-sm font-semibold text-gray-900">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {items.map((item) => (
+                    <tr key={item.id} className="border-b border-gray-200">
+                      <td className="py-3 text-sm text-gray-900">{item.description}</td>
+                      <td className="text-right py-3 text-sm text-gray-600">{item.quantity}</td>
+                      <td className="text-right py-3 text-sm text-gray-600">{formatCurrency(item.unitPrice)}</td>
+                      <td className="text-right py-3 text-sm text-gray-900 font-medium">{formatCurrency(item.total)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              {/* Totals */}
+              <div className="flex justify-end">
+                <div className="w-64 space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Subtotal:</span>
+                    <span className="text-gray-900 font-medium">{formatCurrency(subtotal)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">VAT ({formData.taxRate}%):</span>
+                    <span className="text-gray-900 font-medium">{formatCurrency(taxAmount)}</span>
+                  </div>
+                  <div className="flex justify-between text-lg font-bold border-t-2 border-gray-300 pt-2">
+                    <span className="text-gray-900">Total:</span>
+                    <span className="text-gray-900">{formatCurrency(total)}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Notes & Terms */}
+              {formData.notes && (
+                <div>
+                  <p className="text-sm font-semibold text-gray-900 mb-1">Notes:</p>
+                  <p className="text-sm text-gray-600">{formData.notes}</p>
+                </div>
+              )}
+              {formData.terms && (
+                <div>
+                  <p className="text-sm font-semibold text-gray-900 mb-1">Terms:</p>
+                  <p className="text-sm text-gray-600">{formData.terms}</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowPreview(false)}>
+              Back to Edit
+            </Button>
+            <Button onClick={() => { setShowPreview(false); saveInvoice('SENT'); }} disabled={loading}>
+              <Send className="h-4 w-4 mr-2" />
+              {loading ? 'Sending...' : `Send ${formData.documentType === 'QUOTE' ? 'Quote' : 'Invoice'}`}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
@@ -212,18 +373,27 @@ export default function CreateInvoiceForm({ customers, invoiceNumber }: CreateIn
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-3xl font-bold">Create Invoice</h1>
+            <h1 className="text-3xl font-bold">Create {formData.documentType === 'QUOTE' ? 'Quote' : 'Invoice'}</h1>
             <p className="text-muted-foreground mt-1">Fill in the details below</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <Select value={formData.documentType} onValueChange={(value: 'INVOICE' | 'QUOTE') => setFormData({ ...formData, documentType: value })}>
+            <SelectTrigger className="w-[140px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="INVOICE">Invoice</SelectItem>
+              <SelectItem value="QUOTE">Quote</SelectItem>
+            </SelectContent>
+          </Select>
           <Button variant="outline" onClick={() => handleSubmit('DRAFT')} disabled={loading}>
             <Save className="h-4 w-4 mr-2" />
             Save Draft
           </Button>
           <Button onClick={() => handleSubmit('SENT')} disabled={loading}>
             <Send className="h-4 w-4 mr-2" />
-            {loading ? 'Creating...' : 'Send Invoice'}
+            {loading ? 'Creating...' : `Send ${formData.documentType === 'QUOTE' ? 'Quote' : 'Invoice'}`}
           </Button>
         </div>
       </div>

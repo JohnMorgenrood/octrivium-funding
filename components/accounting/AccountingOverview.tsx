@@ -13,6 +13,7 @@ import {
   Plus,
   ArrowUpRight,
   ArrowDownRight,
+  Users,
 } from 'lucide-react';
 import { formatDistance } from 'date-fns';
 
@@ -109,6 +110,10 @@ export default function AccountingOverview({
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={() => router.push('/dashboard/accounting/customers')}>
+            <Users className="h-4 w-4 mr-2" />
+            Customers
+          </Button>
           <Button onClick={() => router.push('/dashboard/accounting/expenses')}>
             <Plus className="h-4 w-4 mr-2" />
             Add Expense
