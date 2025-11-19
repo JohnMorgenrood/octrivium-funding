@@ -70,38 +70,77 @@ export default function KYCVerificationPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate required documents
+    if (!formData.idDocument || !formData.proofOfAddress) {
+      toast({
+        title: 'Missing Documents',
+        description: 'Please upload your ID and proof of address',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (session?.user?.role === 'BUSINESS' && (!formData.businessRegistration || !formData.bankStatement)) {
+      toast({
+        title: 'Missing Documents',
+        description: 'Please upload your business registration and bank statement',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
-      // In a real implementation, you'd upload files to a storage service
-      // For now, we'll just submit the form data
+      // Create FormData to handle file uploads
+      const uploadData = new FormData();
+      
+      // Add all text fields
+      uploadData.append('firstName', formData.firstName);
+      uploadData.append('lastName', formData.lastName);
+      uploadData.append('idNumber', formData.idNumber);
+      uploadData.append('dateOfBirth', formData.dateOfBirth);
+      uploadData.append('nationality', formData.nationality);
+      uploadData.append('phoneNumber', formData.phoneNumber);
+      uploadData.append('email', formData.email);
+      uploadData.append('address', formData.address);
+      uploadData.append('suburb', formData.suburb || '');
+      uploadData.append('city', formData.city);
+      uploadData.append('province', formData.province);
+      uploadData.append('postalCode', formData.postalCode);
+      uploadData.append('country', formData.country);
+      uploadData.append('bankName', formData.bankName);
+      uploadData.append('accountNumber', formData.accountNumber);
+      uploadData.append('accountType', formData.accountType);
+      uploadData.append('branchCode', formData.branchCode);
+      
+      // Add business fields if applicable
+      if (session?.user?.role === 'BUSINESS') {
+        uploadData.append('businessName', formData.businessName);
+        uploadData.append('registrationNumber', formData.registrationNumber);
+        uploadData.append('vatNumber', formData.vatNumber || '');
+        uploadData.append('businessType', formData.businessType);
+        uploadData.append('industry', formData.industry);
+      }
+      
+      // Add file uploads
+      if (formData.idDocument) {
+        uploadData.append('idDocument', formData.idDocument);
+      }
+      if (formData.proofOfAddress) {
+        uploadData.append('proofOfAddress', formData.proofOfAddress);
+      }
+      if (formData.businessRegistration) {
+        uploadData.append('businessRegistration', formData.businessRegistration);
+      }
+      if (formData.bankStatement) {
+        uploadData.append('bankStatement', formData.bankStatement);
+      }
+
       const res = await fetch('/api/kyc/submit', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          idNumber: formData.idNumber,
-          dateOfBirth: formData.dateOfBirth,
-          nationality: formData.nationality,
-          phoneNumber: formData.phoneNumber,
-          email: formData.email,
-          address: formData.address,
-          suburb: formData.suburb,
-          city: formData.city,
-          province: formData.province,
-          postalCode: formData.postalCode,
-          country: formData.country,
-          businessName: formData.businessName,
-          registrationNumber: formData.registrationNumber,
-          vatNumber: formData.vatNumber,
-          businessType: formData.businessType,
-          industry: formData.industry,
-          bankName: formData.bankName,
-          accountNumber: formData.accountNumber,
-          accountType: formData.accountType,
-          branchCode: formData.branchCode,
-        }),
+        body: uploadData, // Send as FormData, not JSON
       });
 
       if (res.ok) {
