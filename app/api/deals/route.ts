@@ -79,12 +79,15 @@ export async function POST(req: NextRequest) {
     });
 
     if (!business) {
+      // Generate unique registration number for pending businesses
+      const uniqueRegNumber = `PENDING-${session.user.id.slice(0, 8).toUpperCase()}`;
+      
       business = await prisma.business.create({
         data: {
           userId: session.user.id,
           tradingName: session.user.name || 'My Business',
           legalName: session.user.name || 'My Business',
-          registrationNumber: 'PENDING',
+          registrationNumber: uniqueRegNumber,
           industry: 'Other',
           description: 'Business profile pending completion',
           address: 'TBA',
@@ -136,8 +139,20 @@ export async function POST(req: NextRequest) {
 
   } catch (error) {
     console.error('Deal creation error:', error);
+    
+    // Provide more specific error message
+    let errorMessage = 'Failed to create deal';
+    
+    if (error instanceof Error) {
+      console.error('Error details:', error.message);
+      // Don't expose internal errors to user, but log them
+      if (process.env.NODE_ENV === 'development') {
+        errorMessage = error.message;
+      }
+    }
+    
     return NextResponse.json(
-      { error: 'Failed to create deal' },
+      { error: errorMessage },
       { status: 500 }
     );
   }
