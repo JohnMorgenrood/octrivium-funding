@@ -25,6 +25,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { ThemeToggle } from '@/components/theme-toggle';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -146,6 +147,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             </div>
             
             <div className="flex items-center gap-2 sm:gap-4">
+              <ThemeToggle />
+              
               <Link href="/dashboard/notifications">
                 <Button variant="ghost" size="icon" className="relative">
                   <Bell className="h-5 w-5" />
