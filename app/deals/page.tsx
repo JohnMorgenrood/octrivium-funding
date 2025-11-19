@@ -200,7 +200,7 @@ export default function DealsPage() {
   const filteredDeals = allDeals
     .filter(deal => {
       if (filterIndustry !== 'all') {
-        const dealIndustry = 'business' in deal ? deal.business?.industry : deal.industry;
+        const dealIndustry = 'business' in deal ? deal.business?.industry : ('industry' in deal ? deal.industry : null);
         if (dealIndustry !== filterIndustry) return false;
       }
       if (filterRisk !== 'all' && 'riskLevel' in deal && deal.riskLevel !== filterRisk) return false;
