@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Navigation } from '@/components/navigation';
-import { Building2, TrendingUp, Users, Calendar, ArrowUpRight, ArrowDownRight, Clock, Target, Shield, ArrowRight } from 'lucide-react';
+import { Building2, TrendingUp, Users, Calendar, ArrowUpRight, ArrowDownRight, Clock, Target, Shield, ArrowRight, Lock } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { formatCurrency } from '@/lib/utils';
 
@@ -446,33 +446,41 @@ export default function DealsPage() {
                       ></div>
                     </div>
                     <div className="flex justify-between items-center mt-1">
-                      <span className="text-xs text-slate-500 dark:text-slate-400">
-                        R{(funded / 1000).toFixed(0)}k raised
+                      <span className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                        <Lock className="h-3 w-3" /> Private
                       </span>
-                      <span className="text-xs text-slate-500 dark:text-slate-400">
-                        R{(deal.fundingGoal / 1000).toFixed(0)}k goal
+                      <span className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                        <Lock className="h-3 w-3" /> Private
                       </span>
                     </div>
                   </div>
 
                   {/* Key Stats */}
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900/50 dark:to-slate-900/30 rounded-lg p-2.5 md:p-3 border border-slate-200 dark:border-slate-700">
-                      <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Monthly Revenue</div>
-                      <div className="font-bold text-sm md:text-base text-slate-900 dark:text-white">
-                        R{(monthlyRevenue / 1000).toFixed(0)}k
+                    <div className="relative bg-gradient-to-br from-slate-900/80 to-slate-800/80 dark:from-slate-700/80 dark:to-slate-600/80 rounded-lg p-2.5 md:p-3 border border-slate-700 dark:border-slate-600 overflow-hidden">
+                      <div className="absolute inset-0 flex flex-col items-center justify-center">
+                        <Lock className="h-5 w-5 text-white mb-1" />
+                        <div className="text-xs text-white font-medium">Private</div>
                       </div>
-                      <div className={`flex items-center text-xs mt-1 ${isGrowing ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
-                        {isGrowing ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
-                        {revenueGrowth}%
+                      <div className="text-xs text-slate-500 dark:text-slate-400 mb-1 opacity-20">Monthly Revenue</div>
+                      <div className="font-bold text-sm md:text-base text-slate-900 dark:text-white opacity-20">
+                        R***k
+                      </div>
+                      <div className="flex items-center text-xs mt-1 text-emerald-600 dark:text-emerald-400 opacity-20">
+                        <ArrowUpRight className="h-3 w-3" />
+                        **%
                       </div>
                     </div>
-                    <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900/50 dark:to-slate-900/30 rounded-lg p-2.5 md:p-3 border border-slate-200 dark:border-slate-700">
-                      <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Target Return</div>
-                      <div className="font-bold text-sm md:text-base text-slate-900 dark:text-white">
+                    <div className="relative bg-gradient-to-br from-slate-900/80 to-slate-800/80 dark:from-slate-700/80 dark:to-slate-600/80 rounded-lg p-2.5 md:p-3 border border-slate-700 dark:border-slate-600 overflow-hidden">
+                      <div className="absolute inset-0 flex flex-col items-center justify-center">
+                        <Lock className="h-5 w-5 text-white mb-1" />
+                        <div className="text-xs text-white font-medium">Private</div>
+                      </div>
+                      <div className="text-xs text-slate-500 dark:text-slate-400 mb-1 opacity-20">Target Return</div>
+                      <div className="font-bold text-sm md:text-base text-slate-900 dark:text-white opacity-20">
                         {targetReturn}x
                       </div>
-                      <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">Capped</div>
+                      <div className="text-xs text-slate-500 dark:text-slate-400 mt-1 opacity-20">Capped</div>
                     </div>
                   </div>
 
