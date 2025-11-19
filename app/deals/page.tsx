@@ -5,9 +5,30 @@ import Image from 'next/image';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import { Navigation } from '@/components/navigation';
 import { Building2, TrendingUp, Users, Calendar, ArrowUpRight, ArrowDownRight, Clock, Target, Shield, ArrowRight } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { formatCurrency } from '@/lib/utils';
+
+interface Deal {
+  id: string;
+  title: string;
+  description: string;
+  fundingGoal: number;
+  currentFunding: number;
+  revenueSharePercentage: number;
+  status: string;
+  imageUrl?: string;
+  createdAt: string;
+  business?: {
+    tradingName: string;
+    industry: string;
+  };
+  _count: {
+    investments: number;
+  };
+}
 
 // Fake deals data - multipliers match seed data
 const fakeDeals = [
@@ -148,19 +169,60 @@ const fakeDeals = [
 export default function DealsPage() {
   const [filterIndustry, setFilterIndustry] = useState('all');
   const [filterRisk, setFilterRisk] = useState('all');
+  const [deals, setDeals] = useState<Deal[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredDeals = fakeDeals
+  useEffect(() => {
+    fetchDeals();
+  }, []);
+
+  const fetchDeals = async () => {
+    try {
+      const res = await fetch('/api/deals');
+      if (res.ok) {
+        const data = await res.json();
+        // Filter to only show active and pending approval deals (pending shown as "coming soon")
+        const publicDeals = data.deals.filter((d: Deal) => 
+          d.status === 'ACTIVE' || d.status === 'APPROVED' || d.status === 'PENDING_APPROVAL'
+        );
+        setDeals(publicDeals);
+      }
+    } catch (error) {
+      console.error('Failed to load deals:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Combine real deals with fake deals for demo
+  const allDeals = [...deals, ...fakeDeals];
+
+  const filteredDeals = allDeals
     .filter(deal => {
-    if (filterIndustry !== 'all' && deal.industry !== filterIndustry) return false;
-    if (filterRisk !== 'all' && deal.riskLevel !== filterRisk) return false;
-    return deal.status === 'ACTIVE';
+      if (filterIndustry !== 'all') {
+        const dealIndustry = 'business' in deal ? deal.business?.industry : deal.industry;
+        if (dealIndustry !== filterIndustry) return false;
+      }
+      if (filterRisk !== 'all' && 'riskLevel' in deal && deal.riskLevel !== filterRisk) return false;
+      return true;
   })
     .sort((a, b) => {
-      // Sort premium deals first: Top Listing > Featured > Regular
-      if (a.isTopListing && !b.isTopListing) return -1;
-      if (!a.isTopListing && b.isTopListing) return 1;
-      if (a.isFeatured && !b.isFeatured) return -1;
-      if (!a.isFeatured && b.isFeatured) return 1;
+      // Real pending deals first (coming soon)
+      const aIsPending = 'status' in a && a.status === 'PENDING_APPROVAL';
+      const bIsPending = 'status' in b && b.status === 'PENDING_APPROVAL';
+      if (aIsPending && !bIsPending) return -1;
+      if (!aIsPending && bIsPending) return 1;
+      
+      // Then sort premium deals: Top Listing > Featured > Regular
+      const aTopListing = 'isTopListing' in a ? a.isTopListing : false;
+      const bTopListing = 'isTopListing' in b ? b.isTopListing : false;
+      const aFeatured = 'isFeatured' in a ? a.isFeatured : false;
+      const bFeatured = 'isFeatured' in b ? b.isFeatured : false;
+      
+      if (aTopListing && !bTopListing) return -1;
+      if (!aTopListing && bTopListing) return 1;
+      if (aFeatured && !bFeatured) return -1;
+      if (!aFeatured && bFeatured) return 1;
       return 0;
     });
 
