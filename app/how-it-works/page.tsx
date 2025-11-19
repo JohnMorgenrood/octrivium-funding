@@ -324,7 +324,7 @@ export default function HowItWorksPage() {
 
       {/* Main Steps - Redesigned with Modern Cards */}
       <section className="py-20 px-4">
-        <div className="container mx-auto max-w-7xl">
+        <div className="container mx-auto max-w-6xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -345,7 +345,7 @@ export default function HowItWorksPage() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
-            className="grid gap-8 md:gap-10"
+            className="grid gap-8 md:gap-10 max-w-5xl mx-auto"
           >
             {steps.map((step, index) => (
               <motion.div
