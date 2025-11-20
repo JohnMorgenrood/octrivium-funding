@@ -36,14 +36,14 @@ async function fixFailedPayment(invoiceNumber: string) {
     await prisma.invoice.update({
       where: { id: invoice.id },
       data: {
-        status: 'PENDING',
+        status: 'SENT',
         amountDue: invoice.total,
         amountPaid: 0,
         paidDate: null,
       },
     });
 
-    console.log('✅ Invoice reset to PENDING');
+    console.log('✅ Invoice reset to SENT (unpaid)');
 
     // If there's a wallet transaction, remove it
     if (invoice.user.wallet) {
