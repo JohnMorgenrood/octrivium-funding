@@ -77,3 +77,136 @@
   flex: 0 0 100%;
   min-width: 0;
 }
+
+/* Print Styles for Invoices */
+@media print {
+  /* Hide all navigation and UI elements */
+  nav,
+  header:not(.invoice-header),
+  footer,
+  aside,
+  .sidebar,
+  button,
+  .no-print,
+  [role="navigation"],
+  [role="banner"] {
+    display: none !important;
+  }
+
+  /* Hide buttons specifically */
+  button,
+  .btn,
+  [type="button"],
+  [type="submit"] {
+    display: none !important;
+  }
+
+  /* Hide action buttons and dialogs */
+  .dialog,
+  .modal,
+  .toast,
+  .notification {
+    display: none !important;
+  }
+
+  /* Optimize page for printing */
+  body {
+    background: white !important;
+    color: black !important;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Make sure content takes full width */
+  .container,
+  .max-w-5xl,
+  .max-w-4xl {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0.5in !important;
+  }
+
+  /* Remove shadows and borders that waste ink */
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  /* Ensure cards and content areas print properly */
+  .card,
+  [data-card] {
+    border: 1px solid #ddd !important;
+    box-shadow: none !important;
+    page-break-inside: avoid;
+  }
+
+  /* Page breaks */
+  h1, h2, h3 {
+    page-break-after: avoid;
+  }
+
+  table {
+    page-break-inside: avoid;
+  }
+
+  /* Ensure proper spacing */
+  .space-y-4 > * + *,
+  .space-y-6 > * + * {
+    margin-top: 1rem !important;
+  }
+
+  /* Hide back buttons and navigation */
+  [aria-label="back"],
+  [aria-label="Back"] {
+    display: none !important;
+  }
+
+  /* Optimize table printing */
+  table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+
+  tr {
+    page-break-inside: avoid;
+  }
+
+  /* Make links not show URLs */
+  a[href]:after {
+    content: none !important;
+  }
+
+  /* Ensure images don't break pages */
+  img {
+    max-width: 100% !important;
+    page-break-inside: avoid;
+  }
+
+  /* Remove dark mode styles when printing */
+  .dark {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+  }
+
+  /* Ensure text is black for readability */
+  p, span, div, td, th {
+    color: #000 !important;
+  }
+
+  /* Keep important headings bold */
+  h1, h2, h3, h4, h5, h6 {
+    color: #000 !important;
+    font-weight: bold !important;
+  }
+
+  /* Hide status badges when printing */
+  .badge,
+  [class*="badge"] {
+    border: 1px solid #000 !important;
+    background: white !important;
+  }
+}

@@ -47,7 +47,7 @@
     "react-hook-form": "^7.51.5",
     "react-signature-canvas": "^1.1.0-alpha.2",
     "recharts": "^2.12.7",
-    "resend": "^3.2.0",
+    "resend": "^3.5.0",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
     "uuid": "^9.0.1",

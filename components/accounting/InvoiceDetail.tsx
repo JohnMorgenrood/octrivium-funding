@@ -38,6 +38,7 @@ export default function InvoiceDetail({ invoice }: InvoiceDetailProps) {
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [copied, setCopied] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [sendingEmail, setSendingEmail] = useState(false);
 
   const handleEdit = () => {
     router.push(`/dashboard/accounting/invoices/${invoice.id}/edit`);
@@ -45,6 +46,39 @@ export default function InvoiceDetail({ invoice }: InvoiceDetailProps) {
 
   const handleDownloadPDF = () => {
     window.print();
+  };
+
+  const handleSendEmail = async () => {
+    if (!invoice.customer?.email) {
+      toast({
+        title: 'Error',
+        description: 'Customer email not found',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setSendingEmail(true);
+    try {
+      const res = await fetch(`/api/accounting/invoices/${invoice.id}/send`, {
+        method: 'POST',
+      });
+
+      if (!res.ok) throw new Error('Failed to send email');
+
+      toast({
+        title: 'Success',
+        description: 'Invoice sent successfully to ' + invoice.customer.email,
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to send invoice email',
+        variant: 'destructive',
+      });
+    } finally {
+      setSendingEmail(false);
+    }
   };
 
   const formatCurrency = (amount: number) => {
@@ -228,7 +262,7 @@ export default function InvoiceDetail({ invoice }: InvoiceDetailProps) {
       </Dialog>
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 no-print">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" onClick={() => router.back()}>
             <ArrowLeft className="h-5 w-5" />
@@ -241,6 +275,10 @@ export default function InvoiceDetail({ invoice }: InvoiceDetailProps) {
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
+          <Button variant="outline" size="sm" onClick={handleSendEmail} disabled={sendingEmail}>
+            <Send className="h-4 w-4 mr-2" />
+            {sendingEmail ? 'Sending...' : 'Send Email'}
+          </Button>
           <Button variant="outline" size="sm" onClick={() => setShowShareDialog(true)}>
             <Share2 className="h-4 w-4 mr-2" />
             Share
@@ -261,7 +299,7 @@ export default function InvoiceDetail({ invoice }: InvoiceDetailProps) {
       </div>
 
       {/* Status Badge */}
-      <div>
+      <div className="no-print">
         <span className={`inline-flex px-3 py-1.5 rounded-full text-sm font-medium border ${getStatusColor(invoice.status)}`}>
           {invoice.status}
         </span>
