@@ -7,6 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Share2 } from 'lucide-react';
 import SignaturePad from './SignaturePad';
 import PayPalButton from './PayPalButton';
+import YocoButton from './YocoButton';
 import CurrencyConverter from './CurrencyConverter';
 
 interface InvoicePaymentProps {
@@ -294,6 +295,19 @@ export default function InvoicePayment({ invoice }: InvoicePaymentProps) {
         {/* Payment Section */}
         {invoice.status !== 'PAID' && (
           <>
+            <Card>
+              <CardHeader>
+                <CardTitle>Pay with Yoco (ZAR)</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <YocoButton 
+                  invoiceId={invoice.id}
+                  amount={invoice.amountDue}
+                  invoiceNumber={invoice.invoiceNumber}
+                />
+              </CardContent>
+            </Card>
+
             {/* Currency Converter */}
             <CurrencyConverter 
               zarAmount={invoice.amountDue} 
@@ -302,7 +316,7 @@ export default function InvoicePayment({ invoice }: InvoicePaymentProps) {
             
             <Card>
               <CardHeader>
-                <CardTitle>Payment Options</CardTitle>
+                <CardTitle>Pay with PayPal (USD)</CardTitle>
               </CardHeader>
               <CardContent>
                 {usdAmountWithFees > 0 ? (
@@ -347,7 +361,7 @@ export default function InvoicePayment({ invoice }: InvoicePaymentProps) {
               <div>
                 <h3 className="font-semibold text-gray-900 mb-1">Secure Payment</h3>
                 <p className="text-sm text-gray-600">
-                  Your payment is processed securely through PayPal. You can pay with your PayPal account or use a debit/credit card. Funds will be held until confirmed and then made available to the business for withdrawal.
+                  Your payment is processed securely. Pay in ZAR using Yoco (South African payment gateway) or in USD using PayPal. Funds will be held until confirmed and then made available to the business for withdrawal.
                 </p>
               </div>
             </div>
