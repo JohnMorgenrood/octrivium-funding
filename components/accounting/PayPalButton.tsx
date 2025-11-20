@@ -6,11 +6,12 @@ import { useToast } from '@/hooks/use-toast';
 
 interface PayPalButtonProps {
   invoiceId: string;
-  amount: number;
+  amount: number; // Original ZAR amount
   paymentLink: string;
+  usdAmountWithFees: number; // USD amount with fees included
 }
 
-export default function PayPalButton({ invoiceId, amount, paymentLink }: PayPalButtonProps) {
+export default function PayPalButton({ invoiceId, amount, paymentLink, usdAmountWithFees }: PayPalButtonProps) {
   const paypalRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const { toast } = useToast();
@@ -56,12 +57,16 @@ export default function PayPalButton({ invoiceId, amount, paymentLink }: PayPalB
           createOrder: async () => {
             try {
               console.log('Creating PayPal order for invoice:', invoiceId);
+              console.log('USD amount with fees:', usdAmountWithFees);
               const response = await fetch('/api/paypal/create-invoice-payment', {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ invoiceId }),
+                body: JSON.stringify({ 
+                  invoiceId,
+                  usdAmount: usdAmountWithFees // Send the USD amount with fees
+                }),
               });
 
               const data = await response.json();

@@ -3,9 +3,10 @@ import { prisma } from '@/lib/prisma';
 
 export async function POST(request: Request) {
   try {
-    const { invoiceId } = await request.json();
+    const { invoiceId, usdAmount } = await request.json();
 
     console.log('Creating PayPal order for invoice:', invoiceId);
+    console.log('USD amount to charge:', usdAmount);
     console.log('PayPal API URL:', process.env.PAYPAL_API_URL);
     console.log('PayPal Client ID configured:', !!process.env.PAYPAL_CLIENT_ID);
     console.log('PayPal Client Secret configured:', !!process.env.PAYPAL_CLIENT_SECRET);
@@ -31,7 +32,7 @@ export async function POST(request: Request) {
       `${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_CLIENT_SECRET}`
     ).toString('base64');
 
-    console.log('Creating PayPal order with amount:', Number(invoice.amountDue).toFixed(2));
+    console.log('Creating PayPal order with amount:', usdAmount.toFixed(2));
     console.log('Using currency: USD (temporary for testing)');
 
     const response = await fetch(
@@ -50,7 +51,7 @@ export async function POST(request: Request) {
               description: `Invoice ${invoice.invoiceNumber}`,
               amount: {
                 currency_code: 'USD', // Temporarily using USD for testing
-                value: Number(invoice.amountDue).toFixed(2),
+                value: usdAmount.toFixed(2),
               },
             },
           ],

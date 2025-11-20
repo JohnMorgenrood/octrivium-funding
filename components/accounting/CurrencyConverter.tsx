@@ -2,20 +2,18 @@
 
 import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { AlertCircle, TrendingDown } from 'lucide-react';
+import { DollarSign } from 'lucide-react';
+import { calculateAmountWithFees } from '@/lib/paypal-fees';
 
 interface CurrencyConverterProps {
   zarAmount: number;
+  onUsdCalculated?: (usdAmount: number) => void;
 }
 
-export default function CurrencyConverter({ zarAmount }: CurrencyConverterProps) {
-  const [usdAmount, setUsdAmount] = useState<number | null>(null);
+export default function CurrencyConverter({ zarAmount, onUsdCalculated }: CurrencyConverterProps) {
+  const [usdAmountWithFees, setUsdAmountWithFees] = useState<number | null>(null);
   const [exchangeRate, setExchangeRate] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
-
-  // PayPal fees: 3.9% + $0.30 for international payments
-  const PAYPAL_PERCENTAGE_FEE = 0.039; // 3.9%
-  const PAYPAL_FIXED_FEE = 0.30; // $0.30
 
   useEffect(() => {
     async function fetchExchangeRate() {
@@ -26,28 +24,96 @@ export default function CurrencyConverter({ zarAmount }: CurrencyConverterProps)
         const rate = data.rates.USD;
         
         setExchangeRate(rate);
-        const convertedAmount = zarAmount * rate;
-        setUsdAmount(convertedAmount);
+        
+        // Convert ZAR to USD
+        const usdBase = zarAmount * rate;
+        
+        // Add PayPal fees on top
+        const usdWithFees = calculateAmountWithFees(usdBase, true);
+        
+        setUsdAmountWithFees(usdWithFees);
+        
+        // Pass the USD amount back to parent
+        if (onUsdCalculated) {
+          onUsdCalculated(usdWithFees);
+        }
       } catch (error) {
         console.error('Failed to fetch exchange rate:', error);
         // Fallback rate (approximate)
         const fallbackRate = 0.055; // ~R18 per USD
         setExchangeRate(fallbackRate);
-        setUsdAmount(zarAmount * fallbackRate);
+        const usdBase = zarAmount * fallbackRate;
+        const usdWithFees = calculateAmountWithFees(usdBase, true);
+        setUsdAmountWithFees(usdWithFees);
+        
+        if (onUsdCalculated) {
+          onUsdCalculated(usdWithFees);
+        }
       } finally {
         setLoading(false);
       }
     }
 
     fetchExchangeRate();
-  }, [zarAmount]);
+  }, [zarAmount, onUsdCalculated]);
 
-  if (loading || !usdAmount || !exchangeRate) {
+  if (loading || !usdAmountWithFees || !exchangeRate) {
     return (
       <Card className="bg-blue-50 border-blue-200">
         <CardContent className="p-4">
           <div className="flex items-center gap-2 text-blue-600">
             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+            <span className="text-sm">Calculating amount...</span>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const formatUSD = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+    }).format(amount);
+  };
+
+  const formatZAR = (amount: number) => {
+    return new Intl.NumberFormat('en-ZA', {
+      style: 'currency',
+      currency: 'ZAR',
+      minimumFractionDigits: 2,
+    }).format(amount);
+  };
+
+  return (
+    <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
+      <CardContent className="p-6">
+        <div className="flex items-start gap-3">
+          <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+            <DollarSign className="w-5 h-5 text-blue-600" />
+          </div>
+          <div className="flex-1">
+            <h3 className="font-semibold text-gray-900 mb-2">Payment Amount</h3>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-600">Amount (ZAR)</span>
+                <span className="text-lg font-bold text-gray-900">{formatZAR(zarAmount)}</span>
+              </div>
+              <div className="flex justify-between items-center pt-2 border-t">
+                <span className="text-sm text-gray-600">You'll pay (USD)</span>
+                <span className="text-xl font-bold text-blue-600">{formatUSD(usdAmountWithFees)}</span>
+              </div>
+              <p className="text-xs text-gray-500 mt-2">
+                Exchange rate: 1 ZAR = {formatUSD(exchangeRate)}
+              </p>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
             <span className="text-sm">Calculating conversion...</span>
           </div>
         </CardContent>

@@ -54,6 +54,7 @@ export default function InvoicePayment({ invoice }: InvoicePaymentProps) {
   const { toast } = useToast();
   const [showSignature, setShowSignature] = useState(!invoice.signatureData);
   const [signatureSaved, setSignatureSaved] = useState(!!invoice.signatureData);
+  const [usdAmountWithFees, setUsdAmountWithFees] = useState<number>(0);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-ZA', {
@@ -294,18 +295,28 @@ export default function InvoicePayment({ invoice }: InvoicePaymentProps) {
         {invoice.status !== 'PAID' && (
           <>
             {/* Currency Converter */}
-            <CurrencyConverter zarAmount={invoice.amountDue} />
+            <CurrencyConverter 
+              zarAmount={invoice.amountDue} 
+              onUsdCalculated={setUsdAmountWithFees}
+            />
             
             <Card>
               <CardHeader>
                 <CardTitle>Payment Options</CardTitle>
               </CardHeader>
               <CardContent>
-                <PayPalButton 
-                  invoiceId={invoice.id}
-                  amount={invoice.amountDue}
-                  paymentLink={invoice.paymentLink || ''}
-                />
+                {usdAmountWithFees > 0 ? (
+                  <PayPalButton 
+                    invoiceId={invoice.id}
+                    amount={invoice.amountDue}
+                    paymentLink={invoice.paymentLink || ''}
+                    usdAmountWithFees={usdAmountWithFees}
+                  />
+                ) : (
+                  <div className="flex items-center justify-center p-4">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </>
