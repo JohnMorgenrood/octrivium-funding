@@ -5,6 +5,8 @@ export async function POST(request: Request) {
   try {
     const { orderId, invoiceId } = await request.json();
 
+    console.log('Capturing PayPal order:', orderId, 'for invoice:', invoiceId);
+
     // Capture the PayPal payment
     const auth = Buffer.from(
       `${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_CLIENT_SECRET}`
@@ -23,11 +25,17 @@ export async function POST(request: Request) {
 
     const captureData = await response.json();
 
+    console.log('PayPal capture response status:', response.status);
+    console.log('PayPal capture data:', JSON.stringify(captureData, null, 2));
+
     if (!response.ok || captureData.status !== 'COMPLETED') {
       console.error('PayPal capture error:', captureData);
+      const statusCode = response.status === 401 || response.status === 403 
+        ? response.status 
+        : 500;
       return NextResponse.json(
-        { error: 'Failed to capture payment' },
-        { status: 500 }
+        { error: 'Failed to capture payment', details: captureData },
+        { status: statusCode }
       );
     }
 

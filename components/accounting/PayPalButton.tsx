@@ -157,7 +157,7 @@ export default function PayPalButton({ invoiceId, amount, paymentLink }: PayPalB
 
     // Load PayPal SDK
     const script = document.createElement('script');
-    script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&currency=USD&disable-funding=venmo`;
+    script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&currency=ZAR&disable-funding=venmo`;
     script.async = true;
     
     script.onload = () => {
