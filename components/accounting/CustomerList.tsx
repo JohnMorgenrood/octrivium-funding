@@ -266,15 +266,15 @@ export default function CustomerList({ customers: initialCustomers }: CustomerLi
               {filteredCustomers.map((customer) => (
                 <div
                   key={customer.id}
-                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent transition-colors"
+                  className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border rounded-lg hover:bg-accent transition-colors gap-3"
                 >
-                  <div className="flex items-center gap-4 flex-1">
+                  <div className="flex items-center gap-4 flex-1 w-full sm:w-auto">
                     <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
                       <Building2 className="h-6 w-6 text-primary" />
                     </div>
-                    <div className="flex-1">
-                      <h4 className="font-semibold">{customer.name}</h4>
-                      <div className="flex items-center gap-4 mt-1 text-sm text-muted-foreground">
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-semibold truncate">{customer.name}</h4>
+                      <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-1 text-sm text-muted-foreground">
                         {customer.email && (
                           <span className="flex items-center gap-1">
                             <Mail className="h-3 w-3" />
@@ -297,8 +297,8 @@ export default function CustomerList({ customers: initialCustomers }: CustomerLi
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-6">
-                    <div className="text-right">
+                  <div className="flex items-center gap-3 sm:gap-6 w-full sm:w-auto justify-between sm:justify-end">
+                    <div className="text-left sm:text-right">
                       <p className="text-sm font-medium">{customer.totalInvoices} invoices</p>
                       <p className="text-sm text-muted-foreground">
                         {formatCurrency(customer.totalRevenue)} revenue

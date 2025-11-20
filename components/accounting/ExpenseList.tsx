@@ -435,7 +435,7 @@ export default function ExpenseList({ expenses: initialExpenses, stats: initialS
 
       {/* Add/Edit Dialog */}
       <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-        <DialogContent className="max-w-[95vw] sm:max-w-md">
+        <DialogContent className="max-w-[95vw] sm:max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editingExpense ? 'Edit' : 'Add'} Expense</DialogTitle>
             <DialogDescription>
