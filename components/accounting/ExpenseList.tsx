@@ -132,6 +132,9 @@ export default function ExpenseList({ expenses: initialExpenses, stats: initialS
       amount: expense.amount.toString(),
       vendor: expense.vendor || '',
       taxDeductible: expense.taxDeductible,
+      isRecurring: (expense as any).isRecurring || false,
+      recurringType: (expense as any).recurringType || 'MONTHLY',
+      recurringInterval: (expense as any).recurringInterval || 1,
     });
     setEditingExpense(expense);
     setShowAddDialog(true);
