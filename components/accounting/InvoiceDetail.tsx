@@ -39,6 +39,14 @@ export default function InvoiceDetail({ invoice }: InvoiceDetailProps) {
   const [copied, setCopied] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
+  const handleEdit = () => {
+    router.push(`/dashboard/accounting/invoices/${invoice.id}/edit`);
+  };
+
+  const handleDownloadPDF = () => {
+    window.print();
+  };
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-ZA', {
       style: 'currency',
@@ -237,16 +245,17 @@ export default function InvoiceDetail({ invoice }: InvoiceDetailProps) {
             <Share2 className="h-4 w-4 mr-2" />
             Share
           </Button>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={handleDownloadPDF}>
             <Download className="h-4 w-4 mr-2" />
             PDF
           </Button>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={handleEdit}>
             <Edit className="h-4 w-4 mr-2" />
             Edit
           </Button>
           <Button variant="outline" size="sm" onClick={() => setShowDeleteDialog(true)}>
             <Trash2 className="h-4 w-4 mr-2 text-red-600" />
+            Delete
           </Button>
         </div>
       </div>
@@ -265,16 +274,16 @@ export default function InvoiceDetail({ invoice }: InvoiceDetailProps) {
             {/* Header */}
             <div className="flex justify-between items-start flex-wrap gap-4">
               <div className="flex items-start gap-4">
-                {invoice.user.companyLogo && (
+                {invoice.user?.companyLogo && (
                   <img 
                     src={invoice.user.companyLogo} 
                     alt="Company Logo" 
-                    className="w-16 h-16 object-contain"
+                    className="w-20 h-20 object-contain rounded"
                   />
                 )}
                 <div>
-                  {invoice.user.companyName && (
-                    <h3 className="text-lg font-semibold text-gray-900">{invoice.user.companyName}</h3>
+                  {invoice.user?.companyName && (
+                    <h3 className="text-xl font-semibold text-gray-900">{invoice.user.companyName}</h3>
                   )}
                   <h2 className="text-4xl font-bold text-gray-900 mt-1">INVOICE</h2>
                 </div>

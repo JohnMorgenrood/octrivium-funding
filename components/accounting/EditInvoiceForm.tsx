@@ -51,13 +51,13 @@ interface InvoiceItem {
   profit?: number;
 }
 
-interface CreateInvoiceFormProps {
+interface EditInvoiceFormProps {
+  invoice: any;
   customers: Customer[];
-  invoiceNumber: string;
   products: Product[];
 }
 
-export default function CreateInvoiceForm({ customers, invoiceNumber, products }: CreateInvoiceFormProps) {
+export default function EditInvoiceForm({ invoice, customers, products }: EditInvoiceFormProps) {
   const router = useRouter();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
@@ -70,21 +70,29 @@ export default function CreateInvoiceForm({ customers, invoiceNumber, products }
   });
 
   const [formData, setFormData] = useState({
-    customerId: '',
-    invoiceNumber,
+    customerId: invoice.customerId || '',
+    invoiceNumber: invoice.invoiceNumber,
     documentType: 'INVOICE' as 'INVOICE' | 'QUOTE',
-    issueDate: new Date().toISOString().split('T')[0],
-    dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-    taxRate: '15.00',
-    includeVat: true,
-    requiresSignature: false,
-    notes: '',
-    terms: 'Payment due within 30 days',
+    issueDate: new Date(invoice.issueDate).toISOString().split('T')[0],
+    dueDate: new Date(invoice.dueDate).toISOString().split('T')[0],
+    taxRate: invoice.taxRate.toString(),
+    includeVat: Number(invoice.taxAmount) > 0,
+    requiresSignature: invoice.requiresSignature || false,
+    notes: invoice.notes || '',
+    terms: invoice.terms || 'Payment due within 30 days',
   });
 
-  const [items, setItems] = useState<InvoiceItem[]>([
-    { id: '1', description: '', quantity: 1, unitPrice: 0, costPrice: 0, total: 0, profit: 0 },
-  ]);
+  const [items, setItems] = useState<InvoiceItem[]>(
+    invoice.items.map((item: any) => ({
+      id: item.id,
+      description: item.description,
+      quantity: Number(item.quantity),
+      unitPrice: Number(item.unitPrice),
+      costPrice: item.costPrice ? Number(item.costPrice) : 0,
+      total: Number(item.total),
+      profit: item.profit ? Number(item.profit) : 0,
+    }))
+  );
 
   const [showNewCustomer, setShowNewCustomer] = useState(false);
   const [newCustomer, setNewCustomer] = useState({
@@ -249,8 +257,8 @@ export default function CreateInvoiceForm({ customers, invoiceNumber, products }
     setLoading(true);
 
     try {
-      const res = await fetch('/api/accounting/invoices', {
-        method: 'POST',
+      const res = await fetch(`/api/accounting/invoices/${invoice.id}/update`, {
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...formData,
@@ -263,20 +271,20 @@ export default function CreateInvoiceForm({ customers, invoiceNumber, products }
         }),
       });
 
-      if (!res.ok) throw new Error('Failed to create invoice');
+      if (!res.ok) throw new Error('Failed to update invoice');
 
-      const invoice = await res.json();
+      const updatedInvoice = await res.json();
 
       toast({
         title: 'Success',
-        description: `${formData.documentType === 'QUOTE' ? 'Quote' : 'Invoice'} ${status === 'DRAFT' ? 'saved as draft' : 'created and sent'}`,
+        description: 'Invoice updated successfully',
       });
 
-      router.push(`/dashboard/accounting/invoices/${invoice.id}`);
+      router.push(`/dashboard/accounting/invoices/${updatedInvoice.id}`);
     } catch (error) {
       toast({
         title: 'Error',
-        description: `Failed to create ${formData.documentType.toLowerCase()}`,
+        description: 'Failed to update invoice',
         variant: 'destructive',
       });
     } finally {
@@ -411,7 +419,7 @@ export default function CreateInvoiceForm({ customers, invoiceNumber, products }
             <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
           </Button>
           <div>
-            <h1 className="text-xl sm:text-3xl font-bold">Create {formData.documentType === 'QUOTE' ? 'Quote' : 'Invoice'}</h1>
+            <h1 className="text-xl sm:text-3xl font-bold">Edit Invoice {invoice.invoiceNumber}</h1>
             <p className="text-xs sm:text-sm text-muted-foreground mt-1">Fill in details below</p>
           </div>
         </div>
