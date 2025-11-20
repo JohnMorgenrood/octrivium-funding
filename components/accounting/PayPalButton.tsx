@@ -10,12 +10,6 @@ interface PayPalButtonProps {
   paymentLink: string;
 }
 
-declare global {
-  interface Window {
-    paypal?: any;
-  }
-}
-
 export default function PayPalButton({ invoiceId, amount, paymentLink }: PayPalButtonProps) {
   const paypalRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -30,8 +24,8 @@ export default function PayPalButton({ invoiceId, amount, paymentLink }: PayPalB
     script.async = true;
     
     script.onload = () => {
-      if (window.paypal && paypalRef.current) {
-        window.paypal
+      if ((window as any).paypal && paypalRef.current) {
+        (window as any).paypal
           .Buttons({
             style: {
               layout: 'vertical',
