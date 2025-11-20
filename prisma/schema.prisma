@@ -735,6 +735,12 @@ enum ExpenseCategory {
   OTHER
 }
 
+enum RecurringType {
+  MONTHLY
+  ANNUALLY
+  CUSTOM
+}
+
 enum TransactionCategory {
   INCOME
   EXPENSE
@@ -860,6 +866,12 @@ model Expense {
   // Tax
   taxAmount         Decimal?          @db.Decimal(15, 2)
   taxDeductible     Boolean           @default(true)
+  
+  // Recurring Settings
+  isRecurring       Boolean           @default(false)
+  recurringType     RecurringType?    // MONTHLY, ANNUALLY, CUSTOM
+  recurringInterval Int?              // For custom intervals (e.g., 13 months)
+  nextDueDate       DateTime?
   
   // Notes
   notes             String?           @db.Text

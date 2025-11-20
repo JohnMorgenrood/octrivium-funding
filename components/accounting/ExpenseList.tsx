@@ -85,6 +85,9 @@ export default function ExpenseList({ expenses: initialExpenses, stats: initialS
     amount: '',
     vendor: '',
     taxDeductible: true,
+    isRecurring: false,
+    recurringType: 'MONTHLY' as 'MONTHLY' | 'ANNUALLY' | 'CUSTOM',
+    recurringInterval: 1,
   });
 
   const formatCurrency = (amount: number) => {
@@ -108,6 +111,9 @@ export default function ExpenseList({ expenses: initialExpenses, stats: initialS
       amount: '',
       vendor: '',
       taxDeductible: true,
+      isRecurring: false,
+      recurringType: 'MONTHLY',
+      recurringInterval: 1,
     });
     setReceiptFile(null);
     setEditingExpense(null);
@@ -171,6 +177,19 @@ export default function ExpenseList({ expenses: initialExpenses, stats: initialS
 
       const taxAmount = formData.taxDeductible ? Number(formData.amount) * 0.15 : 0;
 
+      // Calculate next due date for recurring expenses
+      let nextDueDate = null;
+      if (formData.isRecurring) {
+        const startDate = new Date(formData.date);
+        if (formData.recurringType === 'MONTHLY') {
+          nextDueDate = new Date(startDate.setMonth(startDate.getMonth() + 1));
+        } else if (formData.recurringType === 'ANNUALLY') {
+          nextDueDate = new Date(startDate.setFullYear(startDate.getFullYear() + 1));
+        } else if (formData.recurringType === 'CUSTOM') {
+          nextDueDate = new Date(startDate.setMonth(startDate.getMonth() + formData.recurringInterval));
+        }
+      }
+
       const expenseData = {
         date: new Date(formData.date).toISOString(),
         description: formData.description,
@@ -180,6 +199,10 @@ export default function ExpenseList({ expenses: initialExpenses, stats: initialS
         receiptUrl,
         taxAmount,
         taxDeductible: formData.taxDeductible,
+        isRecurring: formData.isRecurring,
+        recurringType: formData.isRecurring ? formData.recurringType : null,
+        recurringInterval: formData.isRecurring && formData.recurringType === 'CUSTOM' ? formData.recurringInterval : null,
+        nextDueDate: nextDueDate ? nextDueDate.toISOString() : null,
       };
 
       const url = editingExpense 
@@ -530,6 +553,59 @@ export default function ExpenseList({ expenses: initialExpenses, stats: initialS
                 <Label htmlFor="taxDeductible" className="text-sm font-normal">
                   Tax deductible (15% VAT)
                 </Label>
+              </div>
+
+              <div className="space-y-3 border-t pt-4">
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="isRecurring"
+                    checked={formData.isRecurring}
+                    onChange={(e) => setFormData({ ...formData, isRecurring: e.target.checked })}
+                    className="h-4 w-4"
+                  />
+                  <Label htmlFor="isRecurring" className="text-sm font-medium">
+                    Recurring Expense
+                  </Label>
+                </div>
+
+                {formData.isRecurring && (
+                  <div className="space-y-3 ml-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="recurringType">Frequency</Label>
+                      <Select 
+                        value={formData.recurringType} 
+                        onValueChange={(value: 'MONTHLY' | 'ANNUALLY' | 'CUSTOM') => setFormData({ ...formData, recurringType: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="MONTHLY">Monthly</SelectItem>
+                          <SelectItem value="ANNUALLY">Annually</SelectItem>
+                          <SelectItem value="CUSTOM">Custom Interval</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {formData.recurringType === 'CUSTOM' && (
+                      <div className="space-y-2">
+                        <Label htmlFor="recurringInterval">Every X Months</Label>
+                        <Input
+                          id="recurringInterval"
+                          type="number"
+                          min="1"
+                          max="24"
+                          value={formData.recurringInterval}
+                          onChange={(e) => setFormData({ ...formData, recurringInterval: parseInt(e.target.value) || 1 })}
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          e.g., 13 for every 13 months
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
 

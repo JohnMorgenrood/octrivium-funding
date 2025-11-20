@@ -51,7 +51,20 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { date, description, category, amount, vendor, receiptUrl, taxAmount, taxDeductible } = body;
+    const { 
+      date, 
+      description, 
+      category, 
+      amount, 
+      vendor, 
+      receiptUrl, 
+      taxAmount, 
+      taxDeductible,
+      isRecurring,
+      recurringType,
+      recurringInterval,
+      nextDueDate
+    } = body;
 
     const expense = await prisma.expense.create({
       data: {
@@ -64,6 +77,10 @@ export async function POST(request: Request) {
         receiptUrl,
         taxAmount,
         taxDeductible,
+        isRecurring: isRecurring || false,
+        recurringType: recurringType || null,
+        recurringInterval: recurringInterval || null,
+        nextDueDate: nextDueDate ? new Date(nextDueDate) : null,
       },
     });
 
