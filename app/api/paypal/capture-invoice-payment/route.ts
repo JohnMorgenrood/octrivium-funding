@@ -31,12 +31,24 @@ export async function POST(request: Request) {
       );
     }
 
+    // Get invoice first to get amount
+    const existingInvoice = await prisma.invoice.findUnique({
+      where: { id: invoiceId },
+      select: { amountDue: true },
+    });
+
+    if (!existingInvoice) {
+      return NextResponse.json({ error: 'Invoice not found' }, { status: 404 });
+    }
+
+    const paymentAmount = Number(existingInvoice.amountDue);
+
     // Update invoice
     const invoice = await prisma.invoice.update({
       where: { id: invoiceId },
       data: {
         status: 'PAID',
-        amountPaid: { increment: Number(invoice.amountDue) },
+        amountPaid: { increment: paymentAmount },
         amountDue: 0,
         paidDate: new Date(),
       },
@@ -48,10 +60,6 @@ export async function POST(request: Request) {
         },
       },
     });
-
-    if (!invoice) {
-      return NextResponse.json({ error: 'Invoice not found' }, { status: 404 });
-    }
 
     // Create or get wallet
     let wallet = invoice.user.wallet;
