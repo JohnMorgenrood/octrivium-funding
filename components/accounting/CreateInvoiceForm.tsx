@@ -38,7 +38,9 @@ interface InvoiceItem {
   description: string;
   quantity: number;
   unitPrice: number;
+  costPrice?: number;
   total: number;
+  profit?: number;
 }
 
 interface CreateInvoiceFormProps {
@@ -72,7 +74,7 @@ export default function CreateInvoiceForm({ customers, invoiceNumber }: CreateIn
   });
 
   const [items, setItems] = useState<InvoiceItem[]>([
-    { id: '1', description: '', quantity: 1, unitPrice: 0, total: 0 },
+    { id: '1', description: '', quantity: 1, unitPrice: 0, costPrice: 0, total: 0, profit: 0 },
   ]);
 
   const [showNewCustomer, setShowNewCustomer] = useState(false);
@@ -110,7 +112,7 @@ export default function CreateInvoiceForm({ customers, invoiceNumber }: CreateIn
   const addItem = () => {
     setItems([
       ...items,
-      { id: Date.now().toString(), description: '', quantity: 1, unitPrice: 0, total: 0 },
+      { id: Date.now().toString(), description: '', quantity: 1, unitPrice: 0, costPrice: 0, total: 0, profit: 0 },
     ]);
   };
 
@@ -125,8 +127,14 @@ export default function CreateInvoiceForm({ customers, invoiceNumber }: CreateIn
       items.map((item) => {
         if (item.id === id) {
           const updated = { ...item, [field]: value };
-          if (field === 'quantity' || field === 'unitPrice') {
+          if (field === 'quantity' || field === 'unitPrice' || field === 'costPrice') {
             updated.total = updated.quantity * updated.unitPrice;
+            // Calculate profit: (selling price - cost price) * quantity
+            if (updated.costPrice !== undefined && updated.costPrice > 0) {
+              updated.profit = (updated.unitPrice - updated.costPrice) * updated.quantity;
+            } else {
+              updated.profit = 0;
+            }
           }
           return updated;
         }
@@ -512,7 +520,7 @@ export default function CreateInvoiceForm({ customers, invoiceNumber }: CreateIn
               <div className="space-y-4">
                 {items.map((item, index) => (
                   <div key={item.id} className="grid gap-4 md:grid-cols-12 items-start pb-4 border-b last:border-0">
-                    <div className="md:col-span-5 space-y-2">
+                    <div className="md:col-span-4 space-y-2">
                       <Label>Description</Label>
                       <Input
                         placeholder="Item description"
@@ -520,14 +528,25 @@ export default function CreateInvoiceForm({ customers, invoiceNumber }: CreateIn
                         onChange={(e) => updateItem(item.id, 'description', e.target.value)}
                       />
                     </div>
-                    <div className="md:col-span-2 space-y-2">
-                      <Label>Quantity</Label>
+                    <div className="md:col-span-1 space-y-2">
+                      <Label>Qty</Label>
                       <Input
                         type="number"
                         min="0"
                         step="0.01"
                         value={item.quantity}
                         onChange={(e) => updateItem(item.id, 'quantity', parseFloat(e.target.value) || 0)}
+                      />
+                    </div>
+                    <div className="md:col-span-2 space-y-2">
+                      <Label>Cost Price</Label>
+                      <Input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        placeholder="0.00"
+                        value={item.costPrice || ''}
+                        onChange={(e) => updateItem(item.id, 'costPrice', parseFloat(e.target.value) || 0)}
                       />
                     </div>
                     <div className="md:col-span-2 space-y-2">
@@ -538,6 +557,14 @@ export default function CreateInvoiceForm({ customers, invoiceNumber }: CreateIn
                         step="0.01"
                         value={item.unitPrice}
                         onChange={(e) => updateItem(item.id, 'unitPrice', parseFloat(e.target.value) || 0)}
+                      />
+                    </div>
+                    <div className="md:col-span-2 space-y-2">
+                      <Label>Profit</Label>
+                      <Input 
+                        value={item.profit ? formatCurrency(item.profit) : 'R0.00'} 
+                        disabled 
+                        className={item.profit && item.profit > 0 ? 'text-green-600 font-medium' : ''}
                       />
                     </div>
                     <div className="md:col-span-2 space-y-2">
@@ -642,6 +669,20 @@ export default function CreateInvoiceForm({ customers, invoiceNumber }: CreateIn
                     <span className="font-bold text-lg">{formatCurrency(total)}</span>
                   </div>
                 </div>
+
+                {items.some(item => (item.costPrice || 0) > 0) && (
+                  <div className="pt-2 border-t border-green-200 bg-green-50 -mx-6 px-6 py-3">
+                    <div className="flex justify-between items-center">
+                      <span className="font-semibold text-green-900">Total Profit:</span>
+                      <span className="font-bold text-lg text-green-600">
+                        {formatCurrency(items.reduce((sum, item) => sum + (item.profit || 0), 0))}
+                      </span>
+                    </div>
+                    <p className="text-xs text-green-700 mt-1">
+                      Margin: {((items.reduce((sum, item) => sum + (item.profit || 0), 0) / subtotal) * 100).toFixed(1)}%
+                    </p>
+                  </div>
+                )}
               </div>
 
               <div className="pt-4 space-y-2">
