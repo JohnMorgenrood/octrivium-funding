@@ -811,6 +811,7 @@ model Invoice {
   paymentLink       String?           @unique
   
   // Signature
+  requiresSignature Boolean           @default(false)
   signatureData     String?           @db.Text
   signedAt          DateTime?
   signerName        String?

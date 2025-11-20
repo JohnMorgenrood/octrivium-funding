@@ -23,6 +23,7 @@ interface InvoicePaymentProps {
     terms: string | null;
     paymentLink: string | null;
     status: string;
+    requiresSignature: boolean;
     signatureData: string | null;
     signerName: string | null;
     signedAt: Date | null;
@@ -243,7 +244,7 @@ export default function InvoicePayment({ invoice }: InvoicePaymentProps) {
         )}
 
         {/* Signature Section */}
-        {invoice.status !== 'PAID' && (
+        {invoice.status !== 'PAID' && invoice.requiresSignature && (
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center justify-between">

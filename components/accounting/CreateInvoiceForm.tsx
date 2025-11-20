@@ -66,6 +66,7 @@ export default function CreateInvoiceForm({ customers, invoiceNumber }: CreateIn
     dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
     taxRate: '15.00',
     includeVat: true,
+    requiresSignature: false,
     notes: '',
     terms: 'Payment due within 30 days',
   });
@@ -611,6 +612,20 @@ export default function CreateInvoiceForm({ customers, invoiceNumber }: CreateIn
                     className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
                   >
                     Include VAT
+                  </label>
+                </div>
+                
+                <div className="flex items-center space-x-2 py-2">
+                  <Checkbox
+                    id="requiresSignature"
+                    checked={formData.requiresSignature}
+                    onCheckedChange={(checked) => setFormData({ ...formData, requiresSignature: checked as boolean })}
+                  />
+                  <label
+                    htmlFor="requiresSignature"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                  >
+                    Require customer signature
                   </label>
                 </div>
                 
