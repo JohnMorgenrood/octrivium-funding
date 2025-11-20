@@ -14,6 +14,7 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   Users,
+  Package,
 } from 'lucide-react';
 import { formatDistance } from 'date-fns';
 
@@ -126,6 +127,15 @@ export default function AccountingOverview({
             <Users className="h-4 w-4 sm:mr-2" />
             <span className="hidden sm:inline">Customers</span>
             <span className="sm:hidden text-xs">Customers</span>
+          </Button>
+          <Button 
+            variant="outline" 
+            onClick={() => router.push('/dashboard/accounting/products')}
+            className="w-full sm:w-auto"
+          >
+            <Package className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Products</span>
+            <span className="sm:hidden text-xs">Products</span>
           </Button>
           <Button 
             variant="outline" 

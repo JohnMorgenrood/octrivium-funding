@@ -17,6 +17,15 @@ export default async function CreateInvoicePage() {
     orderBy: { name: 'asc' },
   });
 
+  // Fetch active products for quick add
+  const products = await prisma.product.findMany({
+    where: { 
+      userId: session.user.id,
+      active: true,
+    },
+    orderBy: { name: 'asc' },
+  });
+
   // Get next invoice number
   const lastInvoice = await prisma.invoice.findFirst({
     where: { userId: session.user.id },
@@ -34,6 +43,7 @@ export default async function CreateInvoicePage() {
       <CreateInvoiceForm 
         customers={customers} 
         invoiceNumber={invoiceNumber}
+        products={products}
       />
     </div>
   );

@@ -103,6 +103,7 @@ model User {
   expenses      Expense[]
   accountingTransactions AccountingTransaction[]
   chartOfAccounts ChartOfAccounts[]
+  products      Product[]
 
   @@index([email])
   @@index([role])
@@ -943,4 +944,30 @@ model ChartOfAccounts {
   @@unique([userId, code])
   @@index([userId])
   @@index([type])
+}
+
+model Product {
+  id                String            @id @default(uuid())
+  userId            String
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Product Details
+  name              String
+  description       String?
+  unitPrice         Decimal           @db.Decimal(15, 2)
+  costPrice         Decimal?          @db.Decimal(15, 2)
+  category          String?
+  sku               String?
+  
+  // Tax
+  taxable           Boolean           @default(true)
+  
+  // Status
+  active            Boolean           @default(true)
+  
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  @@index([userId])
+  @@index([active])
 }
