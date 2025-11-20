@@ -387,6 +387,9 @@ export default function CreateInvoiceForm({ customers, invoiceNumber }: CreateIn
               <SelectItem value="QUOTE">Quote</SelectItem>
             </SelectContent>
           </Select>
+          <Button variant="secondary" size="sm" onClick={() => setShowPreview(true)} disabled={!formData.customerId || items.some(i => !i.description || i.quantity <= 0 || i.unitPrice <= 0)}>
+            <span className="text-xs sm:text-sm">👁️ Preview</span>
+          </Button>
           <Button variant="outline" size="sm" onClick={() => handleSubmit('DRAFT')} disabled={loading}>
             <Save className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
             <span className="text-xs sm:text-sm">Draft</span>

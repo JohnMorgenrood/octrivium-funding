@@ -22,6 +22,8 @@ import {
   Send,
   Download,
   Trash2,
+  Link,
+  Share2,
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -40,6 +42,7 @@ interface Invoice {
   amountDue: any;
   issueDate: Date;
   dueDate: Date;
+  paymentLink: string | null;
   customer: { name: string; email: string | null } | null;
   items: any[];
 }
@@ -232,13 +235,28 @@ export default function InvoiceList({ invoices, stats }: InvoiceListProps) {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-6">
-                    <div className="text-right">
+                  <div className="flex items-center gap-3">
+                    <div className="text-right hidden sm:block">
                       <p className="font-semibold">{formatCurrency(Number(invoice.total))}</p>
                       <p className="text-xs text-muted-foreground">
                         Due {formatDistance(new Date(invoice.dueDate), new Date(), { addSuffix: true })}
                       </p>
                     </div>
+
+                    {invoice.paymentLink && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const link = `${window.location.origin}/pay/${invoice.paymentLink}`;
+                          navigator.clipboard.writeText(link);
+                        }}
+                        title="Copy payment link"
+                      >
+                        <Share2 className="h-4 w-4" />
+                      </Button>
+                    )}
 
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -251,6 +269,17 @@ export default function InvoiceList({ invoices, stats }: InvoiceListProps) {
                           <Eye className="h-4 w-4 mr-2" />
                           View Details
                         </DropdownMenuItem>
+                        {invoice.paymentLink && (
+                          <DropdownMenuItem
+                            onClick={() => {
+                              const link = `${window.location.origin}/pay/${invoice.paymentLink}`;
+                              navigator.clipboard.writeText(link);
+                            }}
+                          >
+                            <Link className="h-4 w-4 mr-2" />
+                            Copy Payment Link
+                          </DropdownMenuItem>
+                        )}
                         <DropdownMenuItem>
                           <Send className="h-4 w-4 mr-2" />
                           Send Invoice

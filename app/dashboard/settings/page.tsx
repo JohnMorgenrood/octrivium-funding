@@ -250,22 +250,26 @@ export default function SettingsPage() {
       </div>
 
       <Tabs defaultValue="profile" className="w-full">
-        <TabsList>
-          <TabsTrigger value="profile">
+        <TabsList className="w-full justify-start overflow-x-auto flex-nowrap">
+          <TabsTrigger value="profile" className="flex-shrink-0">
             <User className="h-4 w-4 mr-2" />
-            Profile
+            <span className="hidden sm:inline">Profile</span>
+            <span className="sm:hidden">Profile</span>
           </TabsTrigger>
-          <TabsTrigger value="company">
+          <TabsTrigger value="company" className="flex-shrink-0">
             <Building2 className="h-4 w-4 mr-2" />
-            Company
+            <span className="hidden sm:inline">Company</span>
+            <span className="sm:hidden">Co.</span>
           </TabsTrigger>
-          <TabsTrigger value="security">
+          <TabsTrigger value="security" className="flex-shrink-0">
             <Lock className="h-4 w-4 mr-2" />
-            Security
+            <span className="hidden sm:inline">Security</span>
+            <span className="sm:hidden">Sec.</span>
           </TabsTrigger>
-          <TabsTrigger value="notifications">
+          <TabsTrigger value="notifications" className="flex-shrink-0">
             <Bell className="h-4 w-4 mr-2" />
-            Notifications
+            <span className="hidden sm:inline">Notifications</span>
+            <span className="sm:hidden">Notif.</span>
           </TabsTrigger>
         </TabsList>
 
