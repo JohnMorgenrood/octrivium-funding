@@ -341,15 +341,15 @@ export default function CustomerList({ customers: initialCustomers }: CustomerLi
 
       {/* Add/Edit Dialog */}
       <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-[95vw] sm:max-w-2xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
           <DialogHeader>
-            <DialogTitle>{editingCustomer ? 'Edit Customer' : 'Add New Customer'}</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-lg sm:text-xl">{editingCustomer ? 'Edit Customer' : 'Add New Customer'}</DialogTitle>
+            <DialogDescription className="text-sm">
               {editingCustomer ? 'Update customer information' : 'Fill in the customer details below'}
             </DialogDescription>
           </DialogHeader>
 
-          <div className="grid gap-4">
+          <div className="grid gap-3 sm:gap-4">
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <Label>Name *</Label>

@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/select';
 import { Plus, Trash2, ArrowLeft, Save, Send } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Dialog,
   DialogContent,
@@ -64,6 +65,7 @@ export default function CreateInvoiceForm({ customers, invoiceNumber }: CreateIn
     issueDate: new Date().toISOString().split('T')[0],
     dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
     taxRate: '15.00',
+    includeVat: true,
     notes: '',
     terms: 'Payment due within 30 days',
   });
@@ -134,7 +136,7 @@ export default function CreateInvoiceForm({ customers, invoiceNumber }: CreateIn
 
   const calculateTotals = () => {
     const subtotal = items.reduce((sum, item) => sum + item.total, 0);
-    const taxAmount = subtotal * (parseFloat(formData.taxRate) / 100);
+    const taxAmount = formData.includeVat ? subtotal * (parseFloat(formData.taxRate) / 100) : 0;
     const total = subtotal + taxAmount;
     return { subtotal, taxAmount, total };
   };
@@ -597,10 +599,28 @@ export default function CreateInvoiceForm({ customers, invoiceNumber }: CreateIn
                   <span className="text-muted-foreground">Subtotal:</span>
                   <span className="font-medium">{formatCurrency(subtotal)}</span>
                 </div>
-                <div className="flex justify-between text-sm items-center">
-                  <span className="text-muted-foreground">VAT ({formData.taxRate}%):</span>
-                  <span className="font-medium">{formatCurrency(taxAmount)}</span>
+                
+                <div className="flex items-center space-x-2 py-2">
+                  <Checkbox
+                    id="includeVat"
+                    checked={formData.includeVat}
+                    onCheckedChange={(checked) => setFormData({ ...formData, includeVat: checked as boolean })}
+                  />
+                  <label
+                    htmlFor="includeVat"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                  >
+                    Include VAT
+                  </label>
                 </div>
+                
+                {formData.includeVat && (
+                  <div className="flex justify-between text-sm items-center">
+                    <span className="text-muted-foreground">VAT ({formData.taxRate}%):</span>
+                    <span className="font-medium">{formatCurrency(taxAmount)}</span>
+                  </div>
+                )}
+                
                 <div className="pt-2 border-t">
                   <div className="flex justify-between">
                     <span className="font-semibold">Total:</span>

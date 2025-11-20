@@ -32,6 +32,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { formatDistance } from 'date-fns';
+import { useToast } from '@/hooks/use-toast';
 
 interface Invoice {
   id: string;
@@ -63,8 +64,43 @@ interface InvoiceListProps {
 
 export default function InvoiceList({ invoices, stats }: InvoiceListProps) {
   const router = useRouter();
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
+
+  const handleDelete = async (invoiceId: string) => {
+    if (!confirm('Are you sure you want to delete this invoice?')) return;
+
+    try {
+      const res = await fetch(`/api/accounting/invoices/${invoiceId}`, {
+        method: 'DELETE',
+      });
+
+      if (res.ok) {
+        toast({
+          title: 'Success',
+          description: 'Invoice deleted successfully',
+        });
+        router.refresh();
+      } else {
+        throw new Error('Failed to delete');
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to delete invoice',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleCopyLink = (link: string) => {
+    navigator.clipboard.writeText(link);
+    toast({
+      title: 'Link Copied',
+      description: 'Payment link copied to clipboard',
+    });
+  };
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-ZA', {
@@ -250,7 +286,7 @@ export default function InvoiceList({ invoices, stats }: InvoiceListProps) {
                         onClick={(e) => {
                           e.stopPropagation();
                           const link = `${window.location.origin}/pay/${invoice.paymentLink}`;
-                          navigator.clipboard.writeText(link);
+                          handleCopyLink(link);
                         }}
                         title="Copy payment link"
                       >
@@ -273,7 +309,7 @@ export default function InvoiceList({ invoices, stats }: InvoiceListProps) {
                           <DropdownMenuItem
                             onClick={() => {
                               const link = `${window.location.origin}/pay/${invoice.paymentLink}`;
-                              navigator.clipboard.writeText(link);
+                              handleCopyLink(link);
                             }}
                           >
                             <Link className="h-4 w-4 mr-2" />
@@ -288,7 +324,7 @@ export default function InvoiceList({ invoices, stats }: InvoiceListProps) {
                           <Download className="h-4 w-4 mr-2" />
                           Download PDF
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="text-red-600">
+                        <DropdownMenuItem className="text-red-600" onClick={() => handleDelete(invoice.id)}>
                           <Trash2 className="h-4 w-4 mr-2" />
                           Delete
                         </DropdownMenuItem>
