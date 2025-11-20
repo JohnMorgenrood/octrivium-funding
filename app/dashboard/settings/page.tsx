@@ -104,17 +104,25 @@ export default function SettingsPage() {
         const formData = new FormData();
         formData.append('file', logoFile);
         
-        const uploadRes = await fetch('/api/upload', {
+        // First compress the image
+        const compressRes = await fetch('/api/upload/compress-image', {
           method: 'POST',
           body: formData,
         });
-        
-        if (uploadRes.ok) {
-          const uploadData = await uploadRes.json();
-          logoUrl = uploadData.url;
-        } else {
-          throw new Error('Failed to upload logo');
+
+        if (!compressRes.ok) {
+          throw new Error('Failed to compress image');
         }
+
+        const compressData = await compressRes.json();
+        
+        toast({
+          title: 'Image Compressed',
+          description: `Reduced by ${compressData.compressionRatio}% (${(compressData.originalSize / 1024).toFixed(0)}KB → ${(compressData.compressedSize / 1024).toFixed(0)}KB)`,
+        });
+
+        // Use the compressed image data URL
+        logoUrl = compressData.dataUrl;
       }
       
       const res = await fetch('/api/user/company', {

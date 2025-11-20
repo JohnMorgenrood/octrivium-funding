@@ -421,7 +421,7 @@ export default function InvoiceDetail({ invoice }: InvoiceDetailProps) {
 
       {/* Payment Link Card */}
       {paymentLink && invoice.status !== 'PAID' && (
-        <Card className="border-blue-200 bg-blue-50/30">
+        <Card className="border-blue-200 bg-blue-50/30 no-print">
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
               <FileText className="h-5 w-5 text-blue-600" />
