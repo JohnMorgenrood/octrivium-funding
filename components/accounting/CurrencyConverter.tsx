@@ -114,7 +114,7 @@ export default function CurrencyConverter({ zarAmount, onUsdCalculated }: Curren
     </Card>
   );
 }
-            <span className="text-sm">Calculating conversion...</span>
+
           </div>
         </CardContent>
       </Card>
