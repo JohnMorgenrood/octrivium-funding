@@ -321,31 +321,31 @@ export default function InvoiceDetail({ invoice }: InvoiceDetailProps) {
                 )}
                 <div>
                   {invoice.user?.companyName && (
-                    <h3 className="text-xl font-semibold text-gray-900">{invoice.user.companyName}</h3>
+                    <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">{invoice.user.companyName}</h3>
                   )}
-                  <h2 className="text-4xl font-bold text-gray-900 mt-1">INVOICE</h2>
+                  <h2 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mt-1">INVOICE</h2>
                 </div>
               </div>
               <div className="text-left sm:text-right">
-                <p className="text-sm text-gray-600"><strong>Invoice #:</strong> {invoice.invoiceNumber}</p>
-                <p className="text-sm text-gray-600 mt-1"><strong>Date:</strong> {new Date(invoice.issueDate).toLocaleDateString()}</p>
-                <p className="text-sm text-gray-600"><strong>Due:</strong> {new Date(invoice.dueDate).toLocaleDateString()}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300"><strong>Invoice #:</strong> {invoice.invoiceNumber}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mt-1"><strong>Date:</strong> {new Date(invoice.issueDate).toLocaleDateString()}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300"><strong>Due:</strong> {new Date(invoice.dueDate).toLocaleDateString()}</p>
               </div>
             </div>
 
             {/* Bill To */}
             <div className="grid sm:grid-cols-2 gap-6">
               <div>
-                <p className="text-sm font-semibold text-gray-900 mb-2">From:</p>
-                <p className="text-sm text-gray-600">{invoice.user.firstName} {invoice.user.lastName}</p>
-                <p className="text-sm text-gray-600">{invoice.user.email}</p>
+                <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">From:</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300">{invoice.user.firstName} {invoice.user.lastName}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300">{invoice.user.email}</p>
               </div>
               <div>
-                <p className="text-sm font-semibold text-gray-900 mb-2">Bill To:</p>
-                <p className="text-sm text-gray-600">{invoice.customer?.name}</p>
-                <p className="text-sm text-gray-600">{invoice.customer?.email}</p>
+                <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">Bill To:</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300">{invoice.customer?.name}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300">{invoice.customer?.email}</p>
                 {invoice.customer?.company && (
-                  <p className="text-sm text-gray-600">{invoice.customer.company}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">{invoice.customer.company}</p>
                 )}
               </div>
             </div>
@@ -354,20 +354,20 @@ export default function InvoiceDetail({ invoice }: InvoiceDetailProps) {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b-2 border-gray-300">
-                    <th className="text-left py-3 px-2 text-sm font-semibold text-gray-900">Description</th>
-                    <th className="text-right py-3 px-2 text-sm font-semibold text-gray-900">Qty</th>
-                    <th className="text-right py-3 px-2 text-sm font-semibold text-gray-900">Price</th>
-                    <th className="text-right py-3 px-2 text-sm font-semibold text-gray-900">Amount</th>
+                  <tr className="border-b-2 border-gray-300 dark:border-gray-600">
+                    <th className="text-left py-3 px-2 text-sm font-semibold text-gray-900 dark:text-gray-100">Description</th>
+                    <th className="text-right py-3 px-2 text-sm font-semibold text-gray-900 dark:text-gray-100">Qty</th>
+                    <th className="text-right py-3 px-2 text-sm font-semibold text-gray-900 dark:text-gray-100">Price</th>
+                    <th className="text-right py-3 px-2 text-sm font-semibold text-gray-900 dark:text-gray-100">Amount</th>
                   </tr>
                 </thead>
                 <tbody>
                   {invoice.items.map((item: any, index: number) => (
-                    <tr key={index} className="border-b border-gray-200">
-                      <td className="py-3 px-2 text-sm text-gray-900">{item.description}</td>
-                      <td className="py-3 px-2 text-sm text-gray-600 text-right">{Number(item.quantity)}</td>
-                      <td className="py-3 px-2 text-sm text-gray-600 text-right">{formatCurrency(Number(item.unitPrice))}</td>
-                      <td className="py-3 px-2 text-sm text-gray-900 text-right font-medium">{formatCurrency(Number(item.total))}</td>
+                    <tr key={index} className="border-b border-gray-200 dark:border-gray-700">
+                      <td className="py-3 px-2 text-sm text-gray-900 dark:text-gray-100">{item.description}</td>
+                      <td className="py-3 px-2 text-sm text-gray-600 dark:text-gray-300 text-right font-medium">{Number(item.quantity)}</td>
+                      <td className="py-3 px-2 text-sm text-gray-600 dark:text-gray-300 text-right">{formatCurrency(Number(item.unitPrice))}</td>
+                      <td className="py-3 px-2 text-sm text-gray-900 dark:text-gray-100 text-right font-medium">{formatCurrency(Number(item.total))}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -378,16 +378,16 @@ export default function InvoiceDetail({ invoice }: InvoiceDetailProps) {
             <div className="flex justify-end">
               <div className="w-full sm:w-64 space-y-2">
                 <div className="flex justify-between py-2">
-                  <span className="text-sm text-gray-600">Subtotal:</span>
-                  <span className="text-sm font-medium text-gray-900">{formatCurrency(Number(invoice.subtotal))}</span>
+                  <span className="text-sm text-gray-600 dark:text-gray-300">Subtotal:</span>
+                  <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{formatCurrency(Number(invoice.subtotal))}</span>
                 </div>
                 <div className="flex justify-between py-2">
-                  <span className="text-sm text-gray-600">Tax ({Number(invoice.taxRate)}%):</span>
-                  <span className="text-sm font-medium text-gray-900">{formatCurrency(Number(invoice.taxAmount))}</span>
+                  <span className="text-sm text-gray-600 dark:text-gray-300">Tax ({Number(invoice.taxRate)}%):</span>
+                  <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{formatCurrency(Number(invoice.taxAmount))}</span>
                 </div>
-                <div className="flex justify-between py-3 border-t-2 border-gray-300">
-                  <span className="text-base font-semibold text-gray-900">Total:</span>
-                  <span className="text-base font-bold text-gray-900">{formatCurrency(Number(invoice.total))}</span>
+                <div className="flex justify-between py-3 border-t-2 border-gray-300 dark:border-gray-600">
+                  <span className="text-base font-semibold text-gray-900 dark:text-gray-100">Total:</span>
+                  <span className="text-base font-bold text-gray-900 dark:text-gray-100">{formatCurrency(Number(invoice.total))}</span>
                 </div>
                 {invoice.status !== 'PAID' && (
                   <div className="flex justify-between py-2 bg-orange-50 px-3 rounded">
@@ -400,21 +400,49 @@ export default function InvoiceDetail({ invoice }: InvoiceDetailProps) {
 
             {/* Notes and Terms */}
             {(invoice.notes || invoice.terms) && (
-              <div className="space-y-4 pt-4 border-t">
+              <div className="space-y-4 pt-4 border-t dark:border-gray-700">
                 {invoice.notes && (
                   <div>
-                    <p className="text-sm font-semibold text-gray-900 mb-1">Notes:</p>
-                    <p className="text-sm text-gray-600 whitespace-pre-wrap">{invoice.notes}</p>
+                    <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">Notes:</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300 whitespace-pre-wrap">{invoice.notes}</p>
                   </div>
                 )}
                 {invoice.terms && (
                   <div>
-                    <p className="text-sm font-semibold text-gray-900 mb-1">Terms:</p>
-                    <p className="text-sm text-gray-600 whitespace-pre-wrap">{invoice.terms}</p>
+                    <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">Terms:</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300 whitespace-pre-wrap">{invoice.terms}</p>
                   </div>
                 )}
               </div>
             )}
+
+            {/* Bank Details for Manual Payment */}
+            <div className="space-y-3 pt-4 border-t dark:border-gray-700 bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+              <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">Bank Transfer Details:</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                <div>
+                  <p className="text-gray-600 dark:text-gray-400 text-xs">Bank Name</p>
+                  <p className="text-gray-900 dark:text-gray-100 font-medium">{invoice.user?.bankName || 'First National Bank (FNB)'}</p>
+                </div>
+                <div>
+                  <p className="text-gray-600 dark:text-gray-400 text-xs">Account Holder</p>
+                  <p className="text-gray-900 dark:text-gray-100 font-medium">{invoice.user?.bankAccountName || `${invoice.user.firstName} ${invoice.user.lastName}`}</p>
+                </div>
+                <div>
+                  <p className="text-gray-600 dark:text-gray-400 text-xs">Account Number</p>
+                  <p className="text-gray-900 dark:text-gray-100 font-medium">{invoice.user?.bankAccountNumber || 'Not provided'}</p>
+                </div>
+                <div>
+                  <p className="text-gray-600 dark:text-gray-400 text-xs">Branch Code</p>
+                  <p className="text-gray-900 dark:text-gray-100 font-medium">{invoice.user?.bankBranchCode || '250655'}</p>
+                </div>
+                <div className="sm:col-span-2">
+                  <p className="text-gray-600 dark:text-gray-400 text-xs">Reference</p>
+                  <p className="text-gray-900 dark:text-gray-100 font-medium">{invoice.invoiceNumber}</p>
+                </div>
+              </div>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">Please use the invoice number as your payment reference.</p>
+            </div>
           </div>
         </CardContent>
       </Card>
