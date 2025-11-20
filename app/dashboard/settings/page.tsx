@@ -86,6 +86,12 @@ export default function SettingsPage() {
     }
   };
 
+  const handleRemoveLogo = () => {
+    setLogoFile(null);
+    setLogoPreview('');
+    setCompanyData({ ...companyData, companyLogo: '' });
+  };
+
   const handleCompanyUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -116,11 +122,17 @@ export default function SettingsPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           companyName: companyData.companyName,
-          companyLogo: logoUrl,
+          companyLogo: logoUrl || null,
         }),
       });
 
       if (res.ok) {
+        const updatedData = await res.json();
+        setCompanyData({
+          companyName: updatedData.companyName || '',
+          companyLogo: updatedData.companyLogo || '',
+        });
+        setLogoPreview(updatedData.companyLogo || '');
         toast({
           title: 'Success',
           description: 'Company settings updated successfully',
@@ -368,12 +380,23 @@ export default function SettingsPage() {
                       </p>
                     </div>
                     {logoPreview && (
-                      <div className="w-24 h-24 border rounded-lg overflow-hidden bg-muted flex items-center justify-center">
-                        <img 
-                          src={logoPreview} 
-                          alt="Logo preview" 
-                          className="w-full h-full object-contain"
-                        />
+                      <div className="flex flex-col gap-2">
+                        <div className="w-24 h-24 border rounded-lg overflow-hidden bg-muted flex items-center justify-center">
+                          <img 
+                            src={logoPreview} 
+                            alt="Logo preview" 
+                            className="w-full h-full object-contain"
+                          />
+                        </div>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={handleRemoveLogo}
+                          className="text-xs"
+                        >
+                          Remove
+                        </Button>
                       </div>
                     )}
                   </div>

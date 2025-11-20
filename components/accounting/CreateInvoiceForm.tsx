@@ -85,6 +85,13 @@ export default function CreateInvoiceForm({ customers, invoiceNumber }: CreateIn
     fetchCompanyData();
   }, []);
 
+  // Refresh company data when preview is opened
+  useEffect(() => {
+    if (showPreview) {
+      fetchCompanyData();
+    }
+  }, [showPreview]);
+
   const fetchCompanyData = async () => {
     try {
       const res = await fetch('/api/user/company');
@@ -423,7 +430,7 @@ export default function CreateInvoiceForm({ customers, invoiceNumber }: CreateIn
                         <SelectTrigger>
                           <SelectValue placeholder="Select customer" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="max-h-[200px]">
                           {customers.map((customer) => (
                             <SelectItem key={customer.id} value={customer.id}>
                               {customer.name} {customer.company && `(${customer.company})`}
@@ -436,7 +443,7 @@ export default function CreateInvoiceForm({ customers, invoiceNumber }: CreateIn
                       </Button>
                     </div>
                   ) : (
-                    <div className="space-y-2">
+                    <div className="space-y-2 max-h-[300px] overflow-y-auto">
                       <Input
                         placeholder="Customer name"
                         value={newCustomer.name}
