@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Share2, Download } from 'lucide-react';
+import SignaturePad from './SignaturePad';
 
 interface InvoicePaymentProps {
   invoice: {
@@ -21,6 +22,9 @@ interface InvoicePaymentProps {
     terms: string | null;
     paymentLink: string | null;
     status: string;
+    signatureData: string | null;
+    signerName: string | null;
+    signedAt: Date | null;
     customer: {
       name: string;
       email: string | null;
@@ -46,12 +50,40 @@ interface InvoicePaymentProps {
 export default function InvoicePayment({ invoice }: InvoicePaymentProps) {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [showSignature, setShowSignature] = useState(!invoice.signatureData);
+  const [signatureSaved, setSignatureSaved] = useState(!!invoice.signatureData);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-ZA', {
       style: 'currency',
       currency: 'ZAR',
     }).format(amount);
+  };
+
+  const handleSaveSignature = async (signatureData: string, signerName: string) => {
+    try {
+      const res = await fetch(`/api/accounting/invoices/${invoice.id}/signature`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ invoiceId: invoice.id, signatureData, signerName }),
+      });
+
+      if (!res.ok) throw new Error('Failed to save signature');
+
+      toast({
+        title: 'Success!',
+        description: 'Signature saved successfully',
+      });
+      
+      setSignatureSaved(true);
+      setShowSignature(false);
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to save signature. Please try again.',
+        variant: 'destructive',
+      });
+    }
   };
 
   const handlePayNow = async () => {
@@ -233,6 +265,52 @@ export default function InvoicePayment({ invoice }: InvoicePaymentProps) {
                   <h3 className="font-semibold text-gray-900 mb-2">Terms:</h3>
                   <p className="text-sm text-gray-600 whitespace-pre-wrap">{invoice.terms}</p>
                 </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Signature Section */}
+        {invoice.status !== 'PAID' && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span>Sign Invoice</span>
+                {signatureSaved && (
+                  <span className="text-sm text-green-600 font-normal">✓ Signed</span>
+                )}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {signatureSaved && invoice.signatureData ? (
+                <div className="space-y-4">
+                  <div className="border rounded-lg p-4 bg-gray-50">
+                    <img 
+                      src={invoice.signatureData} 
+                      alt="Signature" 
+                      className="max-h-32 mx-auto"
+                    />
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    <p>Signed by: <span className="font-medium">{invoice.signerName}</span></p>
+                    {invoice.signedAt && (
+                      <p>Date: {new Date(invoice.signedAt).toLocaleString()}</p>
+                    )}
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setShowSignature(true)}
+                  >
+                    Update Signature
+                  </Button>
+                </div>
+              ) : showSignature ? (
+                <SignaturePad onSave={handleSaveSignature} />
+              ) : (
+                <Button onClick={() => setShowSignature(true)}>
+                  Add Signature
+                </Button>
               )}
             </CardContent>
           </Card>

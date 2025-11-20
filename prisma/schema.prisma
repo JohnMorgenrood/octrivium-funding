@@ -804,6 +804,11 @@ model Invoice {
   // Payment
   paymentLink       String?           @unique
   
+  // Signature
+  signatureData     String?           @db.Text
+  signedAt          DateTime?
+  signerName        String?
+  
   // Relations
   items             InvoiceItem[]
   

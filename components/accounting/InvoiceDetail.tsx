@@ -156,17 +156,38 @@ export default function InvoiceDetail({ invoice }: InvoiceDetailProps) {
                   </Button>
                 </div>
 
-                <div className="p-4 border rounded-lg bg-blue-50/50 border-blue-200">
-                  <div className="flex items-start gap-3">
-                    <PenTool className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                    <div>
-                      <p className="text-sm font-medium text-blue-900">Request Signature</p>
-                      <p className="text-xs text-blue-700 mt-1">
-                        Customers can digitally sign this invoice when they open the payment link. Enable signature requirement in settings.
-                      </p>
+                {invoice.signatureData ? (
+                  <div className="p-4 border rounded-lg bg-green-50/50 border-green-200">
+                    <div className="flex items-start gap-3">
+                      <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-green-900">Signed</p>
+                        <p className="text-xs text-green-700 mt-1">
+                          By {invoice.signerName} on {new Date(invoice.signedAt).toLocaleString()}
+                        </p>
+                        <div className="mt-2 border rounded bg-white p-2">
+                          <img 
+                            src={invoice.signatureData} 
+                            alt="Signature" 
+                            className="max-h-16"
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="p-4 border rounded-lg bg-blue-50/50 border-blue-200">
+                    <div className="flex items-start gap-3">
+                      <PenTool className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-sm font-medium text-blue-900">Pending Signature</p>
+                        <p className="text-xs text-blue-700 mt-1">
+                          Customer can digitally sign this invoice when they open the payment link.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </>
             )}
           </div>
