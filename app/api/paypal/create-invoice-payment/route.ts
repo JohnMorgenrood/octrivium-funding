@@ -32,6 +32,7 @@ export async function POST(request: Request) {
     ).toString('base64');
 
     console.log('Creating PayPal order with amount:', Number(invoice.amountDue).toFixed(2));
+    console.log('Using currency: ZAR (South African Rand)');
 
     const response = await fetch(
       `${process.env.PAYPAL_API_URL}/v2/checkout/orders`,
@@ -48,7 +49,7 @@ export async function POST(request: Request) {
               reference_id: invoice.id,
               description: `Invoice ${invoice.invoiceNumber}`,
               amount: {
-                currency_code: 'USD', // Change to ZAR when supported
+                currency_code: 'ZAR', // South African Rand
                 value: Number(invoice.amountDue).toFixed(2),
               },
             },
@@ -68,13 +69,19 @@ export async function POST(request: Request) {
     if (!response.ok) {
       console.error('PayPal API error response:', JSON.stringify(data, null, 2));
       console.error('PayPal API status:', response.status);
+      
+      // Return appropriate status code based on PayPal error
+      const statusCode = response.status === 401 || response.status === 403 
+        ? response.status 
+        : 500;
+      
       return NextResponse.json(
         { 
           error: 'Failed to create PayPal order',
           details: data,
           status: response.status
         },
-        { status: 500 }
+        { status: statusCode }
       );
     }
 
