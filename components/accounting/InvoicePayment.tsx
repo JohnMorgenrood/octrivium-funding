@@ -7,6 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Share2 } from 'lucide-react';
 import SignaturePad from './SignaturePad';
 import PayPalButton from './PayPalButton';
+import CurrencyConverter from './CurrencyConverter';
 
 interface InvoicePaymentProps {
   invoice: {
@@ -291,18 +292,23 @@ export default function InvoicePayment({ invoice }: InvoicePaymentProps) {
 
         {/* Payment Section */}
         {invoice.status !== 'PAID' && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Payment Options</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <PayPalButton 
-                invoiceId={invoice.id}
-                amount={invoice.amountDue}
-                paymentLink={invoice.paymentLink || ''}
-              />
-            </CardContent>
-          </Card>
+          <>
+            {/* Currency Converter */}
+            <CurrencyConverter zarAmount={invoice.amountDue} />
+            
+            <Card>
+              <CardHeader>
+                <CardTitle>Payment Options</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <PayPalButton 
+                  invoiceId={invoice.id}
+                  amount={invoice.amountDue}
+                  paymentLink={invoice.paymentLink || ''}
+                />
+              </CardContent>
+            </Card>
+          </>
         )}
 
         {/* Share Button */}
