@@ -74,8 +74,6 @@ export async function POST(request: Request) {
       });
     }
 
-    const paymentAmount = Number(invoice.total);
-    
     // Lock funds in wallet (will be available after processing period)
     await prisma.wallet.update({
       where: { id: wallet.id },
