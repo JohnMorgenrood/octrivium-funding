@@ -8,12 +8,11 @@ import { Loader2 } from 'lucide-react';
 
 interface YocoButtonProps {
   invoiceId: string;
-  amount: number; // Amount in ZAR cents (e.g., R100.00 = 10000)
-  paymentLink: string;
-  description: string;
+  amount: number; // Amount in ZAR
+  invoiceNumber: string;
 }
 
-export default function YocoButton({ invoiceId, amount, paymentLink, description }: YocoButtonProps) {
+export default function YocoButton({ invoiceId, amount, invoiceNumber }: YocoButtonProps) {
   const router = useRouter();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
@@ -47,10 +46,10 @@ export default function YocoButton({ invoiceId, amount, paymentLink, description
 
       // Create inline payment
       yoco.showPopup({
-        amountInCents: amount,
+        amountInCents: Math.round(amount * 100), // Convert ZAR to cents
         currency: 'ZAR',
         name: 'Invoice Payment',
-        description: description,
+        description: `Payment for invoice ${invoiceNumber}`,
         callback: async (result: any) => {
           if (result.error) {
             console.error('Yoco payment error:', result.error);
@@ -88,8 +87,9 @@ export default function YocoButton({ invoiceId, amount, paymentLink, description
               description: 'Your payment has been processed.',
             });
 
-            // Redirect to success page
-            router.push(`/pay/${paymentLink}/success`);
+            // Reload page to show updated invoice status
+            router.refresh();
+            window.location.reload();
           } catch (error: any) {
             console.error('Error processing payment:', error);
             toast({
