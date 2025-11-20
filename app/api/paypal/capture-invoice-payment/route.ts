@@ -28,14 +28,24 @@ export async function POST(request: Request) {
     console.log('PayPal capture response status:', response.status);
     console.log('PayPal capture data:', JSON.stringify(captureData, null, 2));
 
-    if (!response.ok || captureData.status !== 'COMPLETED') {
-      console.error('PayPal capture error:', captureData);
+    // Check if capture was actually successful
+    if (!response.ok) {
+      console.error('PayPal API returned error:', captureData);
       const statusCode = response.status === 401 || response.status === 403 
         ? response.status 
         : 500;
       return NextResponse.json(
         { error: 'Failed to capture payment', details: captureData },
         { status: statusCode }
+      );
+    }
+
+    // Verify the payment was actually completed
+    if (captureData.status !== 'COMPLETED') {
+      console.error('PayPal payment not completed. Status:', captureData.status);
+      return NextResponse.json(
+        { error: `Payment not completed. Status: ${captureData.status}`, details: captureData },
+        { status: 400 }
       );
     }
 
