@@ -5,6 +5,11 @@ export async function POST(request: Request) {
   try {
     const { invoiceId } = await request.json();
 
+    console.log('Creating PayPal order for invoice:', invoiceId);
+    console.log('PayPal API URL:', process.env.PAYPAL_API_URL);
+    console.log('PayPal Client ID configured:', !!process.env.PAYPAL_CLIENT_ID);
+    console.log('PayPal Client Secret configured:', !!process.env.PAYPAL_CLIENT_SECRET);
+
     const invoice = await prisma.invoice.findUnique({
       where: { id: invoiceId },
       include: {
@@ -25,6 +30,8 @@ export async function POST(request: Request) {
     const auth = Buffer.from(
       `${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_CLIENT_SECRET}`
     ).toString('base64');
+
+    console.log('Creating PayPal order with amount:', Number(invoice.amountDue).toFixed(2));
 
     const response = await fetch(
       `${process.env.PAYPAL_API_URL}/v2/checkout/orders`,
@@ -59,9 +66,14 @@ export async function POST(request: Request) {
     const data = await response.json();
 
     if (!response.ok) {
-      console.error('PayPal error:', data);
+      console.error('PayPal API error response:', JSON.stringify(data, null, 2));
+      console.error('PayPal API status:', response.status);
       return NextResponse.json(
-        { error: 'Failed to create PayPal order' },
+        { 
+          error: 'Failed to create PayPal order',
+          details: data,
+          status: response.status
+        },
         { status: 500 }
       );
     }
