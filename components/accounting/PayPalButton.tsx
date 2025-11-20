@@ -30,40 +30,19 @@ export default function PayPalButton({ invoiceId, amount, paymentLink }: PayPalB
 
     console.log('Loading PayPal SDK with client ID:', clientId.substring(0, 10) + '...');
 
-    // Check if PayPal SDK is already loaded
-    if ((window as any).paypal) {
-      console.log('PayPal SDK already loaded, rendering buttons');
-      renderPayPalButtons();
-      return;
-    }
-
-    // Load PayPal SDK
-    const script = document.createElement('script');
-    script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&currency=USD&disable-funding=venmo`;
-    script.async = true;
-    
-    script.onload = () => {
-      console.log('PayPal SDK script loaded successfully');
-      renderPayPalButtons();
-    };
-
-    script.onerror = () => {
-      console.error('Failed to load PayPal SDK script');
-      setError('Failed to load PayPal. Please check your internet connection.');
-      setLoading(false);
-    };
-
-    document.body.appendChild(script);
-
-    return () => {
-      if (document.body.contains(script)) {
-        document.body.removeChild(script);
+    const renderPayPalButtons = () => {
+      if (!(window as any).paypal) {
+        console.error('PayPal SDK not loaded');
+        setError('PayPal SDK failed to load. Please refresh the page.');
+        setLoading(false);
+        return;
       }
-    };
-  }, [invoiceId, amount, router, toast, paymentLink]);
 
-  const renderPayPalButtons = () => {
-    if ((window as any).paypal && paypalRef.current) {
+      if (!paypalRef.current) {
+        console.error('PayPal container ref not ready');
+        return;
+      }
+
       console.log('Rendering PayPal buttons...');
       
       (window as any).paypal
@@ -167,12 +146,39 @@ export default function PayPalButton({ invoiceId, amount, paymentLink }: PayPalB
           setError('Failed to load PayPal buttons. Please refresh the page.');
           setLoading(false);
         });
-    } else {
-      console.error('PayPal SDK not available or ref not ready');
-      setError('PayPal failed to initialize. Please refresh the page.');
-      setLoading(false);
+    };
+
+    // Check if PayPal SDK is already loaded
+    if ((window as any).paypal) {
+      console.log('PayPal SDK already loaded, rendering buttons');
+      renderPayPalButtons();
+      return;
     }
-  };  if (error) {
+
+    // Load PayPal SDK
+    const script = document.createElement('script');
+    script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&currency=USD&disable-funding=venmo`;
+    script.async = true;
+    
+    script.onload = () => {
+      console.log('PayPal SDK script loaded successfully');
+      renderPayPalButtons();
+    };
+
+    script.onerror = () => {
+      console.error('Failed to load PayPal SDK script');
+      setError('Failed to load PayPal. Please check your internet connection.');
+      setLoading(false);
+    };
+
+    document.body.appendChild(script);
+
+    return () => {
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
+    };
+  }, [invoiceId, router, toast, paymentLink]);  if (error) {
     return (
       <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-center">
         <p className="text-sm text-red-600">{error}</p>
