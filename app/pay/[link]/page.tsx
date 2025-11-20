@@ -51,7 +51,6 @@ export default async function PaymentPage({ params }: { params: { link: string }
         taxRate: Number(invoice.taxRate),
         taxAmount: Number(invoice.taxAmount),
         total: Number(invoice.total),
-        amountPaid: Number(invoice.amountPaid),
         amountDue: Number(invoice.amountDue),
         items: invoice.items.map(item => ({
           ...item,
