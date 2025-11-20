@@ -28,6 +28,9 @@ export async function POST(req: NextRequest) {
       items,
     } = body;
 
+    // Generate unique payment link
+    const paymentLink = `inv-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
     // Create invoice with items
     const invoice = await prisma.invoice.create({
       data: {
@@ -45,6 +48,7 @@ export async function POST(req: NextRequest) {
         amountDue,
         notes,
         terms,
+        paymentLink,
         items: {
           create: items,
         },

@@ -801,6 +801,9 @@ model Invoice {
   notes             String?           @db.Text
   terms             String?           @db.Text
   
+  // Payment
+  paymentLink       String?           @unique
+  
   // Relations
   items             InvoiceItem[]
   
@@ -812,6 +815,7 @@ model Invoice {
   @@index([status])
   @@index([dueDate])
   @@index([invoiceNumber])
+  @@index([paymentLink])
 }
 
 model InvoiceItem {
