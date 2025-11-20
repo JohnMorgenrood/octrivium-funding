@@ -32,7 +32,7 @@ export async function POST(request: Request) {
     ).toString('base64');
 
     console.log('Creating PayPal order with amount:', Number(invoice.amountDue).toFixed(2));
-    console.log('Using currency: ZAR (South African Rand)');
+    console.log('Using currency: USD (temporary for testing)');
 
     const response = await fetch(
       `${process.env.PAYPAL_API_URL}/v2/checkout/orders`,
@@ -49,7 +49,7 @@ export async function POST(request: Request) {
               reference_id: invoice.id,
               description: `Invoice ${invoice.invoiceNumber}`,
               amount: {
-                currency_code: 'ZAR', // South African Rand
+                currency_code: 'USD', // Temporarily using USD for testing
                 value: Number(invoice.amountDue).toFixed(2),
               },
             },
