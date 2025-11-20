@@ -4,8 +4,9 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Share2, Download } from 'lucide-react';
+import { Share2 } from 'lucide-react';
 import SignaturePad from './SignaturePad';
+import PayPalButton from './PayPalButton';
 
 interface InvoicePaymentProps {
   invoice: {
@@ -49,7 +50,6 @@ interface InvoicePaymentProps {
 
 export default function InvoicePayment({ invoice }: InvoicePaymentProps) {
   const { toast } = useToast();
-  const [loading, setLoading] = useState(false);
   const [showSignature, setShowSignature] = useState(!invoice.signatureData);
   const [signatureSaved, setSignatureSaved] = useState(!!invoice.signatureData);
 
@@ -83,34 +83,6 @@ export default function InvoicePayment({ invoice }: InvoicePaymentProps) {
         description: 'Failed to save signature. Please try again.',
         variant: 'destructive',
       });
-    }
-  };
-
-  const handlePayNow = async () => {
-    setLoading(true);
-    try {
-      // Create PayPal order
-      const res = await fetch('/api/paypal/create-invoice-payment', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ invoiceId: invoice.id }),
-      });
-
-      const data = await res.json();
-      
-      if (data.approvalUrl) {
-        // Redirect to PayPal
-        window.location.href = data.approvalUrl;
-      } else {
-        throw new Error('Failed to create payment');
-      }
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Failed to process payment. Please try again.',
-        variant: 'destructive',
-      });
-      setLoading(false);
     }
   };
 
@@ -316,24 +288,32 @@ export default function InvoicePayment({ invoice }: InvoicePaymentProps) {
           </Card>
         )}
 
-        {/* Actions */}
-        <div className="flex flex-col sm:flex-row gap-3">
-          <Button 
-            size="lg" 
-            className="flex-1 text-lg py-6"
-            onClick={handlePayNow}
-            disabled={loading}
-          >
-            {loading ? 'Processing...' : `Pay ${formatCurrency(invoice.amountDue)} with PayPal`}
-          </Button>
+        {/* Payment Section */}
+        {invoice.status !== 'PAID' && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Payment Options</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <PayPalButton 
+                invoiceId={invoice.id}
+                amount={invoice.amountDue}
+                paymentLink={invoice.paymentLink || ''}
+              />
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Share Button */}
+        <div className="flex justify-center">
           <Button 
             size="lg" 
             variant="outline"
             onClick={handleShare}
-            className="sm:w-auto"
+            className="w-full sm:w-auto"
           >
             <Share2 className="h-5 w-5 mr-2" />
-            Share
+            Share Invoice
           </Button>
         </div>
 
@@ -349,7 +329,7 @@ export default function InvoicePayment({ invoice }: InvoicePaymentProps) {
               <div>
                 <h3 className="font-semibold text-gray-900 mb-1">Secure Payment</h3>
                 <p className="text-sm text-gray-600">
-                  Your payment is processed securely through PayPal. Funds will be held until confirmed and then made available to the business for withdrawal.
+                  Your payment is processed securely through PayPal. You can pay with your PayPal account or use a debit/credit card. Funds will be held until confirmed and then made available to the business for withdrawal.
                 </p>
               </div>
             </div>
