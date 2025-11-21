@@ -416,33 +416,35 @@ export default function InvoiceDetail({ invoice }: InvoiceDetailProps) {
               </div>
             )}
 
-            {/* Bank Details for Manual Payment */}
-            <div className="space-y-3 pt-4 border-t dark:border-gray-700 bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
-              <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">Bank Transfer Details:</p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                <div>
-                  <p className="text-gray-600 dark:text-gray-400 text-xs">Bank Name</p>
-                  <p className="text-gray-900 dark:text-gray-100 font-medium">{invoice.user?.bankName || 'First National Bank (FNB)'}</p>
+            {/* Bank Details for Manual Payment - PREMIUM ONLY */}
+            {invoice.user?.subscriptionTier === 'PREMIUM' && invoice.user?.bankAccountNumber && (
+              <div className="space-y-3 pt-4 border-t dark:border-gray-700 bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">Bank Transfer Details:</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                  <div>
+                    <p className="text-gray-600 dark:text-gray-400 text-xs">Bank Name</p>
+                    <p className="text-gray-900 dark:text-gray-100 font-medium">{invoice.user?.bankName || 'First National Bank (FNB)'}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-600 dark:text-gray-400 text-xs">Account Holder</p>
+                    <p className="text-gray-900 dark:text-gray-100 font-medium">{invoice.user?.bankAccountName || `${invoice.user.firstName} ${invoice.user.lastName}`}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-600 dark:text-gray-400 text-xs">Account Number</p>
+                    <p className="text-gray-900 dark:text-gray-100 font-medium">{invoice.user?.bankAccountNumber}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-600 dark:text-gray-400 text-xs">Branch Code</p>
+                    <p className="text-gray-900 dark:text-gray-100 font-medium">{invoice.user?.bankBranchCode || '250655'}</p>
+                  </div>
+                  <div className="sm:col-span-2">
+                    <p className="text-gray-600 dark:text-gray-400 text-xs">Reference</p>
+                    <p className="text-gray-900 dark:text-gray-100 font-medium">{invoice.invoiceNumber}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-gray-600 dark:text-gray-400 text-xs">Account Holder</p>
-                  <p className="text-gray-900 dark:text-gray-100 font-medium">{invoice.user?.bankAccountName || `${invoice.user.firstName} ${invoice.user.lastName}`}</p>
-                </div>
-                <div>
-                  <p className="text-gray-600 dark:text-gray-400 text-xs">Account Number</p>
-                  <p className="text-gray-900 dark:text-gray-100 font-medium">{invoice.user?.bankAccountNumber || 'Not provided'}</p>
-                </div>
-                <div>
-                  <p className="text-gray-600 dark:text-gray-400 text-xs">Branch Code</p>
-                  <p className="text-gray-900 dark:text-gray-100 font-medium">{invoice.user?.bankBranchCode || '250655'}</p>
-                </div>
-                <div className="sm:col-span-2">
-                  <p className="text-gray-600 dark:text-gray-400 text-xs">Reference</p>
-                  <p className="text-gray-900 dark:text-gray-100 font-medium">{invoice.invoiceNumber}</p>
-                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">Please use the invoice number as your payment reference.</p>
               </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">Please use the invoice number as your payment reference.</p>
-            </div>
+            )}
           </div>
         </CardContent>
       </Card>
