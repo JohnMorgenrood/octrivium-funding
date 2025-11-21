@@ -13,7 +13,7 @@ interface Invoice {
   status: string;
   dueDate: Date;
   createdAt: Date;
-  paidAt: Date | null;
+  paidDate: Date | null;
 }
 
 interface Expense {
