@@ -109,8 +109,37 @@ export default function InvoiceDetail({ invoice }: InvoiceDetailProps) {
     }
   };
 
-  const handleDownloadPDF = () => {
-    window.print();
+  const handleDownloadPDF = async () => {
+    try {
+      const res = await fetch(`/api/accounting/invoices/${invoice.id}/pdf`);
+      if (!res.ok) throw new Error('Failed to generate PDF');
+      
+      const html = await res.text();
+      
+      // Open in new window for printing/saving
+      const printWindow = window.open('', '_blank');
+      if (printWindow) {
+        printWindow.document.write(html);
+        printWindow.document.close();
+        printWindow.focus();
+        
+        // Trigger print dialog after a short delay
+        setTimeout(() => {
+          printWindow.print();
+        }, 500);
+      }
+      
+      toast({
+        title: 'Success',
+        description: 'PDF opened. Use your browser\'s print dialog to save as PDF.',
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to generate PDF',
+        variant: 'destructive',
+      });
+    }
   };
 
   const handleSendEmail = async () => {

@@ -125,6 +125,39 @@ export default function InvoiceList({ invoices, stats }: InvoiceListProps) {
     });
   };
 
+  const handleDownloadPDF = async (invoiceId: string, invoiceNumber: string) => {
+    try {
+      const res = await fetch(`/api/accounting/invoices/${invoiceId}/pdf`);
+      if (!res.ok) throw new Error('Failed to generate PDF');
+      
+      const html = await res.text();
+      
+      // Open in new window for printing/saving
+      const printWindow = window.open('', '_blank');
+      if (printWindow) {
+        printWindow.document.write(html);
+        printWindow.document.close();
+        printWindow.focus();
+        
+        // Trigger print dialog after a short delay
+        setTimeout(() => {
+          printWindow.print();
+        }, 500);
+      }
+      
+      toast({
+        title: 'PDF Generated',
+        description: 'Use your browser\'s print dialog to save as PDF.',
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to generate PDF',
+        variant: 'destructive',
+      });
+    }
+  };
+
   const handleUpdateStatus = async () => {
     if (!statusDialog.invoice || !newStatus) return;
 
@@ -400,7 +433,7 @@ export default function InvoiceList({ invoices, stats }: InvoiceListProps) {
                           <Send className="h-4 w-4 mr-2" />
                           Send Invoice
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleDownloadPDF(invoice.id, invoice.invoiceNumber)}>
                           <Download className="h-4 w-4 mr-2" />
                           Download PDF
                         </DropdownMenuItem>

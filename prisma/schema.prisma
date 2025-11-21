@@ -126,6 +126,11 @@ model User {
   yocoPublicKey     String?  // Their own pk_live_xxx or pk_test_xxx
   yocoSecretKey     String?  // Their own sk_live_xxx or sk_test_xxx
 
+  // Notification preferences
+  emailNotifications    Boolean @default(true)
+  pushNotifications     Boolean @default(false)
+  notificationPreferences Json? // { invoicePaid: true, invoiceOverdue: true, etc. }
+
   // Relations
   wallet        Wallet?
   investments   Investment[]

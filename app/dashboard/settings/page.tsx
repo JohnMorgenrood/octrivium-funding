@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { User, Lock, Bell, Building2, Loader2, CreditCard, Users, Landmark } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import NotificationSettings from '@/components/NotificationSettings';
 
 export default function SettingsPage() {
   const { data: session, update } = useSession();
@@ -1001,38 +1002,7 @@ export default function SettingsPage() {
         </TabsContent>
 
         <TabsContent value="notifications">
-          <Card>
-            <CardHeader>
-              <CardTitle>Notification Preferences</CardTitle>
-              <CardDescription>Choose what notifications you want to receive</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">Email Notifications</p>
-                    <p className="text-sm text-muted-foreground">Receive email updates about your investments</p>
-                  </div>
-                  <input type="checkbox" defaultChecked className="h-4 w-4" />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">Investment Updates</p>
-                    <p className="text-sm text-muted-foreground">Get notified when deals you invested in have updates</p>
-                  </div>
-                  <input type="checkbox" defaultChecked className="h-4 w-4" />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">Revenue Share Payments</p>
-                    <p className="text-sm text-muted-foreground">Notifications for monthly revenue share payments</p>
-                  </div>
-                  <input type="checkbox" defaultChecked className="h-4 w-4" />
-                </div>
-                <Button>Save Preferences</Button>
-              </div>
-            </CardContent>
-          </Card>
+          <NotificationSettings />
         </TabsContent>
       </Tabs>
     </div>
