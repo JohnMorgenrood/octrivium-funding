@@ -275,12 +275,30 @@ export default function CreateInvoiceForm({ customers, invoiceNumber, products }
       });
 
       router.push(`/dashboard/accounting/invoices/${invoice.id}`);
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: `Failed to create ${formData.documentType.toLowerCase()}`,
-        variant: 'destructive',
-      });
+    } catch (error: any) {
+      // Check if it's a limit error
+      if (error.message?.includes('limit') || error.message?.includes('403')) {
+        toast({
+          title: 'Invoice Limit Reached',
+          description: 'Upgrade to Premium for unlimited invoices',
+          variant: 'destructive',
+          action: (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => router.push('/dashboard/subscriptions')}
+            >
+              Upgrade Now
+            </Button>
+          ) as any,
+        });
+      } else {
+        toast({
+          title: 'Error',
+          description: `Failed to create ${formData.documentType.toLowerCase()}`,
+          variant: 'destructive',
+        });
+      }
     } finally {
       setLoading(false);
     }

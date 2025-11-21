@@ -11,6 +11,51 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // Get user subscription data
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: {
+        subscriptionTier: true,
+        subscriptionStatus: true,
+        invoiceCount: true,
+        lastInvoiceReset: true,
+      },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    // Check if we need to reset invoice count (monthly reset for FREE tier)
+    const now = new Date();
+    const lastReset = user.lastInvoiceReset ? new Date(user.lastInvoiceReset) : null;
+    const shouldReset = !lastReset || (now.getMonth() !== lastReset.getMonth() || now.getFullYear() !== lastReset.getFullYear());
+
+    if (user.subscriptionTier === 'FREE' && shouldReset) {
+      await prisma.user.update({
+        where: { id: session.user.id },
+        data: {
+          invoiceCount: 0,
+          lastInvoiceReset: now,
+        },
+      });
+    }
+
+    // Check invoice limit for FREE tier
+    if (user.subscriptionTier === 'FREE' && user.subscriptionStatus === 'ACTIVE') {
+      const currentCount = shouldReset ? 0 : user.invoiceCount;
+      if (currentCount >= 3) {
+        return NextResponse.json(
+          { 
+            error: 'Invoice limit reached',
+            message: 'You have reached your monthly limit of 3 invoices. Upgrade to Premium for unlimited invoices.',
+            limit: true,
+          },
+          { status: 403 }
+        );
+      }
+    }
+
     const body = await req.json();
     const {
       customerId,
@@ -58,6 +103,16 @@ export async function POST(req: NextRequest) {
         items: true,
       },
     });
+
+    // Increment invoice count for FREE tier users
+    if (user.subscriptionTier === 'FREE') {
+      await prisma.user.update({
+        where: { id: session.user.id },
+        data: {
+          invoiceCount: { increment: 1 },
+        },
+      });
+    }
 
     return NextResponse.json(invoice);
   } catch (error) {
