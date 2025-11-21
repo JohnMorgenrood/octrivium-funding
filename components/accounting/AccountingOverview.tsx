@@ -121,6 +121,15 @@ export default function AccountingOverview({
           </Button>
           <Button 
             variant="outline" 
+            onClick={() => router.push('/dashboard/accounting/reports')}
+            className="w-full sm:w-auto"
+          >
+            <FileText className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Reports</span>
+            <span className="sm:hidden text-xs">Reports</span>
+          </Button>
+          <Button 
+            variant="outline" 
             onClick={() => router.push('/dashboard/accounting/customers')}
             className="w-full sm:w-auto"
           >

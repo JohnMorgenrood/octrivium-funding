@@ -306,6 +306,15 @@ model Deal {
   approvedAt            DateTime?
   approvedBy            String?
   
+  // Fund Release Requirements
+  fundsHeld             Decimal    @default(0) @db.Decimal(15, 2) // Money held until docs verified
+  fundsReleased         Decimal    @default(0) @db.Decimal(15, 2) // Money released to business
+  documentsVerified     Boolean    @default(false) // Business submitted required docs
+  bankDetailsVerified   Boolean    @default(false) // Bank account verified
+  accountingSoftwareActive Boolean @default(false) // Must use Octrivium accounting
+  canReceiveFunds       Boolean    @default(false) // All requirements met
+  fundsReleasedAt       DateTime?  // When funds were released
+  
   // Premium Listing Features
   isFeatured            Boolean    @default(false) // Featured badge on card
   isTopListing          Boolean    @default(false) // Top of homepage spot
@@ -340,7 +349,11 @@ model Investment {
   sharePercentage   Decimal   @db.Decimal(10, 6) // Investor's % of total deal
   totalReceived     Decimal   @default(0) @db.Decimal(15, 2)
   expectedReturn    Decimal   @db.Decimal(15, 2) // amount * repaymentCap
-  status            String    @default("ACTIVE") // ACTIVE, COMPLETED, CANCELLED
+  status            String    @default("PENDING") // PENDING, ACTIVE, COMPLETED, CANCELLED
+  paymentMethod     String?   // YOCO, EFT, etc
+  paymentToken      String?   // Yoco payment token
+  paymentStatus     String    @default("PENDING") // PENDING, PAID, FAILED
+  paidAt            DateTime?
   agreementSigned   Boolean   @default(false)
   agreementUrl      String?
   signedAt          DateTime?
