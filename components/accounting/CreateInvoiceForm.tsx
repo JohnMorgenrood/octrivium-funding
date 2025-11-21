@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Plus, Trash2, ArrowLeft, Save, Send } from 'lucide-react';
+import { Plus, Trash2, ArrowLeft, Save, Send, Palette } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -25,6 +25,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import TemplateSelector from './TemplateSelector';
 
 interface Customer {
   id: string;
@@ -80,6 +81,7 @@ export default function CreateInvoiceForm({ customers, invoiceNumber, products }
     requiresSignature: false,
     notes: '',
     terms: 'Payment due within 30 days',
+    templateId: 1,
   });
 
   const [items, setItems] = useState<InvoiceItem[]>([
@@ -93,6 +95,7 @@ export default function CreateInvoiceForm({ customers, invoiceNumber, products }
     company: '',
   });
   const [showPreview, setShowPreview] = useState(false);
+  const [showTemplateSelector, setShowTemplateSelector] = useState(false);
 
   // Fetch company data on mount
   useEffect(() => {
@@ -259,6 +262,7 @@ export default function CreateInvoiceForm({ customers, invoiceNumber, products }
           taxAmount,
           total,
           amountDue: total,
+          templateId: formData.templateId,
           items: items.map(({ id, ...item }) => item),
         }),
       });
@@ -645,6 +649,53 @@ export default function CreateInvoiceForm({ customers, invoiceNumber, products }
               </div>
             </CardContent>
           </Card>
+
+          {/* Template Selection */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Palette className="h-5 w-5" />
+                Design Template
+              </CardTitle>
+              <CardDescription>
+                Choose a professional layout for your {formData.documentType.toLowerCase()}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button 
+                variant="outline" 
+                className="w-full"
+                onClick={() => setShowTemplateSelector(true)}
+              >
+                <Palette className="h-4 w-4 mr-2" />
+                Choose Template (Currently: Template {formData.templateId})
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Template Selector Dialog */}
+          <TemplateSelector
+            open={showTemplateSelector}
+            onClose={() => setShowTemplateSelector(false)}
+            onSelect={(templateId: number) => {
+              setFormData({ ...formData, templateId });
+              setShowTemplateSelector(false);
+            }}
+            currentTemplate={formData.templateId}
+            invoice={{
+              invoiceNumber: formData.invoiceNumber,
+              issueDate: formData.issueDate,
+              dueDate: formData.dueDate,
+              notes: formData.notes,
+              terms: formData.terms,
+              subtotal,
+              taxAmount,
+              total,
+            }}
+            user={{ name: companyData.companyName, logo: companyData.companyLogo }}
+            customer={customers.find(c => c.id === formData.customerId) || { name: 'Sample Customer', email: 'customer@example.com' }}
+            items={items}
+          />
 
           {/* Notes & Terms */}
           <Card>

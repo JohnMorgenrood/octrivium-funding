@@ -869,6 +869,8 @@ model Invoice {
   // Invoice Details
   invoiceNumber     String            @unique
   status            InvoiceStatus     @default(DRAFT)
+  documentType      String            @default("INVOICE") // INVOICE or QUOTE
+  includeVat        Boolean           @default(true)
   
   // Dates
   issueDate         DateTime          @default(now())

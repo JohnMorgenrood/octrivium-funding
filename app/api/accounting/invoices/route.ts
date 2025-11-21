@@ -81,6 +81,10 @@ export async function POST(req: NextRequest) {
       notes,
       terms,
       items,
+      templateId,
+      documentType,
+      includeVat,
+      requiresSignature,
     } = body;
 
     // Generate unique payment link
@@ -104,6 +108,10 @@ export async function POST(req: NextRequest) {
         notes,
         terms,
         paymentLink,
+        templateId: templateId || 1,
+        documentType: documentType || 'INVOICE',
+        includeVat: includeVat !== undefined ? includeVat : true,
+        requiresSignature: requiresSignature || false,
         items: {
           create: items,
         },
