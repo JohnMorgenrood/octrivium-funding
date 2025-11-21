@@ -10,9 +10,10 @@ interface YocoButtonProps {
   invoiceId: string;
   amount: number; // Amount in ZAR
   invoiceNumber: string;
+  customPublicKey?: string | null; // For BUSINESS tier users with their own Yoco
 }
 
-export default function YocoButton({ invoiceId, amount, invoiceNumber }: YocoButtonProps) {
+export default function YocoButton({ invoiceId, amount, invoiceNumber, customPublicKey }: YocoButtonProps) {
   const router = useRouter();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
@@ -30,11 +31,11 @@ export default function YocoButton({ invoiceId, amount, invoiceNumber }: YocoBut
     try {
       setLoading(true);
 
-      // Get public key from environment
-      const publicKey = process.env.NEXT_PUBLIC_YOCO_PUBLIC_KEY;
+      // Get public key - use custom key for BUSINESS tier, otherwise platform key
+      const publicKey = customPublicKey || process.env.NEXT_PUBLIC_YOCO_PUBLIC_KEY;
 
       if (!publicKey) {
-        console.error('Yoco public key not found in environment variables');
+        console.error('Yoco public key not found');
         toast({
           title: 'Configuration Error',
           description: 'Payment system not properly configured. Please contact support.',
@@ -44,7 +45,8 @@ export default function YocoButton({ invoiceId, amount, invoiceNumber }: YocoBut
         return;
       }
 
-      console.log('Initializing Yoco with public key:', publicKey.substring(0, 10) + '...');
+      const isCustomKey = !!customPublicKey;
+      console.log(`Initializing Yoco with ${isCustomKey ? 'merchant' : 'platform'} key:`, publicKey.substring(0, 10) + '...');
 
       // Load Yoco SDK if not already loaded
       if (!(window as any).YocoSDK) {

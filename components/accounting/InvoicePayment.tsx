@@ -47,6 +47,8 @@ interface InvoicePaymentProps {
       bankAccountNumber?: string | null;
       bankBranchCode?: string | null;
       bankAccountType?: string | null;
+      yocoPublicKey?: string | null;
+      yocoSecretKey?: string | null;
     };
     items: Array<{
       id: string;
@@ -304,13 +306,26 @@ export default function InvoicePayment({ invoice }: InvoicePaymentProps) {
           <>
             <Card>
               <CardHeader>
-                <CardTitle>Pay with Yoco (ZAR)</CardTitle>
+                <CardTitle>
+                  Pay with Yoco (ZAR)
+                  {invoice.user?.subscriptionTier === 'BUSINESS' && invoice.user?.yocoPublicKey && (
+                    <span className="text-xs text-green-600 ml-2 font-normal">
+                      • Direct to merchant
+                    </span>
+                  )}
+                  {(invoice.user?.subscriptionTier === 'FREE' || invoice.user?.subscriptionTier === 'STARTER') && (
+                    <span className="text-xs text-blue-600 ml-2 font-normal">
+                      • Processed via platform
+                    </span>
+                  )}
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <YocoButton 
                   invoiceId={invoice.id}
                   amount={invoice.amountDue}
                   invoiceNumber={invoice.invoiceNumber}
+                  customPublicKey={invoice.user?.subscriptionTier === 'BUSINESS' ? invoice.user?.yocoPublicKey : undefined}
                 />
               </CardContent>
             </Card>

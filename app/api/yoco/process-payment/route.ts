@@ -8,12 +8,21 @@ export async function POST(request: Request) {
     console.log('Processing Yoco payment for invoice:', invoiceId);
     console.log('Amount (cents):', amount);
 
-    // Get the invoice
+    // Get the invoice with user details
     const invoice = await prisma.invoice.findUnique({
       where: { id: invoiceId },
       include: {
         customer: true,
-        user: true,
+        user: {
+          select: {
+            id: true,
+            email: true,
+            firstName: true,
+            lastName: true,
+            subscriptionTier: true,
+            yocoSecretKey: true, // For BUSINESS tier custom Yoco
+          },
+        },
       },
     });
 
@@ -25,12 +34,25 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Invoice already paid' }, { status: 400 });
     }
 
+    // Determine which Yoco secret key to use
+    // BUSINESS tier with custom keys: use their key (payment goes directly to them)
+    // FREE/STARTER tier: use platform key (payment comes to platform, platform earns fee)
+    const useCustomYoco = invoice.user.subscriptionTier === 'BUSINESS' && invoice.user.yocoSecretKey;
+    const yocoSecretKey = useCustomYoco ? invoice.user.yocoSecretKey : process.env.YOCO_SECRET_KEY;
+
+    if (!yocoSecretKey) {
+      console.error('No Yoco secret key available');
+      return NextResponse.json({ error: 'Payment system not configured' }, { status: 500 });
+    }
+
+    console.log(`Processing payment via ${useCustomYoco ? 'merchant' : 'platform'} Yoco account`);
+
     // Process payment with Yoco API
     const yocoResponse = await fetch('https://online.yoco.com/v1/charges/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.YOCO_SECRET_KEY}`,
+        'Authorization': `Bearer ${yocoSecretKey}`,
       },
       body: JSON.stringify({
         token: token,

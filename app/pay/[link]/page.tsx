@@ -22,6 +22,8 @@ export default async function PaymentPage({ params }: { params: { link: string }
           bankAccountNumber: true,
           bankBranchCode: true,
           bankAccountType: true,
+          yocoPublicKey: true,
+          yocoSecretKey: true,
         },
       },
     },
