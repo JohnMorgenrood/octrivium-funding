@@ -69,25 +69,6 @@ export default function YocoButton({ invoiceId, amount, invoiceNumber, customPub
       {loading ? (
         <>
           <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-          Processing...
-        </>
-      ) : (
-        <>
-          <svg
-            className="mr-2 h-5 w-5"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-          >
-  return (
-    <Button
-      onClick={handleYocoPayment}
-      disabled={loading}
-      className="w-full bg-[#00A859] hover:bg-[#008f4a] text-white"
-      size="lg"
-    >
-      {loading ? (
-        <>
-          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
           Redirecting to payment...
         </>
       ) : (
