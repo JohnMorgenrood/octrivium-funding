@@ -72,11 +72,12 @@ export const authOptions: NextAuthOptions = {
         });
 
         if (existingUser) {
-          // User exists, allow sign in
+          // Existing user, allow sign in
           return true;
         }
 
-        // Create new user from Google
+        // New user - create with default INVESTOR role
+        // User will be redirected to complete-profile to set actual role
         const names = user.name?.split(' ') || ['', ''];
         const isAdmin = email === 'golearnx@gmail.com'; // Admin account
 
@@ -86,7 +87,7 @@ export const authOptions: NextAuthOptions = {
             firstName: names[0] || 'User',
             lastName: names.slice(1).join(' ') || 'Account',
             password: '', // No password for Google accounts
-            role: isAdmin ? 'ADMIN' : 'INVESTOR',
+            role: isAdmin ? 'ADMIN' : 'INVESTOR', // Default to INVESTOR, will be updated in complete-profile
             emailVerified: new Date(),
             avatar: user.image,
             subscriptionTier: isAdmin ? 'BUSINESS' : 'FREE', // Admin gets BUSINESS tier
@@ -94,6 +95,8 @@ export const authOptions: NextAuthOptions = {
           },
         });
 
+        // New users need to complete their profile
+        // This will be handled by checking role in complete-profile page
         return true;
       }
       return true;
