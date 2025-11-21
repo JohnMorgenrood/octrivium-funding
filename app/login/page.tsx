@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
+
+// Note: Client components can't export metadata directly, but parent layout handles it
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
