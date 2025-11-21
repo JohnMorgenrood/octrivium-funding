@@ -27,7 +27,15 @@ export async function GET(
             lastName: true,
             companyName: true,
             companyLogo: true,
-            phone: true,
+            companyEmail: true,
+            companyPhone: true,
+            companyAddress: true,
+            companyCity: true,
+            companyPostalCode: true,
+            companyCountry: true,
+            taxNumber: true,
+            registrationNumber: true,
+            website: true,
           },
         },
       },
@@ -365,8 +373,15 @@ export async function GET(
                 ${invoice.user.companyLogo ? `<img src="${invoice.user.companyLogo}" alt="Logo" class="company-logo">` : ''}
                 <div class="company-name">${invoice.user.companyName || `${invoice.user.firstName} ${invoice.user.lastName}`}</div>
                 <div class="company-details">
-                  ${invoice.user.email}<br>
-                  ${invoice.user.phone ? `${invoice.user.phone}<br>` : ''}
+                  ${invoice.user.companyEmail || invoice.user.email}<br>
+                  ${invoice.user.companyPhone ? `${invoice.user.companyPhone}<br>` : ''}
+                  ${invoice.user.companyAddress ? `${invoice.user.companyAddress}<br>` : ''}
+                  ${invoice.user.companyCity || invoice.user.companyPostalCode || invoice.user.companyCountry ? 
+                    `${[invoice.user.companyCity, invoice.user.companyPostalCode, invoice.user.companyCountry].filter(Boolean).join(', ')}<br>` 
+                    : ''}
+                  ${invoice.user.website ? `${invoice.user.website}<br>` : ''}
+                  ${invoice.user.registrationNumber ? `Reg: ${invoice.user.registrationNumber}<br>` : ''}
+                  ${invoice.user.taxNumber ? `VAT: ${invoice.user.taxNumber}` : ''}
                 </div>
               </div>
               <div class="invoice-title">
@@ -385,6 +400,7 @@ export async function GET(
                 ${invoice.customer?.email ? `<p>${invoice.customer.email}</p>` : ''}
                 ${invoice.customer?.phone ? `<p>${invoice.customer.phone}</p>` : ''}
                 ${invoice.customer?.addressLine1 ? `<p>${invoice.customer.addressLine1}</p>` : ''}
+                ${invoice.customer?.city ? `<p>${invoice.customer.city}</p>` : ''}
               </div>
               
               <div class="info-box">

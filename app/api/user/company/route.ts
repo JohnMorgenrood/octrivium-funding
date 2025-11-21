@@ -16,6 +16,15 @@ export async function GET() {
       select: {
         companyName: true,
         companyLogo: true,
+        companyEmail: true,
+        companyPhone: true,
+        companyAddress: true,
+        companyCity: true,
+        companyPostalCode: true,
+        companyCountry: true,
+        taxNumber: true,
+        registrationNumber: true,
+        website: true,
       },
     });
 
@@ -41,18 +50,48 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { companyName, companyLogo } = await request.json();
+    const { 
+      companyName, 
+      companyLogo,
+      companyEmail,
+      companyPhone,
+      companyAddress,
+      companyCity,
+      companyPostalCode,
+      companyCountry,
+      taxNumber,
+      registrationNumber,
+      website,
+    } = await request.json();
 
     const user = await prisma.user.update({
       where: { email: session.user.email },
       data: {
         companyName: companyName || null,
         companyLogo: companyLogo || null,
+        companyEmail: companyEmail || null,
+        companyPhone: companyPhone || null,
+        companyAddress: companyAddress || null,
+        companyCity: companyCity || null,
+        companyPostalCode: companyPostalCode || null,
+        companyCountry: companyCountry || null,
+        taxNumber: taxNumber || null,
+        registrationNumber: registrationNumber || null,
+        website: website || null,
       },
       select: {
         id: true,
         companyName: true,
         companyLogo: true,
+        companyEmail: true,
+        companyPhone: true,
+        companyAddress: true,
+        companyCity: true,
+        companyPostalCode: true,
+        companyCountry: true,
+        taxNumber: true,
+        registrationNumber: true,
+        website: true,
       },
     });
 

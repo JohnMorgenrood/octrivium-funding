@@ -25,6 +25,15 @@ export default function SettingsPage() {
   const [companyData, setCompanyData] = useState({
     companyName: '',
     companyLogo: '',
+    companyEmail: '',
+    companyPhone: '',
+    companyAddress: '',
+    companyCity: '',
+    companyPostalCode: '',
+    companyCountry: '',
+    taxNumber: '',
+    registrationNumber: '',
+    website: '',
   });
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string>('');
@@ -56,21 +65,31 @@ export default function SettingsPage() {
 
   useEffect(() => {
     if (session?.user) {
-      const names = session.user.name?.split(' ') || ['', ''];
-      setProfileData({
-        firstName: names[0] || '',
-        lastName: names[1] || '',
-        email: session.user.email || '',
-        phone: '',
-      });
-      
-      // Fetch company data
+      // Fetch all user data
+      fetchProfileData();
       fetchCompanyData();
       fetchBankData();
       fetchYocoData();
       fetchTeamMembers();
     }
   }, [session]);
+
+  const fetchProfileData = async () => {
+    try {
+      const res = await fetch('/api/user/profile');
+      if (res.ok) {
+        const data = await res.json();
+        setProfileData({
+          firstName: data.firstName || '',
+          lastName: data.lastName || '',
+          email: data.email || '',
+          phone: data.phone || '',
+        });
+      }
+    } catch (error) {
+      console.error('Failed to fetch profile data:', error);
+    }
+  };
 
   const fetchBankData = async () => {
     try {
@@ -130,6 +149,15 @@ export default function SettingsPage() {
         setCompanyData({
           companyName: data.companyName || '',
           companyLogo: data.companyLogo || '',
+          companyEmail: data.companyEmail || '',
+          companyPhone: data.companyPhone || '',
+          companyAddress: data.companyAddress || '',
+          companyCity: data.companyCity || '',
+          companyPostalCode: data.companyPostalCode || '',
+          companyCountry: data.companyCountry || 'South Africa',
+          taxNumber: data.taxNumber || '',
+          registrationNumber: data.registrationNumber || '',
+          website: data.website || '',
         });
         if (data.companyLogo) {
           setLogoPreview(data.companyLogo);
@@ -206,6 +234,15 @@ export default function SettingsPage() {
         body: JSON.stringify({
           companyName: companyData.companyName,
           companyLogo: logoUrl || null,
+          companyEmail: companyData.companyEmail,
+          companyPhone: companyData.companyPhone,
+          companyAddress: companyData.companyAddress,
+          companyCity: companyData.companyCity,
+          companyPostalCode: companyData.companyPostalCode,
+          companyCountry: companyData.companyCountry,
+          taxNumber: companyData.taxNumber,
+          registrationNumber: companyData.registrationNumber,
+          website: companyData.website,
         }),
       });
 
@@ -214,6 +251,15 @@ export default function SettingsPage() {
         setCompanyData({
           companyName: updatedData.companyName || '',
           companyLogo: updatedData.companyLogo || '',
+          companyEmail: updatedData.companyEmail || '',
+          companyPhone: updatedData.companyPhone || '',
+          companyAddress: updatedData.companyAddress || '',
+          companyCity: updatedData.companyCity || '',
+          companyPostalCode: updatedData.companyPostalCode || '',
+          companyCountry: updatedData.companyCountry || '',
+          taxNumber: updatedData.taxNumber || '',
+          registrationNumber: updatedData.registrationNumber || '',
+          website: updatedData.website || '',
         });
         setLogoPreview(updatedData.companyLogo || '');
         toast({
@@ -252,15 +298,33 @@ export default function SettingsPage() {
       });
 
       if (res.ok) {
+        const updatedData = await res.json();
+        // Update local state with response
+        setProfileData({
+          firstName: updatedData.firstName || '',
+          lastName: updatedData.lastName || '',
+          email: updatedData.email || '',
+          phone: updatedData.phone || '',
+        });
+        
         toast({
           title: 'Success',
           description: 'Profile updated successfully',
         });
-        await update();
+        
+        // Update session
+        await update({
+          ...session,
+          user: {
+            ...session?.user,
+            name: `${updatedData.firstName} ${updatedData.lastName}`,
+          },
+        });
       } else {
+        const error = await res.json();
         toast({
           title: 'Error',
-          description: 'Failed to update profile',
+          description: error.error || 'Failed to update profile',
           variant: 'destructive',
         });
       }
@@ -603,63 +667,190 @@ export default function SettingsPage() {
         <TabsContent value="company">
           <Card>
             <CardHeader>
-              <CardTitle>Company Settings</CardTitle>
-              <CardDescription>Manage your company information for invoices and quotes</CardDescription>
+              <CardTitle>Company Information</CardTitle>
+              <CardDescription>This information will appear on your invoices and quotes</CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleCompanyUpdate} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="companyName">Company Name</Label>
-                  <Input
-                    id="companyName"
-                    placeholder="Your Company Name"
-                    value={companyData.companyName}
-                    onChange={(e) => setCompanyData({ ...companyData, companyName: e.target.value })}
-                  />
-                  <p className="text-xs text-muted-foreground">This will appear on your invoices and quotes</p>
+              <form onSubmit={handleCompanyUpdate} className="space-y-6">
+                {/* Company Name & Logo */}
+                <div className="space-y-4 pb-4 border-b">
+                  <h3 className="font-medium">Basic Information</h3>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="companyName">Company Name *</Label>
+                    <Input
+                      id="companyName"
+                      placeholder="Your Company Name"
+                      value={companyData.companyName}
+                      onChange={(e) => setCompanyData({ ...companyData, companyName: e.target.value })}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="logo">Company Logo</Label>
+                    <div className="flex items-start gap-4">
+                      <div className="flex-1">
+                        <Input
+                          id="logo"
+                          type="file"
+                          accept="image/png,image/jpeg,image/jpg"
+                          onChange={handleLogoChange}
+                          className="cursor-pointer"
+                        />
+                        <p className="text-xs text-muted-foreground mt-1">
+                          PNG, JPG or JPEG. Max 2MB. Recommended: 200x200px
+                        </p>
+                      </div>
+                      {logoPreview && (
+                        <div className="flex flex-col gap-2">
+                          <div className="w-24 h-24 border rounded-lg overflow-hidden bg-muted flex items-center justify-center">
+                            <img 
+                              src={logoPreview} 
+                              alt="Logo preview" 
+                              className="w-full h-full object-contain"
+                            />
+                          </div>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={handleRemoveLogo}
+                            className="text-xs"
+                          >
+                            Remove
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="logo">Company Logo</Label>
-                  <div className="flex items-start gap-4">
-                    <div className="flex-1">
+                {/* Contact Information */}
+                <div className="space-y-4 pb-4 border-b">
+                  <h3 className="font-medium">Contact Information</h3>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="companyEmail">Business Email</Label>
                       <Input
-                        id="logo"
-                        type="file"
-                        accept="image/png,image/jpeg,image/jpg"
-                        onChange={handleLogoChange}
-                        className="cursor-pointer"
+                        id="companyEmail"
+                        type="email"
+                        placeholder="invoices@yourcompany.com"
+                        value={companyData.companyEmail}
+                        onChange={(e) => setCompanyData({ ...companyData, companyEmail: e.target.value })}
                       />
-                      <p className="text-xs text-muted-foreground mt-1">
-                        PNG, JPG or JPEG. Max 2MB. Recommended: 200x200px
+                      <p className="text-xs text-muted-foreground">
+                        This email will appear on invoices (separate from your login email)
                       </p>
                     </div>
-                    {logoPreview && (
-                      <div className="flex flex-col gap-2">
-                        <div className="w-24 h-24 border rounded-lg overflow-hidden bg-muted flex items-center justify-center">
-                          <img 
-                            src={logoPreview} 
-                            alt="Logo preview" 
-                            className="w-full h-full object-contain"
-                          />
-                        </div>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={handleRemoveLogo}
-                          className="text-xs"
-                        >
-                          Remove
-                        </Button>
-                      </div>
-                    )}
+
+                    <div className="space-y-2">
+                      <Label htmlFor="companyPhone">Business Phone</Label>
+                      <Input
+                        id="companyPhone"
+                        type="tel"
+                        placeholder="+27 XX XXX XXXX"
+                        value={companyData.companyPhone}
+                        onChange={(e) => setCompanyData({ ...companyData, companyPhone: e.target.value })}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="website">Website</Label>
+                    <Input
+                      id="website"
+                      type="url"
+                      placeholder="https://yourcompany.com"
+                      value={companyData.website}
+                      onChange={(e) => setCompanyData({ ...companyData, website: e.target.value })}
+                    />
+                  </div>
+                </div>
+
+                {/* Address Information */}
+                <div className="space-y-4 pb-4 border-b">
+                  <h3 className="font-medium">Business Address</h3>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="companyAddress">Street Address</Label>
+                    <Input
+                      id="companyAddress"
+                      placeholder="123 Business Street"
+                      value={companyData.companyAddress}
+                      onChange={(e) => setCompanyData({ ...companyData, companyAddress: e.target.value })}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="companyCity">City</Label>
+                      <Input
+                        id="companyCity"
+                        placeholder="Cape Town"
+                        value={companyData.companyCity}
+                        onChange={(e) => setCompanyData({ ...companyData, companyCity: e.target.value })}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="companyPostalCode">Postal Code</Label>
+                      <Input
+                        id="companyPostalCode"
+                        placeholder="8001"
+                        value={companyData.companyPostalCode}
+                        onChange={(e) => setCompanyData({ ...companyData, companyPostalCode: e.target.value })}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="companyCountry">Country</Label>
+                      <Input
+                        id="companyCountry"
+                        placeholder="South Africa"
+                        value={companyData.companyCountry}
+                        onChange={(e) => setCompanyData({ ...companyData, companyCountry: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Tax & Registration */}
+                <div className="space-y-4">
+                  <h3 className="font-medium">Tax & Registration Information</h3>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="registrationNumber">Business Registration Number</Label>
+                      <Input
+                        id="registrationNumber"
+                        placeholder="2023/123456/07"
+                        value={companyData.registrationNumber}
+                        onChange={(e) => setCompanyData({ ...companyData, registrationNumber: e.target.value })}
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Company registration or CK number
+                      </p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="taxNumber">VAT Registration Number</Label>
+                      <Input
+                        id="taxNumber"
+                        placeholder="4123456789"
+                        value={companyData.taxNumber}
+                        onChange={(e) => setCompanyData({ ...companyData, taxNumber: e.target.value })}
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Leave blank if not VAT registered
+                      </p>
+                    </div>
                   </div>
                 </div>
 
                 <Button type="submit" disabled={loading}>
                   {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                  Save Company Settings
+                  Save Company Information
                 </Button>
               </form>
             </CardContent>

@@ -98,6 +98,15 @@ model User {
   avatar        String?
   companyLogo   String?
   companyName   String?
+  companyEmail  String?   // Business email for invoices (different from login email)
+  companyPhone  String?   // Business phone
+  companyAddress String?  // Full business address
+  companyCity   String?   // City
+  companyPostalCode String? // Postal code
+  companyCountry String?  // Country
+  taxNumber     String?   // VAT/Tax registration number
+  registrationNumber String? // Business registration number
+  website       String?   // Company website
   emailVerified DateTime?
   kycStatus     KYCStatus @default(NOT_SUBMITTED)
   createdAt     DateTime  @default(now())
