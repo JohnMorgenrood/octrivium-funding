@@ -18,6 +18,14 @@ export default function YocoButton({ invoiceId, amount, invoiceNumber, customPub
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
 
+  // Format currency helper
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-ZA', {
+      style: 'currency',
+      currency: 'ZAR',
+    }).format(amount);
+  };
+
   // Log on component mount to check if env var is available
   useEffect(() => {
     const key = process.env.NEXT_PUBLIC_YOCO_PUBLIC_KEY;
@@ -83,12 +91,14 @@ export default function YocoButton({ invoiceId, amount, invoiceNumber, customPub
       });
 
       console.log('Opening Yoco popup...');
-      // Create inline payment
+      // Create inline payment with enhanced styling
       yoco.showPopup({
         amountInCents: Math.round(amount * 100), // Convert ZAR to cents
         currency: 'ZAR',
-        name: 'Invoice Payment',
-        description: `Payment for invoice ${invoiceNumber}`,
+        name: 'Octrivium Funding',
+        description: `Invoice #${invoiceNumber} - ${formatCurrency(amount)}`,
+        image: '/assets/logo.png',
+        locale: 'en',
         callback: async (result: any) => {
           console.log('Yoco callback received:', result);
           if (result.error) {
@@ -124,12 +134,13 @@ export default function YocoButton({ invoiceId, amount, invoiceNumber, customPub
 
             toast({
               title: 'Payment Successful!',
-              description: 'Your payment has been processed.',
+              description: 'Your payment has been processed. Redirecting to home...',
             });
 
-            // Reload page to show updated invoice status
-            router.refresh();
-            window.location.reload();
+            // Redirect to home page after successful payment
+            setTimeout(() => {
+              window.location.href = '/';
+            }, 1500);
           } catch (error: any) {
             console.error('Error processing payment:', error);
             toast({

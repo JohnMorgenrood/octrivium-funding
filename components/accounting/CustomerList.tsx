@@ -276,9 +276,9 @@ export default function CustomerList({ customers: initialCustomers }: CustomerLi
                       <h4 className="font-semibold truncate">{customer.name}</h4>
                       <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-1 text-sm text-muted-foreground">
                         {customer.email && (
-                          <span className="flex items-center gap-1">
-                            <Mail className="h-3 w-3" />
-                            {customer.email}
+                          <span className="flex items-center gap-1 max-w-[200px] sm:max-w-none">
+                            <Mail className="h-3 w-3 flex-shrink-0" />
+                            <span className="truncate">{customer.email}</span>
                           </span>
                         )}
                         {customer.phone && (
