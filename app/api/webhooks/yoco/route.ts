@@ -78,7 +78,43 @@ async function handlePaymentSuccess(eventPayload: any) {
     }
 
     if (invoice.status === 'PAID') {
-      console.log('Invoice already marked as paid');
+      console.log('Invoice already marked as paid - possible duplicate payment');
+      
+      // Check if this is a duplicate checkout attempt
+      const existingTransaction = await prisma.transaction.findFirst({
+        where: {
+          reference: `INV-${invoice.invoiceNumber}`,
+          status: 'COMPLETED',
+        },
+      });
+
+      if (existingTransaction) {
+        console.log('Duplicate payment detected! Existing transaction:', existingTransaction.id);
+        // TODO: Automatically trigger refund for the duplicate payment
+        // For now, log it for admin review
+        await prisma.transaction.create({
+          data: {
+            walletId: (existingTransaction as any).walletId,
+            type: 'REFUND',
+            status: 'PENDING',
+            amount: -Number(invoice.amountPaid),
+            fee: 0,
+            netAmount: -Number(invoice.amountPaid),
+            currency: 'ZAR',
+            reference: `DUPLICATE-PAYMENT-INV-${invoice.invoiceNumber}`,
+            description: `DUPLICATE PAYMENT DETECTED for invoice ${invoice.invoiceNumber} - Requires manual refund`,
+            metadata: {
+              invoiceId: invoice.id,
+              yocoCheckoutId: checkoutId,
+              isDuplicate: true,
+              requiresRefund: true,
+            },
+          },
+        });
+        
+        console.error('⚠️ DUPLICATE PAYMENT - Manual refund required for invoice:', invoice.invoiceNumber);
+      }
+      
       return;
     }
 

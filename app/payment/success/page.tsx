@@ -13,7 +13,7 @@ export default function PaymentSuccessPage() {
   const [verified, setVerified] = useState(false);
 
   useEffect(() => {
-    // Verify the payment status with the backend
+    // Verify and update payment status
     const verifyPayment = async () => {
       if (!invoiceId) {
         setVerifying(false);
@@ -21,11 +21,32 @@ export default function PaymentSuccessPage() {
       }
 
       try {
-        const response = await fetch(`/api/invoices/${invoiceId}/status`);
-        const data = await response.json();
+        // First check if already paid
+        const statusResponse = await fetch(`/api/invoices/${invoiceId}/status`);
+        const statusData = await statusResponse.json();
         
-        if (data.status === 'PAID') {
+        if (statusData.status === 'PAID') {
           setVerified(true);
+          setVerifying(false);
+          return;
+        }
+
+        // If not paid yet, try to mark it as paid (for cases when webhook hasn't fired)
+        console.log('Invoice not yet marked as paid, attempting to update...');
+        
+        const updateResponse = await fetch(`/api/invoices/${invoiceId}/mark-paid`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            paymentMethod: 'yoco',
+            source: 'checkout_return',
+          }),
+        });
+
+        if (updateResponse.ok) {
+          setVerified(true);
+        } else {
+          console.error('Failed to mark invoice as paid');
         }
       } catch (error) {
         console.error('Error verifying payment:', error);

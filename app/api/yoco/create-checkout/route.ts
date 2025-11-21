@@ -38,12 +38,36 @@ export async function POST(request: Request) {
     }
 
     if (invoice.status === 'PAID') {
-      return NextResponse.json({ error: 'Invoice already paid' }, { status: 400 });
+      return NextResponse.json({ 
+        error: 'Invoice already paid',
+        message: 'This invoice has already been paid. If you believe this is an error, please contact support.',
+      }, { status: 400 });
     }
 
     // Check authorization
     if (invoice.userId !== session.user.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+    }
+
+    // Check for recent checkout to prevent duplicates
+    const recentTransaction = await prisma.transaction.findFirst({
+      where: {
+        wallet: {
+          userId: invoice.userId,
+        },
+        reference: `INV-${invoice.invoiceNumber}`,
+        status: 'COMPLETED',
+        createdAt: {
+          gte: new Date(Date.now() - 5 * 60 * 1000), // Last 5 minutes
+        },
+      },
+    });
+
+    if (recentTransaction) {
+      return NextResponse.json({
+        error: 'Duplicate payment detected',
+        message: 'A payment for this invoice was recently processed. Please wait a few minutes and refresh the page.',
+      }, { status: 400 });
     }
 
     // Determine which Yoco secret key to use
