@@ -599,11 +599,11 @@ export default function DealDetailPage({ params }: { params: { id: string } }) {
                     {paymentMethod === 'yoco' && (
                       <Button 
                         onClick={handleYocoPayment}
-                        className="w-full h-11 sm:h-12 md:h-14 text-sm sm:text-base md:text-lg bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-lg" 
+                        className="w-full bg-black hover:bg-gray-900 text-white font-semibold" 
                         size="lg"
                         disabled={processing}
                       >
-                        <CreditCard className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                        <CreditCard className="h-5 w-5 mr-2" />
                         {processing ? 'Processing...' : 'Pay with Yoco'}
                       </Button>
                     )}
