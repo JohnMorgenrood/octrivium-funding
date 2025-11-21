@@ -11,7 +11,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { token } = await request.json();
+    const { token, tier } = await request.json();
+
+    if (!tier || !['STARTER', 'BUSINESS'].includes(tier)) {
+      return NextResponse.json({ error: 'Invalid tier' }, { status: 400 });
+    }
 
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
@@ -20,6 +24,22 @@ export async function POST(request: Request) {
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
+
+    // Determine pricing and limits based on tier
+    const tierConfig = {
+      STARTER: {
+        amount: 5000, // R50 in cents
+        maxInvoices: 15,
+        maxTeamMembers: 1,
+      },
+      BUSINESS: {
+        amount: 10000, // R100 in cents
+        maxInvoices: null, // unlimited
+        maxTeamMembers: 4,
+      },
+    };
+
+    const config = tierConfig[tier as 'STARTER' | 'BUSINESS'];
 
     // Process payment with Yoco
     const yocoResponse = await fetch('https://online.yoco.com/v1/charges/', {
@@ -30,12 +50,12 @@ export async function POST(request: Request) {
       },
       body: JSON.stringify({
         token: token,
-        amountInCents: 5000, // R50.00
+        amountInCents: config.amount,
         currency: 'ZAR',
         metadata: {
           userId: user.id,
           type: 'subscription',
-          tier: 'PREMIUM',
+          tier: tier,
         },
       }),
     });
@@ -55,15 +75,16 @@ export async function POST(request: Request) {
     const endDate = new Date();
     endDate.setMonth(endDate.getMonth() + 1);
 
-    // Update user to PREMIUM
+    // Update user to selected tier
     await prisma.user.update({
       where: { id: user.id },
       data: {
-        subscriptionTier: 'PREMIUM',
+        subscriptionTier: tier,
         subscriptionStatus: 'ACTIVE',
         subscriptionStartDate: startDate,
         subscriptionEndDate: endDate,
         invoiceCount: 0, // Reset count
+        teamMemberCount: 1, // Reset to 1 (just the owner)
       },
     });
 
@@ -71,21 +92,23 @@ export async function POST(request: Request) {
     await prisma.subscription.create({
       data: {
         userId: user.id,
-        tier: 'PREMIUM',
+        tier: tier,
         status: 'ACTIVE',
-        amount: 50.00,
+        amount: config.amount / 100, // Convert cents to Rands
         currency: 'ZAR',
         startDate,
         endDate,
+        maxInvoices: config.maxInvoices,
+        maxTeamMembers: config.maxTeamMembers,
         yocoChargeId: yocoData.id,
       },
     });
 
     return NextResponse.json({
       success: true,
-      message: 'Successfully upgraded to Premium!',
+      message: `Successfully upgraded to ${tier}!`,
       subscription: {
-        tier: 'PREMIUM',
+        tier: tier,
         endDate,
       },
     });

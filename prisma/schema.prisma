@@ -54,7 +54,8 @@ enum TransactionStatus {
 
 enum SubscriptionTier {
   FREE
-  PREMIUM
+  STARTER
+  BUSINESS
 }
 
 enum SubscriptionStatus {
@@ -107,15 +108,23 @@ model User {
   subscriptionStatus    SubscriptionStatus   @default(ACTIVE)
   subscriptionStartDate DateTime?
   subscriptionEndDate   DateTime?
-  invoiceCount          Int                  @default(0) // Resets monthly for FREE tier
+  invoiceCount          Int                  @default(0) // Resets monthly for FREE/STARTER tiers
   lastInvoiceReset      DateTime?            // Track when we last reset the count
+  teamMemberCount       Int                  @default(1) // Number of users in this company account
+  companyOwnerId        String?              // If this is a team member, link to company owner
+  companyOwner          User?                @relation("CompanyMembers", fields: [companyOwnerId], references: [id], onDelete: Cascade)
+  teamMembers           User[]               @relation("CompanyMembers")
 
-  // Bank details for invoices (EFT/Bank Transfer) - PREMIUM ONLY
+  // Bank details for invoices (EFT/Bank Transfer) - STARTER/BUSINESS ONLY
   bankName          String?
   bankAccountName   String?
   bankAccountNumber String?
   bankBranchCode    String?
   bankAccountType   String?  // Cheque, Savings, Business
+
+  // Company's own Yoco keys (BUSINESS TIER ONLY) - if empty, uses platform Yoco
+  yocoPublicKey     String?  // Their own pk_live_xxx or pk_test_xxx
+  yocoSecretKey     String?  // Their own sk_live_xxx or sk_test_xxx
 
   // Relations
   wallet        Wallet?
@@ -182,11 +191,13 @@ model Subscription {
   userId          String
   tier            SubscriptionTier
   status          SubscriptionStatus @default(ACTIVE)
-  amount          Decimal            @db.Decimal(10, 2) // R50.00
+  amount          Decimal            @db.Decimal(10, 2) // R50.00 or R100.00
   currency        String             @default("ZAR")
   startDate       DateTime
   endDate         DateTime
   autoRenew       Boolean            @default(true)
+  maxInvoices     Int?               // 15 for STARTER, null for BUSINESS (unlimited)
+  maxTeamMembers  Int?               // 1 for STARTER, 4 for BUSINESS
   yocoChargeId    String?            // Yoco payment reference
   cancelledAt     DateTime?
   createdAt       DateTime           @default(now())

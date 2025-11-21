@@ -26,12 +26,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // Check if we need to reset invoice count (monthly reset for FREE tier)
+    // Check if we need to reset invoice count (monthly reset for FREE/STARTER tiers)
     const now = new Date();
     const lastReset = user.lastInvoiceReset ? new Date(user.lastInvoiceReset) : null;
     const shouldReset = !lastReset || (now.getMonth() !== lastReset.getMonth() || now.getFullYear() !== lastReset.getFullYear());
 
-    if (user.subscriptionTier === 'FREE' && shouldReset) {
+    if ((user.subscriptionTier === 'FREE' || user.subscriptionTier === 'STARTER') && shouldReset) {
       await prisma.user.update({
         where: { id: session.user.id },
         data: {
@@ -41,19 +41,29 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Check invoice limit for FREE tier
-    if (user.subscriptionTier === 'FREE' && user.subscriptionStatus === 'ACTIVE') {
-      const currentCount = shouldReset ? 0 : user.invoiceCount;
-      if (currentCount >= 3) {
-        return NextResponse.json(
-          { 
-            error: 'Invoice limit reached',
-            message: 'You have reached your monthly limit of 3 invoices. Upgrade to Premium for unlimited invoices.',
-            limit: true,
-          },
-          { status: 403 }
-        );
-      }
+    // Check invoice limit
+    const currentCount = shouldReset ? 0 : user.invoiceCount;
+    
+    if (user.subscriptionTier === 'FREE' && user.subscriptionStatus === 'ACTIVE' && currentCount >= 3) {
+      return NextResponse.json(
+        { 
+          error: 'Invoice limit reached',
+          message: 'You have reached your monthly limit of 3 invoices. Upgrade to Starter (R50/month) for 15 invoices or Business (R100/month) for unlimited invoices.',
+          limit: true,
+        },
+        { status: 403 }
+      );
+    }
+
+    if (user.subscriptionTier === 'STARTER' && user.subscriptionStatus === 'ACTIVE' && currentCount >= 15) {
+      return NextResponse.json(
+        { 
+          error: 'Invoice limit reached',
+          message: 'You have reached your monthly limit of 15 invoices. Upgrade to Business (R100/month) for unlimited invoices.',
+          limit: true,
+        },
+        { status: 403 }
+      );
     }
 
     const body = await req.json();

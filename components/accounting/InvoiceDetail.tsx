@@ -416,8 +416,8 @@ export default function InvoiceDetail({ invoice }: InvoiceDetailProps) {
               </div>
             )}
 
-            {/* Bank Details for Manual Payment - PREMIUM ONLY */}
-            {invoice.user?.subscriptionTier === 'PREMIUM' && invoice.user?.bankAccountNumber && (
+            {/* Bank Details for Manual Payment - STARTER/BUSINESS ONLY */}
+            {(invoice.user?.subscriptionTier === 'STARTER' || invoice.user?.subscriptionTier === 'BUSINESS') && invoice.user?.bankAccountNumber && (
               <div className="space-y-3 pt-4 border-t dark:border-gray-700 bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
                 <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">Bank Transfer Details:</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">

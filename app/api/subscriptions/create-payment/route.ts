@@ -19,9 +19,9 @@ export async function POST() {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // Check if already premium
-    if (user.subscriptionTier === 'PREMIUM' && user.subscriptionStatus === 'ACTIVE') {
-      return NextResponse.json({ error: 'Already subscribed to Premium' }, { status: 400 });
+    // Check if already subscribed
+    if ((user.subscriptionTier === 'STARTER' || user.subscriptionTier === 'BUSINESS') && user.subscriptionStatus === 'ACTIVE') {
+      return NextResponse.json({ error: 'Already subscribed' }, { status: 400 });
     }
 
     // Create Yoco checkout for R50 subscription

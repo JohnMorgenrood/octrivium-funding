@@ -315,8 +315,8 @@ export default function InvoicePayment({ invoice }: InvoicePaymentProps) {
               </CardContent>
             </Card>
 
-            {/* Bank Transfer - Premium Only */}
-            {invoice.user?.subscriptionTier === 'PREMIUM' && invoice.user?.bankAccountNumber && (
+            {/* Bank Transfer - STARTER/BUSINESS Only */}
+            {(invoice.user?.subscriptionTier === 'STARTER' || invoice.user?.subscriptionTier === 'BUSINESS') && invoice.user?.bankAccountNumber && (
               <Card className="border-blue-200 bg-blue-50/30">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
