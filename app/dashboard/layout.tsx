@@ -16,7 +16,8 @@ import {
   Shield,
   Menu,
   X,
-  Calculator
+  Calculator,
+  CreditCard
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -74,6 +75,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     session.user.role === 'BUSINESS' && { name: 'My Deals', href: '/dashboard/business/deals', icon: Building2 },
     session.user.role === 'BUSINESS' && { name: 'Revenue', href: '/dashboard/revenue', icon: TrendingUp },
     { name: 'Accounting', href: '/dashboard/accounting/overview', icon: Calculator },
+    { name: 'Subscription', href: '/dashboard/subscriptions', icon: CreditCard },
     session.user.role === 'ADMIN' && { name: 'Review Deals', href: '/admin/deals', icon: Shield },
     session.user.role === 'ADMIN' && { name: 'KYC Verification', href: '/admin/kyc', icon: Users },
     { name: 'Wallet', href: '/dashboard/wallet', icon: Wallet },
