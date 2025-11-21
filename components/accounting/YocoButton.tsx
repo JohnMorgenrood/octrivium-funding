@@ -63,13 +63,13 @@ export default function YocoButton({ invoiceId, amount, invoiceNumber, customPub
     <Button
       onClick={handleYocoPayment}
       disabled={loading}
-      className="w-full bg-[#00A859] hover:bg-[#008f4a] text-white"
+      className="w-full bg-black hover:bg-gray-900 text-white font-semibold"
       size="lg"
     >
       {loading ? (
         <>
           <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-          Redirecting to payment...
+          Redirecting...
         </>
       ) : (
         <>
@@ -80,7 +80,7 @@ export default function YocoButton({ invoiceId, amount, invoiceNumber, customPub
           >
             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" />
           </svg>
-          Pay with Yoco (Card • Google Pay • Apple Pay • EFT)
+          Pay with Yoco
         </>
       )}
     </Button>
