@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -17,33 +17,70 @@ export default function YocoButton({ invoiceId, amount, invoiceNumber }: YocoBut
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
 
+  // Log on component mount to check if env var is available
+  useEffect(() => {
+    const key = process.env.NEXT_PUBLIC_YOCO_PUBLIC_KEY;
+    console.log('YocoButton mounted. Public key available:', !!key);
+    if (key) {
+      console.log('Key starts with:', key.substring(0, 10));
+    }
+  }, []);
+
   const handleYocoPayment = async () => {
     try {
       setLoading(true);
 
+      // Get public key from environment
+      const publicKey = process.env.NEXT_PUBLIC_YOCO_PUBLIC_KEY;
+
+      if (!publicKey) {
+        console.error('Yoco public key not found in environment variables');
+        toast({
+          title: 'Configuration Error',
+          description: 'Payment system not properly configured. Please contact support.',
+          variant: 'destructive',
+        });
+        setLoading(false);
+        return;
+      }
+
+      console.log('Initializing Yoco with public key:', publicKey.substring(0, 10) + '...');
+
       // Load Yoco SDK if not already loaded
       if (!(window as any).YocoSDK) {
+        console.log('Loading Yoco SDK...');
         const script = document.createElement('script');
         script.src = 'https://js.yoco.com/sdk/v1/yoco-sdk-web.js';
         script.async = true;
         document.body.appendChild(script);
 
-        await new Promise((resolve) => {
-          script.onload = resolve;
+        await new Promise((resolve, reject) => {
+          script.onload = () => {
+            console.log('Yoco SDK loaded successfully');
+            resolve(true);
+          };
+          script.onerror = () => {
+            console.error('Failed to load Yoco SDK');
+            reject(new Error('Failed to load Yoco SDK'));
+          };
         });
       }
 
-      const publicKey = process.env.NEXT_PUBLIC_YOCO_PUBLIC_KEY;
+      if (!(window as any).YocoSDK) {
+        throw new Error('Yoco SDK not loaded');
+      }
 
-      if (!publicKey) {
-        throw new Error('Yoco public key not configured');
+      if (!(window as any).YocoSDK) {
+        throw new Error('Yoco SDK not loaded');
       }
 
       // Initialize Yoco SDK
+      console.log('Creating Yoco instance...');
       const yoco = new (window as any).YocoSDK({
         publicKey: publicKey,
       });
 
+      console.log('Opening Yoco popup...');
       // Create inline payment
       yoco.showPopup({
         amountInCents: Math.round(amount * 100), // Convert ZAR to cents
@@ -51,6 +88,7 @@ export default function YocoButton({ invoiceId, amount, invoiceNumber }: YocoBut
         name: 'Invoice Payment',
         description: `Payment for invoice ${invoiceNumber}`,
         callback: async (result: any) => {
+          console.log('Yoco callback received:', result);
           if (result.error) {
             console.error('Yoco payment error:', result.error);
             toast({
