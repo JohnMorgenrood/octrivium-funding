@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Check } from 'lucide-react';
+import { Check, Crown, Lock } from 'lucide-react';
 import { INVOICE_TEMPLATES } from './invoice-templates';
 import {
   Template1Classic,
@@ -28,6 +28,7 @@ interface TemplateSelectorProps {
   user: any;
   customer: any;
   items: any[];
+  userSubscriptionTier?: string;
 }
 
 const TEMPLATE_COMPONENTS: any = {
@@ -52,9 +53,15 @@ export default function TemplateSelector({
   user,
   customer,
   items,
+  userSubscriptionTier = 'FREE',
 }: TemplateSelectorProps) {
   const [selectedTemplate, setSelectedTemplate] = useState(currentTemplate);
   const [previewTemplate, setPreviewTemplate] = useState<number | null>(null);
+
+  const canUseTemplate = (template: any) => {
+    if (!template.premium) return true;
+    return userSubscriptionTier === 'BUSINESS' || userSubscriptionTier === 'STARTER';
+  };
 
   const handleSelect = () => {
     onSelect(selectedTemplate);
@@ -106,57 +113,72 @@ export default function TemplateSelector({
         </DialogHeader>
         <ScrollArea className="h-[70vh] pr-4">
           <div className="grid grid-cols-2 gap-4 mt-4">
-            {INVOICE_TEMPLATES.map((template) => (
-              <div
-                key={template.id}
-                className={`relative border-2 rounded-lg p-4 cursor-pointer transition-all hover:shadow-lg ${
-                  selectedTemplate === template.id
-                    ? 'border-blue-600 bg-blue-50'
-                    : 'border-gray-200 hover:border-blue-400'
-                }`}
-                onClick={() => setSelectedTemplate(template.id)}
-              >
-                {selectedTemplate === template.id && (
-                  <div className="absolute top-2 right-2 bg-blue-600 text-white rounded-full p-1">
-                    <Check className="h-4 w-4" />
-                  </div>
-                )}
-                
-                <div className="mb-3">
-                  <h3 className="font-semibold text-lg mb-1">{template.name}</h3>
-                  <p className="text-sm text-gray-600">{template.description}</p>
-                </div>
-
-                {/* Template Preview Thumbnail */}
-                <div className="bg-gray-100 rounded border border-gray-300 h-48 flex items-center justify-center mb-3 overflow-hidden">
-                  <div className="transform scale-[0.15] origin-top-left w-[800px]">
-                    {(() => {
-                      const TemplateComponent = TEMPLATE_COMPONENTS[template.component];
-                      return (
-                        <TemplateComponent
-                          invoice={invoice}
-                          user={user}
-                          customer={customer}
-                          items={items.slice(0, 2)}
-                        />
-                      );
-                    })()}
-                  </div>
-                </div>
-
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setPreviewTemplate(template.id);
-                  }}
+            {INVOICE_TEMPLATES.map((template) => {
+              const canUse = canUseTemplate(template);
+              return (
+                <div
+                  key={template.id}
+                  className={`relative border-2 rounded-lg p-4 transition-all ${
+                    canUse ? 'cursor-pointer hover:shadow-lg' : 'cursor-not-allowed opacity-70'
+                  } ${
+                    selectedTemplate === template.id
+                      ? 'border-blue-600 bg-blue-50'
+                      : 'border-gray-200 hover:border-blue-400'
+                  }`}
+                  onClick={() => canUse && setSelectedTemplate(template.id)}
                 >
-                  Full Preview
-                </Button>
-              </div>
-            ))}
+                  {template.premium && (
+                    <div className={`absolute top-2 right-2 ${canUse ? 'bg-gradient-to-r from-yellow-400 to-yellow-600' : 'bg-gray-400'} text-white rounded-full px-2 py-1 text-xs font-bold flex items-center gap-1`}>
+                      {canUse ? <Crown className="h-3 w-3" /> : <Lock className="h-3 w-3" />}
+                      PREMIUM
+                    </div>
+                  )}
+                  
+                  {selectedTemplate === template.id && canUse && (
+                    <div className="absolute top-2 left-2 bg-blue-600 text-white rounded-full p-1">
+                      <Check className="h-4 w-4" />
+                    </div>
+                  )}
+                  
+                  <div className="mb-3 mt-6">
+                    <h3 className="font-semibold text-lg mb-1">{template.name}</h3>
+                    <p className="text-sm text-gray-600">{template.description}</p>
+                  </div>
+
+                  {/* Template Preview Thumbnail */}
+                  <div className={`bg-gray-100 rounded border border-gray-300 h-48 flex items-center justify-center mb-3 overflow-hidden ${!canUse && 'blur-sm'}`}>
+                    <div className="transform scale-[0.15] origin-top-left w-[800px]">
+                      {(() => {
+                        const TemplateComponent = TEMPLATE_COMPONENTS[template.component];
+                        return (
+                          <TemplateComponent
+                            invoice={invoice}
+                            user={user}
+                            customer={customer}
+                            items={items.slice(0, 2)}
+                          />
+                        );
+                      })()}
+                    </div>
+                  </div>
+
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                    disabled={!canUse}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (canUse) {
+                        setPreviewTemplate(template.id);
+                      }
+                    }}
+                  >
+                    {canUse ? 'Full Preview' : 'Upgrade to Unlock'}
+                  </Button>
+                </div>
+              );
+            })}
           </div>
         </ScrollArea>
         

@@ -65,9 +65,11 @@ export default function CreateInvoiceForm({ customers, invoiceNumber, products }
   const [companyData, setCompanyData] = useState<{
     companyName: string | null;
     companyLogo: string | null;
+    subscriptionTier: string | null;
   }>({
     companyName: null,
     companyLogo: null,
+    subscriptionTier: 'FREE',
   });
 
   const [formData, setFormData] = useState({
@@ -695,6 +697,7 @@ export default function CreateInvoiceForm({ customers, invoiceNumber, products }
             user={{ name: companyData.companyName, logo: companyData.companyLogo }}
             customer={customers.find(c => c.id === formData.customerId) || { name: 'Sample Customer', email: 'customer@example.com' }}
             items={items}
+            userSubscriptionTier={companyData.subscriptionTier || 'FREE'}
           />
 
           {/* Notes & Terms */}
