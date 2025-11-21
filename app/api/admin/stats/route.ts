@@ -68,7 +68,7 @@ export async function GET() {
       invoices: {
         total: invoices.length,
         paid: paidInvoices.length,
-        pending: invoices.filter(inv => inv.status === 'PENDING').length,
+        pending: invoices.filter(inv => inv.status === 'SENT' || inv.status === 'VIEWED' || inv.status === 'OVERDUE').length,
       },
       subscriptions: {
         active: subscriptions.length,
