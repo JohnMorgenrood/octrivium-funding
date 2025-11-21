@@ -15,7 +15,22 @@ export async function PATCH(
     }
 
     const body = await req.json();
-    const { name, email, phone, company, addressLine1, addressLine2, city, province, postalCode, vatNumber } = body;
+    const { 
+      name, 
+      email, 
+      phone, 
+      company, 
+      companyEmail,
+      companyPhone,
+      website,
+      addressLine1, 
+      addressLine2, 
+      city, 
+      province, 
+      postalCode, 
+      vatNumber,
+      registrationNumber 
+    } = body;
 
     const customer = await prisma.customer.update({
       where: {
@@ -27,12 +42,16 @@ export async function PATCH(
         email,
         phone,
         company,
+        companyEmail,
+        companyPhone,
+        website,
         addressLine1,
         addressLine2,
         city,
         province,
         postalCode,
         vatNumber,
+        registrationNumber,
       },
     });
 

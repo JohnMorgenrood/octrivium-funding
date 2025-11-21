@@ -12,7 +12,22 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { name, email, phone, company, addressLine1, addressLine2, city, province, postalCode, vatNumber } = body;
+    const { 
+      name, 
+      email, 
+      phone, 
+      company, 
+      companyEmail,
+      companyPhone,
+      website,
+      addressLine1, 
+      addressLine2, 
+      city, 
+      province, 
+      postalCode, 
+      vatNumber,
+      registrationNumber 
+    } = body;
 
     const customer = await prisma.customer.create({
       data: {
@@ -21,12 +36,16 @@ export async function POST(req: NextRequest) {
         email,
         phone,
         company,
+        companyEmail,
+        companyPhone,
+        website,
         addressLine1,
         addressLine2,
         city,
         province,
         postalCode,
         vatNumber,
+        registrationNumber,
       },
     });
 

@@ -849,7 +849,10 @@ model Customer {
   name              String
   email             String?
   phone             String?
-  company           String?
+  company           String?            // Company name
+  companyEmail      String?            // Business email
+  companyPhone      String?            // Business phone
+  website           String?            // Company website
   
   // Address
   addressLine1      String?
@@ -859,8 +862,9 @@ model Customer {
   postalCode        String?
   country           String            @default("South Africa")
   
-  // Financial
-  vatNumber         String?
+  // Financial & Registration
+  vatNumber         String?            // VAT/Tax number
+  registrationNumber String?           // Business registration number
   
   // Relations
   invoices          Invoice[]

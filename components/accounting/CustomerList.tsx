@@ -29,9 +29,13 @@ interface Customer {
   email: string | null;
   phone: string | null;
   company: string | null;
+  companyEmail: string | null;
+  companyPhone: string | null;
+  website: string | null;
   addressLine1: string | null;
   city: string | null;
   province: string | null;
+  registrationNumber: string | null;
   totalInvoices: number;
   totalRevenue: number;
   unpaidInvoices: number;
@@ -55,12 +59,16 @@ export default function CustomerList({ customers: initialCustomers }: CustomerLi
     email: '',
     phone: '',
     company: '',
+    companyEmail: '',
+    companyPhone: '',
+    website: '',
     addressLine1: '',
     addressLine2: '',
     city: '',
     province: '',
     postalCode: '',
     vatNumber: '',
+    registrationNumber: '',
   });
 
   const formatCurrency = (amount: number) => {
@@ -76,12 +84,16 @@ export default function CustomerList({ customers: initialCustomers }: CustomerLi
       email: '',
       phone: '',
       company: '',
+      companyEmail: '',
+      companyPhone: '',
+      website: '',
       addressLine1: '',
       addressLine2: '',
       city: '',
       province: '',
       postalCode: '',
       vatNumber: '',
+      registrationNumber: '',
     });
     setEditingCustomer(null);
   };
@@ -97,12 +109,16 @@ export default function CustomerList({ customers: initialCustomers }: CustomerLi
       email: customer.email || '',
       phone: customer.phone || '',
       company: customer.company || '',
+      companyEmail: customer.companyEmail || '',
+      companyPhone: customer.companyPhone || '',
+      website: customer.website || '',
       addressLine1: customer.addressLine1 || '',
       addressLine2: '',
       city: customer.city || '',
       province: customer.province || '',
       postalCode: '',
       vatNumber: '',
+      registrationNumber: customer.registrationNumber || '',
     });
     setEditingCustomer(customer);
     setShowAddDialog(true);
@@ -350,97 +366,154 @@ export default function CustomerList({ customers: initialCustomers }: CustomerLi
           </DialogHeader>
 
           <div className="grid gap-3 sm:gap-4">
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label>Name *</Label>
-                <Input
-                  placeholder="Customer name"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                />
+            {/* Contact Information */}
+            <div>
+              <h3 className="font-semibold mb-3">Contact Information</h3>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label>Name *</Label>
+                  <Input
+                    placeholder="Customer name"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Email *</Label>
+                  <Input
+                    type="email"
+                    placeholder="email@example.com"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  />
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label>Email *</Label>
-                <Input
-                  type="email"
-                  placeholder="email@example.com"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                />
+
+              <div className="grid gap-4 md:grid-cols-2 mt-4">
+                <div className="space-y-2">
+                  <Label>Phone</Label>
+                  <Input
+                    placeholder="+27 12 345 6789"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Company</Label>
+                  <Input
+                    placeholder="Company name"
+                    value={formData.company}
+                    onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                  />
+                </div>
               </div>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label>Phone</Label>
-                <Input
-                  placeholder="+27 12 345 6789"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                />
+            {/* Company Details */}
+            <div className="pt-4 border-t">
+              <h3 className="font-semibold mb-3">Company Details (Optional)</h3>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label>Company Email</Label>
+                  <Input
+                    type="email"
+                    placeholder="info@company.com"
+                    value={formData.companyEmail}
+                    onChange={(e) => setFormData({ ...formData, companyEmail: e.target.value })}
+                  />
+                  <p className="text-xs text-muted-foreground">Business email address</p>
+                </div>
+                <div className="space-y-2">
+                  <Label>Company Phone</Label>
+                  <Input
+                    placeholder="+27 12 345 6789"
+                    value={formData.companyPhone}
+                    onChange={(e) => setFormData({ ...formData, companyPhone: e.target.value })}
+                  />
+                  <p className="text-xs text-muted-foreground">Business phone number</p>
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label>Company</Label>
-                <Input
-                  placeholder="Company name"
-                  value={formData.company}
-                  onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                />
+
+              <div className="grid gap-4 md:grid-cols-2 mt-4">
+                <div className="space-y-2">
+                  <Label>Website</Label>
+                  <Input
+                    placeholder="https://www.company.com"
+                    value={formData.website}
+                    onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Registration Number</Label>
+                  <Input
+                    placeholder="Company registration number"
+                    value={formData.registrationNumber}
+                    onChange={(e) => setFormData({ ...formData, registrationNumber: e.target.value })}
+                  />
+                </div>
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label>Address Line 1</Label>
-              <Input
-                placeholder="Street address"
-                value={formData.addressLine1}
-                onChange={(e) => setFormData({ ...formData, addressLine1: e.target.value })}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Address Line 2</Label>
-              <Input
-                placeholder="Apartment, suite, etc."
-                value={formData.addressLine2}
-                onChange={(e) => setFormData({ ...formData, addressLine2: e.target.value })}
-              />
-            </div>
-
-            <div className="grid gap-4 md:grid-cols-3">
+            {/* Address */}
+            <div className="pt-4 border-t">
+              <h3 className="font-semibold mb-3">Address</h3>
               <div className="space-y-2">
-                <Label>City</Label>
+                <Label>Address Line 1</Label>
                 <Input
-                  placeholder="City"
-                  value={formData.city}
-                  onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                  placeholder="Street address"
+                  value={formData.addressLine1}
+                  onChange={(e) => setFormData({ ...formData, addressLine1: e.target.value })}
                 />
               </div>
-              <div className="space-y-2">
-                <Label>Province</Label>
+
+              <div className="space-y-2 mt-4">
+                <Label>Address Line 2</Label>
                 <Input
-                  placeholder="Province"
-                  value={formData.province}
-                  onChange={(e) => setFormData({ ...formData, province: e.target.value })}
+                  placeholder="Apartment, suite, etc."
+                  value={formData.addressLine2}
+                  onChange={(e) => setFormData({ ...formData, addressLine2: e.target.value })}
                 />
               </div>
-              <div className="space-y-2">
-                <Label>Postal Code</Label>
-                <Input
-                  placeholder="0000"
-                  value={formData.postalCode}
-                  onChange={(e) => setFormData({ ...formData, postalCode: e.target.value })}
-                />
+
+              <div className="grid gap-4 md:grid-cols-3 mt-4">
+                <div className="space-y-2">
+                  <Label>City</Label>
+                  <Input
+                    placeholder="City"
+                    value={formData.city}
+                    onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Province</Label>
+                  <Input
+                    placeholder="Province"
+                    value={formData.province}
+                    onChange={(e) => setFormData({ ...formData, province: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Postal Code</Label>
+                  <Input
+                    placeholder="0000"
+                    value={formData.postalCode}
+                    onChange={(e) => setFormData({ ...formData, postalCode: e.target.value })}
+                  />
+                </div>
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label>VAT Number</Label>
-              <Input
-                placeholder="VAT registration number"
-                value={formData.vatNumber}
-                onChange={(e) => setFormData({ ...formData, vatNumber: e.target.value })}
-              />
+            {/* Tax Information */}
+            <div className="pt-4 border-t">
+              <h3 className="font-semibold mb-3">Tax Information</h3>
+              <div className="space-y-2">
+                <Label>VAT Number</Label>
+                <Input
+                  placeholder="VAT registration number"
+                  value={formData.vatNumber}
+                  onChange={(e) => setFormData({ ...formData, vatNumber: e.target.value })}
+                />
+              </div>
             </div>
           </div>
 
