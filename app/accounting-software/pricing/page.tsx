@@ -143,21 +143,21 @@ export default function AccountingPricingPage() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link href="/accounting-software" className="flex items-center gap-2">
-              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              <span className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                 Octrivium
               </span>
-              <span className="text-sm text-slate-600 dark:text-slate-400">Accounting</span>
+              <span className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Accounting</span>
             </Link>
-            <div className="flex items-center gap-4">
-              <Link href="/accounting-software">
-                <Button variant="ghost">Features</Button>
+            <div className="flex items-center gap-2 sm:gap-4">
+              <Link href="/accounting-software" className="hidden sm:inline-block">
+                <Button variant="ghost" size="sm" className="sm:size-default">Features</Button>
               </Link>
-              <Link href="/login">
-                <Button variant="outline">Sign In</Button>
+              <Link href="/login" className="hidden md:inline-block">
+                <Button variant="outline" size="sm" className="sm:size-default">Sign In</Button>
               </Link>
               <Link href="/register">
-                <Button className="bg-gradient-to-r from-blue-600 to-indigo-600">
-                  Get Started Free
+                <Button size="sm" className="bg-gradient-to-r from-blue-600 to-indigo-600 text-xs sm:text-sm px-3 sm:px-4">
+                  Get Started
                 </Button>
               </Link>
             </div>
