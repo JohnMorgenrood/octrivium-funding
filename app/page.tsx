@@ -630,6 +630,181 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Accounting Software Section */}
+      <section className="py-20 bg-white dark:bg-slate-900 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo-500 rounded-full blur-3xl"></div>
+        </div>
+
+        <div className="container mx-auto px-4 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="grid lg:grid-cols-2 gap-12 items-center"
+          >
+            {/* Left: Content */}
+            <div>
+              <Badge className="mb-6 bg-blue-500/10 text-blue-600 border-blue-500/20 px-4 py-2">
+                <Calculator className="w-4 h-4 mr-2" />
+                Accounting Software
+              </Badge>
+
+              <h2 className="text-4xl md:text-5xl font-bold mb-6 text-slate-900 dark:text-white">
+                Professional Invoicing & Accounting
+              </h2>
+
+              <p className="text-xl text-slate-600 dark:text-slate-300 mb-8 leading-relaxed">
+                Create beautiful invoices, track expenses, manage customers, and get paid faster with our all-in-one accounting solution.
+              </p>
+
+              <div className="space-y-4 mb-8">
+                {[
+                  { icon: FileText, text: '10 professional invoice templates (5 free, 5 premium)' },
+                  { icon: Users, text: 'Unlimited customers and products' },
+                  { icon: TrendingUp, text: 'Real-time expense and revenue tracking' },
+                  { icon: DollarSign, text: 'Yoco, bank transfer & PayPal payments' },
+                ].map((item, idx) => {
+                  const Icon = item.icon;
+                  return (
+                    <motion.div
+                      key={idx}
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: idx * 0.1 }}
+                      className="flex items-center gap-3"
+                    >
+                      <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <Icon className="w-5 h-5 text-white" />
+                      </div>
+                      <span className="text-slate-700 dark:text-slate-300">{item.text}</span>
+                    </motion.div>
+                  );
+                })}
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link href="/accounting-software">
+                  <Button size="lg" className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 px-8">
+                    Explore Features
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+                <Link href="/accounting-software/pricing">
+                  <Button size="lg" variant="outline">
+                    View Pricing
+                  </Button>
+                </Link>
+              </div>
+            </div>
+
+            {/* Right: Visual */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="relative"
+            >
+              <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-3xl p-8 shadow-2xl">
+                <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 space-y-4">
+                  {/* Mock Invoice Preview */}
+                  <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-700">
+                    <div>
+                      <div className="text-2xl font-bold text-slate-900 dark:text-white">INVOICE</div>
+                      <div className="text-sm text-slate-600 dark:text-slate-400">#INV-2025-001</div>
+                    </div>
+                    <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg"></div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-slate-600 dark:text-slate-400">Item</span>
+                      <span className="text-slate-600 dark:text-slate-400">Amount</span>
+                    </div>
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="flex justify-between">
+                        <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-2/3"></div>
+                        <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-20"></div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="pt-4 border-t border-slate-200 dark:border-slate-700">
+                    <div className="flex justify-between items-center">
+                      <span className="text-lg font-bold text-slate-900 dark:text-white">Total</span>
+                      <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                        R4,500.00
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2 pt-4">
+                    <Badge className="bg-green-500/10 text-green-600 border-green-500/20">Paid</Badge>
+                    <Badge className="bg-blue-500/10 text-blue-600 border-blue-500/20">Template 1</Badge>
+                  </div>
+                </div>
+              </div>
+
+              {/* Floating Elements */}
+              <motion.div
+                animate={{ y: [0, -10, 0] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute -top-4 -right-4 bg-white dark:bg-slate-800 rounded-xl shadow-xl p-4 border-2 border-blue-500"
+              >
+                <div className="flex items-center gap-2">
+                  <Check className="w-5 h-5 text-green-500" />
+                  <span className="text-sm font-semibold text-slate-900 dark:text-white">Payment Received</span>
+                </div>
+              </motion.div>
+
+              <motion.div
+                animate={{ y: [0, 10, 0] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                className="absolute -bottom-4 -left-4 bg-white dark:bg-slate-800 rounded-xl shadow-xl p-4 border-2 border-indigo-500"
+              >
+                <div className="flex items-center gap-2">
+                  <FileText className="w-5 h-5 text-indigo-500" />
+                  <span className="text-sm font-semibold text-slate-900 dark:text-white">10 Templates</span>
+                </div>
+              </motion.div>
+            </motion.div>
+          </motion.div>
+
+          {/* Stats */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto"
+          >
+            {[
+              { number: '10', label: 'Invoice Templates' },
+              { number: 'R0', label: 'Start Free' },
+              { number: '3', label: 'Free Invoices/Month' },
+              { number: '24/7', label: 'Access Anywhere' },
+            ].map((stat, idx) => (
+              <motion.div
+                key={idx}
+                whileHover={{ scale: 1.05 }}
+                className="text-center p-6 bg-slate-50 dark:bg-slate-800/50 rounded-2xl"
+              >
+                <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2">
+                  {stat.number}
+                </div>
+                <div className="text-sm text-slate-600 dark:text-slate-400 font-medium">
+                  {stat.label}
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
       {/* How It Works - Interactive Timeline */}
       <section className="py-20 bg-gradient-to-br from-blue-100 via-indigo-100 to-purple-100 dark:from-slate-900 dark:via-indigo-950 dark:to-slate-950 relative overflow-hidden">
         {/* Animated Background Elements */}
