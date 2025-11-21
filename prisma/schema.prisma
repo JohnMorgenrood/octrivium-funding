@@ -310,6 +310,15 @@ model Deal {
   fundingDeadline       DateTime
   startDate             DateTime?
   endDate               DateTime?
+  
+  // Business Metrics (from deal creation form)
+  industry              String?
+  location              String?
+  monthlyRevenue        Decimal?   @db.Decimal(15, 2)
+  revenueGrowth         Decimal?   @db.Decimal(5, 2) // Growth percentage
+  riskLevel             String?    // Low, Medium, High
+  foundedYear           Int?
+  
   projectedMonthlyRevenue Decimal? @db.Decimal(15, 2)
   actualMonthlyRevenue  Decimal    @default(0) @db.Decimal(15, 2)
   totalRepaid           Decimal    @default(0) @db.Decimal(15, 2)

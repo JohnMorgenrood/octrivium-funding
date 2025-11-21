@@ -24,6 +24,13 @@ export default function CreateDealPage() {
     fundingGoal: '',
     revenueSharePercentage: '',
     duration: '12',
+    industry: '',
+    location: '',
+    monthlyRevenue: '',
+    revenueGrowth: '',
+    riskLevel: 'Medium',
+    foundedYear: '',
+    minInvestment: '1000',
   });
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -70,6 +77,13 @@ export default function CreateDealPage() {
       submitData.append('fundingGoal', formData.fundingGoal);
       submitData.append('revenueSharePercentage', formData.revenueSharePercentage);
       submitData.append('duration', formData.duration);
+      submitData.append('industry', formData.industry);
+      submitData.append('location', formData.location);
+      submitData.append('monthlyRevenue', formData.monthlyRevenue);
+      submitData.append('revenueGrowth', formData.revenueGrowth);
+      submitData.append('riskLevel', formData.riskLevel);
+      submitData.append('foundedYear', formData.foundedYear);
+      submitData.append('minInvestment', formData.minInvestment);
       
       if (imageFile) {
         submitData.append('image', imageFile);
@@ -218,6 +232,134 @@ export default function CreateDealPage() {
 
             <div className="grid md:grid-cols-2 gap-6">
               <div className="space-y-2">
+                <Label htmlFor="industry">Industry *</Label>
+                <select
+                  id="industry"
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  value={formData.industry}
+                  onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
+                  required
+                >
+                  <option value="">Select industry...</option>
+                  <option value="Technology">Technology</option>
+                  <option value="E-commerce">E-commerce</option>
+                  <option value="Food & Beverage">Food & Beverage</option>
+                  <option value="Renewable Energy">Renewable Energy</option>
+                  <option value="FinTech">FinTech</option>
+                  <option value="Healthcare">Healthcare</option>
+                  <option value="Manufacturing">Manufacturing</option>
+                  <option value="Logistics">Logistics</option>
+                  <option value="Retail">Retail</option>
+                  <option value="Services">Services</option>
+                  <option value="Other">Other</option>
+                </select>
+                <p className="text-xs text-muted-foreground">
+                  Your business sector or industry
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="location">Location *</Label>
+                <select
+                  id="location"
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  value={formData.location}
+                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                  required
+                >
+                  <option value="">Select location...</option>
+                  <option value="Johannesburg">Johannesburg</option>
+                  <option value="Cape Town">Cape Town</option>
+                  <option value="Durban">Durban</option>
+                  <option value="Pretoria">Pretoria</option>
+                  <option value="Port Elizabeth">Port Elizabeth</option>
+                  <option value="Bloemfontein">Bloemfontein</option>
+                  <option value="East London">East London</option>
+                  <option value="Polokwane">Polokwane</option>
+                  <option value="Nelspruit">Nelspruit</option>
+                  <option value="Kimberley">Kimberley</option>
+                  <option value="Other">Other</option>
+                </select>
+                <p className="text-xs text-muted-foreground">
+                  Primary business location in South Africa
+                </p>
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="monthlyRevenue">Monthly Revenue (ZAR) *</Label>
+                <Input
+                  id="monthlyRevenue"
+                  type="number"
+                  min="0"
+                  step="1000"
+                  placeholder="50000"
+                  value={formData.monthlyRevenue}
+                  onChange={(e) => setFormData({ ...formData, monthlyRevenue: e.target.value })}
+                  required
+                />
+                <p className="text-xs text-muted-foreground">
+                  Average monthly revenue
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="revenueGrowth">Revenue Growth (%) *</Label>
+                <Input
+                  id="revenueGrowth"
+                  type="number"
+                  min="0"
+                  max="1000"
+                  step="0.1"
+                  placeholder="15.5"
+                  value={formData.revenueGrowth}
+                  onChange={(e) => setFormData({ ...formData, revenueGrowth: e.target.value })}
+                  required
+                />
+                <p className="text-xs text-muted-foreground">
+                  Monthly growth rate
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="foundedYear">Founded Year *</Label>
+                <Input
+                  id="foundedYear"
+                  type="number"
+                  min="1900"
+                  max="2025"
+                  placeholder="2020"
+                  value={formData.foundedYear}
+                  onChange={(e) => setFormData({ ...formData, foundedYear: e.target.value })}
+                  required
+                />
+                <p className="text-xs text-muted-foreground">
+                  Year business started
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="riskLevel">Risk Level *</Label>
+              <select
+                id="riskLevel"
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                value={formData.riskLevel}
+                onChange={(e) => setFormData({ ...formData, riskLevel: e.target.value })}
+                required
+              >
+                <option value="Low">Low - Established business, proven track record</option>
+                <option value="Medium">Medium - Growing business, moderate risk</option>
+                <option value="High">High - Early stage, higher risk/reward</option>
+              </select>
+              <p className="text-xs text-muted-foreground">
+                Honest risk assessment helps investors make informed decisions
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="space-y-2">
                 <Label htmlFor="fundingGoal">Funding Goal (ZAR) *</Label>
                 <Input
                   id="fundingGoal"
@@ -235,6 +377,25 @@ export default function CreateDealPage() {
               </div>
 
               <div className="space-y-2">
+                <Label htmlFor="minInvestment">Minimum Investment (ZAR) *</Label>
+                <Input
+                  id="minInvestment"
+                  type="number"
+                  min="1000"
+                  step="100"
+                  placeholder="1000"
+                  value={formData.minInvestment}
+                  onChange={(e) => setFormData({ ...formData, minInvestment: e.target.value })}
+                  required
+                />
+                <p className="text-xs text-muted-foreground">
+                  Minimum: R1,000
+                </p>
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="space-y-2">
                 <Label htmlFor="revenueSharePercentage">Revenue Share (%) *</Label>
                 <Input
                   id="revenueSharePercentage"
@@ -251,23 +412,23 @@ export default function CreateDealPage() {
                   % of monthly revenue shared with investors (1-30%)
                 </p>
               </div>
-            </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="duration">Repayment Duration (months) *</Label>
-              <Input
-                id="duration"
-                type="number"
-                min="6"
-                max="60"
-                placeholder="12"
-                value={formData.duration}
-                onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
-                required
-              />
-              <p className="text-xs text-muted-foreground">
-                How long you'll share revenue with investors (6-60 months)
-              </p>
+              <div className="space-y-2">
+                <Label htmlFor="duration">Repayment Duration (months) *</Label>
+                <Input
+                  id="duration"
+                  type="number"
+                  min="6"
+                  max="60"
+                  placeholder="12"
+                  value={formData.duration}
+                  onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
+                  required
+                />
+                <p className="text-xs text-muted-foreground">
+                  How long you'll share revenue with investors (6-60 months)
+                </p>
+              </div>
             </div>
 
             <div className="flex gap-4 pt-4">

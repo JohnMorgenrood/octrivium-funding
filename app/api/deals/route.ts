@@ -29,9 +29,16 @@ export async function POST(req: NextRequest) {
     const revenueSharePercentage = parseFloat(formData.get('revenueSharePercentage') as string);
     const duration = parseInt(formData.get('duration') as string);
     const image = formData.get('image') as File | null;
+    const industry = formData.get('industry') as string;
+    const location = formData.get('location') as string;
+    const monthlyRevenue = parseFloat(formData.get('monthlyRevenue') as string);
+    const revenueGrowth = parseFloat(formData.get('revenueGrowth') as string);
+    const riskLevel = formData.get('riskLevel') as string;
+    const foundedYear = parseInt(formData.get('foundedYear') as string);
+    const minInvestment = parseFloat(formData.get('minInvestment') as string);
 
     // Validation
-    if (!title || !description || !fundingGoal || !revenueSharePercentage || !duration) {
+    if (!title || !description || !fundingGoal || !revenueSharePercentage || !duration || !industry || !location || !monthlyRevenue || !revenueGrowth || !riskLevel || !foundedYear || !minInvestment) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
@@ -45,6 +52,10 @@ export async function POST(req: NextRequest) {
 
     if (duration < 6 || duration > 60) {
       return NextResponse.json({ error: 'Duration must be between 6 and 60 months' }, { status: 400 });
+    }
+
+    if (minInvestment < 1000) {
+      return NextResponse.json({ error: 'Minimum investment must be at least R1,000' }, { status: 400 });
     }
 
     let imageUrl: string | null = null;
@@ -91,10 +102,10 @@ export async function POST(req: NextRequest) {
             tradingName: session.user.name || 'My Business',
             legalName: session.user.name || 'My Business',
             registrationNumber: uniqueRegNumber,
-            industry: 'Other',
+            industry: industry,
             description: 'Business profile pending completion',
             address: 'TBA',
-            city: 'TBA',
+            city: location,
             province: 'Gauteng',
             postalCode: '0000',
           }
@@ -109,10 +120,10 @@ export async function POST(req: NextRequest) {
               tradingName: session.user.name || 'My Business',
               legalName: session.user.name || 'My Business',
               registrationNumber: fallbackRegNumber,
-              industry: 'Other',
+              industry: industry,
               description: 'Business profile pending completion',
               address: 'TBA',
-              city: 'TBA',
+              city: location,
               province: 'Gauteng',
               postalCode: '0000',
             }
@@ -135,9 +146,7 @@ export async function POST(req: NextRequest) {
     const fundingDeadline = new Date();
     fundingDeadline.setDate(fundingDeadline.getDate() + 90);
 
-    // Create deal - status depends on KYC
-    // PENDING_APPROVAL: Not yet verified, needs KYC + admin approval
-    // PENDING: KYC verified, just needs admin approval
+    // Create deal - AUTO-APPROVED (admin can remove if needed)
     const deal = await prisma.deal.create({
       data: {
         businessId: business.id,
@@ -148,6 +157,13 @@ export async function POST(req: NextRequest) {
         revenueSharePercentage,
         repaymentCap: 2.0, // Default 2x return cap
         fundingDeadline,
+        minInvestment,
+        industry,
+        location,
+        monthlyRevenue,
+        revenueGrowth,
+        riskLevel,
+        foundedYear,
         termsAndConditions: `
           Revenue Share Agreement:
           - ${revenueSharePercentage}% of monthly revenue will be shared with investors
@@ -155,7 +171,8 @@ export async function POST(req: NextRequest) {
           - Maximum return: 2.0x invested amount
           - Monthly payouts within 7 business days of revenue verification
         `.trim(),
-        status: 'PENDING_APPROVAL', // Always starts as pending approval
+        status: 'ACTIVE', // AUTO-APPROVED - goes live immediately
+        approvedAt: new Date(),
       },
     });
 
@@ -168,8 +185,8 @@ export async function POST(req: NextRequest) {
       },
       needsKyc: !isKycVerified,
       message: !isKycVerified
-        ? '✅ Deal created successfully!\n\n📋 Next Steps:\n1. Your deal is now visible on the deals page\n2. Complete your KYC verification\n3. Submit required documents\n4. Wait for admin approval\n\n💡 Once approved, investors can fund your deal and you\'ll receive the funds!'
-        : '✅ Deal created successfully!\n\nYour deal is now pending admin approval. Once approved, it will be available for investment.'
+        ? '✅ Deal created and published successfully!\n\n⚠️ Important: Your deal is live but shows "KYC Not Verified" to investors.\n\n📋 Next Steps:\n1. Complete KYC verification to remove the warning\n2. Investors can see but cannot invest until you\'re KYC verified\n3. Admin can remove your deal if needed\n\n💡 Complete KYC to start accepting investments!'
+        : '✅ Deal created and published successfully!\n\nYour deal is now live and available for investment. Investors can start funding your campaign immediately!'
     });
 
   } catch (error) {
@@ -237,6 +254,11 @@ export async function GET(req: NextRequest) {
             select: {
               tradingName: true,
               industry: true,
+              user: {
+                select: {
+                  kycStatus: true,
+                }
+              }
             }
           },
           _count: {
