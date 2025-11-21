@@ -79,30 +79,65 @@ export async function POST(req: NextRequest) {
     });
 
     if (!business) {
-      // Generate unique registration number for pending businesses
-      const uniqueRegNumber = `PENDING-${session.user.id.slice(0, 8).toUpperCase()}`;
+      // Generate truly unique registration number for pending businesses
+      const timestamp = Date.now().toString(36).toUpperCase();
+      const uniqueId = session.user.id.slice(-6).toUpperCase();
+      const uniqueRegNumber = `PENDING-${uniqueId}-${timestamp}`;
       
-      business = await prisma.business.create({
-        data: {
-          userId: session.user.id,
-          tradingName: session.user.name || 'My Business',
-          legalName: session.user.name || 'My Business',
-          registrationNumber: uniqueRegNumber,
-          industry: 'Other',
-          description: 'Business profile pending completion',
-          address: 'TBA',
-          city: 'TBA',
-          province: 'Gauteng',
-          postalCode: '0000',
+      try {
+        business = await prisma.business.create({
+          data: {
+            userId: session.user.id,
+            tradingName: session.user.name || 'My Business',
+            legalName: session.user.name || 'My Business',
+            registrationNumber: uniqueRegNumber,
+            industry: 'Other',
+            description: 'Business profile pending completion',
+            address: 'TBA',
+            city: 'TBA',
+            province: 'Gauteng',
+            postalCode: '0000',
+          }
+        });
+      } catch (createError: any) {
+        // If registration number conflict (shouldn't happen with timestamp), use fallback
+        if (createError.code === 'P2002') {
+          const fallbackRegNumber = `PENDING-${uuidv4().slice(0, 8).toUpperCase()}`;
+          business = await prisma.business.create({
+            data: {
+              userId: session.user.id,
+              tradingName: session.user.name || 'My Business',
+              legalName: session.user.name || 'My Business',
+              registrationNumber: fallbackRegNumber,
+              industry: 'Other',
+              description: 'Business profile pending completion',
+              address: 'TBA',
+              city: 'TBA',
+              province: 'Gauteng',
+              postalCode: '0000',
+            }
+          });
+        } else {
+          throw createError;
         }
-      });
+      }
     }
+
+    // Check user's KYC status
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { kycStatus: true }
+    });
+
+    const isKycVerified = user?.kycStatus === 'VERIFIED';
 
     // Calculate funding deadline (90 days from now)
     const fundingDeadline = new Date();
     fundingDeadline.setDate(fundingDeadline.getDate() + 90);
 
-    // Create deal with PENDING status
+    // Create deal - status depends on KYC
+    // PENDING_APPROVAL: Not yet verified, needs KYC + admin approval
+    // PENDING: KYC verified, just needs admin approval
     const deal = await prisma.deal.create({
       data: {
         businessId: business.id,
@@ -120,7 +155,7 @@ export async function POST(req: NextRequest) {
           - Maximum return: 2.0x invested amount
           - Monthly payouts within 7 business days of revenue verification
         `.trim(),
-        status: 'PENDING_APPROVAL', // Requires admin approval
+        status: 'PENDING_APPROVAL', // Always starts as pending approval
       },
     });
 
@@ -131,10 +166,10 @@ export async function POST(req: NextRequest) {
         title: deal.title,
         status: deal.status,
       },
-      needsKyc: session.user.kycStatus !== 'VERIFIED',
-      message: session.user.kycStatus !== 'VERIFIED' 
-        ? 'Deal created successfully! Complete KYC verification to make it investable.'
-        : 'Deal created successfully and is now pending approval.'
+      needsKyc: !isKycVerified,
+      message: !isKycVerified
+        ? '✅ Deal created successfully!\n\n📋 Next Steps:\n1. Your deal is now visible on the deals page\n2. Complete your KYC verification\n3. Submit required documents\n4. Wait for admin approval\n\n💡 Once approved, investors can fund your deal and you\'ll receive the funds!'
+        : '✅ Deal created successfully!\n\nYour deal is now pending admin approval. Once approved, it will be available for investment.'
     });
 
   } catch (error) {

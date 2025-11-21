@@ -83,17 +83,20 @@ export default function CreateDealPage() {
       const data = await res.json();
 
       if (!res.ok) {
+        console.error('API Error:', data);
         setError(data.error || 'Failed to create deal');
         return;
       }
 
-      // Show KYC reminder if needed, then redirect
-      if (data.needsKyc) {
-        alert('Deal created successfully! ✅\n\nReminder: Complete your KYC verification to make this deal investable.\n\nYour deal will appear on the deals page but won\'t be available for investment until KYC is approved.');
+      // Show success message with next steps
+      if (data.message) {
+        alert(data.message);
       }
 
       router.push('/dashboard/business/deals');
+      router.refresh();
     } catch (err) {
+      console.error('Deal creation error:', err);
       setError('An error occurred. Please try again.');
     } finally {
       setLoading(false);
@@ -144,7 +147,7 @@ export default function CreateDealPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="image">Deal Image *</Label>
+              <Label htmlFor="image">Deal Image (Optional)</Label>
               <div className="space-y-4">
                 {imagePreview ? (
                   <div className="relative w-full h-64 rounded-lg overflow-hidden border-2 border-dashed border-gray-300 bg-gray-50">
