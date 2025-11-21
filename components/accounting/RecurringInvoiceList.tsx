@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Dialog,
   DialogContent,
@@ -49,6 +50,7 @@ export default function RecurringInvoiceList({ recurring, customers }: Recurring
   const [loading, setLoading] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
   const [items, setItems] = useState([{ description: '', quantity: 1, rate: 0 }]);
+  const [includeVat, setIncludeVat] = useState(true);
   
   const [formData, setFormData] = useState({
     customerId: '',
@@ -75,7 +77,7 @@ export default function RecurringInvoiceList({ recurring, customers }: Recurring
   };
 
   const calculateVAT = () => {
-    return calculateSubtotal() * 0.15;
+    return includeVat ? calculateSubtotal() * 0.15 : 0;
   };
 
   const calculateTotal = () => {
@@ -105,6 +107,7 @@ export default function RecurringInvoiceList({ recurring, customers }: Recurring
       notes: '',
     });
     setItems([{ description: '', quantity: 1, rate: 0 }]);
+    setIncludeVat(true);
   };
 
   const handleCreate = async () => {
@@ -142,6 +145,7 @@ export default function RecurringInvoiceList({ recurring, customers }: Recurring
           vatAmount: calculateVAT(),
           total: calculateTotal(),
           notes: formData.notes,
+          includeVat: includeVat,
         }),
       });
 
@@ -427,8 +431,15 @@ export default function RecurringInvoiceList({ recurring, customers }: Recurring
                 <span>Subtotal:</span>
                 <span>{formatCurrency(calculateSubtotal())}</span>
               </div>
-              <div className="flex justify-between text-sm">
-                <span>VAT (15%):</span>
+              <div className="flex items-center justify-between text-sm">
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id="include-vat"
+                    checked={includeVat}
+                    onCheckedChange={(checked) => setIncludeVat(checked as boolean)}
+                  />
+                  <Label htmlFor="include-vat" className="cursor-pointer">VAT (15%):</Label>
+                </div>
                 <span>{formatCurrency(calculateVAT())}</span>
               </div>
               <div className="flex justify-between text-lg font-bold">
