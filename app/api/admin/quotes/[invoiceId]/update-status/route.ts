@@ -10,31 +10,21 @@ export async function POST(
   try {
     const session = await getServerSession(authOptions);
     
-    // Only admin can manually update quote status
+    // Only admin can manually update invoice status
     if (!session?.user?.email || session.user.email !== 'golearnx@gmail.com') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const { status, reason } = await request.json();
 
-    // Validate status - Quote specific statuses
-    const validStatuses = [
-      'DRAFT',           // Quote being prepared
-      'SENT',            // Quote sent to customer
-      'ACCEPTED',        // Customer accepted quote
-      'SIGNED',          // Customer signed quote
-      'PENDING_PAYMENT', // Awaiting payment
-      'PAID',            // Payment received
-      'REJECTED',        // Customer rejected quote
-      'CANCELLED',       // Quote cancelled
-      'EXPIRED'          // Quote expired
-    ];
+    // Use standard invoice statuses
+    const validStatuses = ['DRAFT', 'SENT', 'PAID', 'OVERDUE', 'CANCELLED', 'REFUNDED'];
     
     if (!validStatuses.includes(status)) {
       return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
     }
 
-    const quote = await prisma.invoice.findUnique({
+    const invoice = await prisma.invoice.findUnique({
       where: { id: params.invoiceId },
       include: {
         user: {
@@ -43,78 +33,32 @@ export async function POST(
       },
     });
 
-    if (!quote) {
-      return NextResponse.json({ error: 'Quote not found' }, { status: 404 });
+    if (!invoice) {
+      return NextResponse.json({ error: 'Invoice not found' }, { status: 404 });
     }
 
-    // Verify it's actually a quote
-    if (quote.documentType !== 'QUOTE') {
-      return NextResponse.json({ error: 'This is not a quote' }, { status: 400 });
-    }
-
-    const oldStatus = quote.status;
+    const oldStatus = invoice.status;
 
     // Handle status transitions
-    if (status === 'ACCEPTED' && oldStatus === 'SENT') {
-      // Quote accepted by customer
-      await prisma.invoice.update({
-        where: { id: quote.id },
-        data: {
-          status: 'ACCEPTED',
-          metadata: {
-            ...((quote.metadata as any) || {}),
-            acceptedAt: new Date().toISOString(),
-            acceptedManually: true,
-            reason: reason || 'Quote accepted by customer',
-          },
-        },
-      });
-    } else if (status === 'SIGNED' && (oldStatus === 'ACCEPTED' || oldStatus === 'SENT')) {
-      // Quote signed by customer
-      await prisma.invoice.update({
-        where: { id: quote.id },
-        data: {
-          status: 'SIGNED',
-          metadata: {
-            ...((quote.metadata as any) || {}),
-            signedManually: true,
-            signedAt: new Date().toISOString(),
-            reason: reason || 'Quote signed by customer',
-          },
-        },
-      });
-    } else if (status === 'PENDING_PAYMENT' && (oldStatus === 'SIGNED' || oldStatus === 'ACCEPTED')) {
-      // Awaiting payment
-      await prisma.invoice.update({
-        where: { id: quote.id },
-        data: {
-          status: 'PENDING_PAYMENT',
-          metadata: {
-            ...((quote.metadata as any) || {}),
-            pendingPaymentAt: new Date().toISOString(),
-            reason: reason || 'Awaiting payment',
-          },
-        },
-      });
-    } else if (status === 'PAID' && oldStatus !== 'PAID') {
-      // Quote paid - add funds to wallet
+    if (status === 'PAID' && oldStatus !== 'PAID') {
+      // Mark as paid - add funds to wallet
       await prisma.$transaction(async (tx) => {
-        // Update quote to paid
+        // Update invoice
         await tx.invoice.update({
-          where: { id: quote.id },
+          where: { id: invoice.id },
           data: {
             status: 'PAID',
-            amountPaid: quote.total,
+            amountPaid: invoice.total,
             amountDue: 0,
             paidDate: new Date(),
           },
         });
 
         // Ensure wallet exists
-        let wallet = quote.user.wallet;
+        let wallet = invoice.user.wallet;
         if (!wallet) {
           wallet = await tx.wallet.create({
-            data: { userId: quote.user.id },
+            data: { userId: invoice.user.id },
           });
         }
 
@@ -123,19 +67,20 @@ export async function POST(
           data: {
             walletId: wallet.id,
             type: 'DEPOSIT',
-            amount: quote.total,
+            amount: invoice.total,
+            fee: 0,
+            netAmount: invoice.total,
             status: 'COMPLETED',
-            description: `Payment for quote ${quote.invoiceNumber}`,
-            reference: `QUOTE-PAYMENT-${quote.invoiceNumber}`,
+            description: `Manual payment - Invoice ${invoice.invoiceNumber}`,
+            reference: `MANUAL-PAYMENT-${invoice.invoiceNumber}`,
             metadata: {
-              quoteId: quote.id,
-              quoteNumber: quote.invoiceNumber,
+              invoiceId: invoice.id,
+              invoiceNumber: invoice.invoiceNumber,
               markedPaidManually: true,
               source: 'admin_manual_update',
-              reason: reason || 'Manual payment for quote',
+              reason: reason || 'Manual status update by admin',
               locked: true,
             },
-            lockedUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
           },
         });
 
@@ -143,99 +88,75 @@ export async function POST(
         await tx.wallet.update({
           where: { id: wallet.id },
           data: {
-            balance: { increment: quote.total },
-            lockedBalance: { increment: quote.total },
+            balance: { increment: invoice.total },
+            lockedBalance: { increment: invoice.total },
           },
         });
       });
-    } else if (status === 'REJECTED' && (oldStatus === 'SENT' || oldStatus === 'ACCEPTED')) {
-      // Quote rejected by customer
-      await prisma.invoice.update({
-        where: { id: quote.id },
-        data: {
-          status: 'REJECTED',
-          metadata: {
-            ...((quote.metadata as any) || {}),
-            rejectedAt: new Date().toISOString(),
-            rejectedReason: reason || 'Quote rejected by customer',
+    } else if (status === 'CANCELLED' && oldStatus === 'PAID') {
+      // Cancelled but was paid - need to refund
+      await prisma.$transaction(async (tx) => {
+        // Update invoice
+        await tx.invoice.update({
+          where: { id: invoice.id },
+          data: {
+            status: 'CANCELLED',
+            amountPaid: 0,
+            amountDue: invoice.total,
+            paidDate: null,
           },
-        },
-      });
-    } else if (status === 'CANCELLED') {
-      // Quote cancelled - handle refund if was paid
-      if (oldStatus === 'PAID') {
-        await prisma.$transaction(async (tx) => {
-          // Update quote
-          await tx.invoice.update({
-            where: { id: quote.id },
+        });
+
+        // Remove funds from wallet if they exist
+        if (invoice.user.wallet) {
+          await tx.transaction.create({
             data: {
-              status: 'CANCELLED',
-              amountPaid: 0,
-              amountDue: quote.total,
-              paidDate: null,
+              walletId: invoice.user.wallet.id,
+              type: 'REFUND',
+              amount: -invoice.total,
+              fee: 0,
+              netAmount: -invoice.total,
+              status: 'COMPLETED',
+              description: `Cancelled - Invoice ${invoice.invoiceNumber}`,
+              reference: `CANCEL-REFUND-${invoice.invoiceNumber}`,
+              metadata: {
+                invoiceId: invoice.id,
+                invoiceNumber: invoice.invoiceNumber,
+                cancelledManually: true,
+                reason: reason || 'Manual cancellation by admin',
+              },
             },
           });
 
-          // Remove funds from wallet if they exist
-          if (quote.user.wallet) {
-            await tx.transaction.create({
-              data: {
-                walletId: quote.user.wallet.id,
-                type: 'REFUND',
-                amount: -quote.total,
-                status: 'COMPLETED',
-                description: `Cancelled quote ${quote.invoiceNumber}`,
-                reference: `QUOTE-CANCEL-${quote.invoiceNumber}`,
-                metadata: {
-                  quoteId: quote.id,
-                  quoteNumber: quote.invoiceNumber,
-                  cancelledManually: true,
-                  reason: reason || 'Quote cancelled',
-                },
-              },
-            });
-
-            await tx.wallet.update({
-              where: { id: quote.user.wallet.id },
-              data: {
-                balance: { decrement: quote.total },
-                lockedBalance: { decrement: Math.min(quote.total, quote.user.wallet.lockedBalance) },
-              },
-            });
-          }
-        });
-      } else {
-        // Just cancel without financial impact
-        await prisma.invoice.update({
-          where: { id: quote.id },
-          data: {
-            status: 'CANCELLED',
-            metadata: {
-              ...((quote.metadata as any) || {}),
-              cancelledAt: new Date().toISOString(),
-              reason: reason || 'Quote cancelled',
+          await tx.wallet.update({
+            where: { id: invoice.user.wallet.id },
+            data: {
+              balance: { decrement: invoice.total },
+              lockedBalance: { decrement: Math.min(Number(invoice.total), Number(invoice.user.wallet.lockedBalance)) },
             },
-          },
-        });
-      }
+          });
+        }
+      });
     } else {
-      // Simple status update without special handling
+      // Simple status update without financial impact
       await prisma.invoice.update({
-        where: { id: quote.id },
+        where: { id: invoice.id },
         data: {
           status: status as any,
+          ...(status === 'SENT' && { amountDue: invoice.total, amountPaid: 0, paidDate: null }),
+          ...(status === 'DRAFT' && { amountDue: invoice.total, amountPaid: 0, paidDate: null }),
         },
       });
     }
 
     return NextResponse.json({
       success: true,
-      message: `Quote ${quote.invoiceNumber} status updated from ${oldStatus} to ${status}`,
+      message: `Invoice ${invoice.invoiceNumber} status updated from ${oldStatus} to ${status}`,
     });
   } catch (error) {
-    console.error('Error updating quote status:', error);
+    console.error('Error updating invoice status:', error);
     return NextResponse.json(
-      { error: 'Failed to update quote status' },
+      { error: 'Failed to update invoice status' },
       { status: 500 }
     );
   }

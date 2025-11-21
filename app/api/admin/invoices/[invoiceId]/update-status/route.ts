@@ -67,6 +67,8 @@ export async function POST(
             walletId: wallet.id,
             type: 'DEPOSIT',
             amount: invoice.total,
+            fee: 0,
+            netAmount: invoice.total,
             status: 'COMPLETED',
             description: `Manual payment - Invoice ${invoice.invoiceNumber}`,
             reference: `MANUAL-PAYMENT-${invoice.invoiceNumber}`,
@@ -78,7 +80,6 @@ export async function POST(
               reason: reason || 'Manual status update by admin',
               locked: true,
             },
-            lockedUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
           },
         });
 
@@ -112,6 +113,8 @@ export async function POST(
               walletId: invoice.user.wallet.id,
               type: 'REFUND',
               amount: -invoice.total,
+              fee: 0,
+              netAmount: -invoice.total,
               status: 'COMPLETED',
               description: `Cancelled - Invoice ${invoice.invoiceNumber}`,
               reference: `CANCEL-REFUND-${invoice.invoiceNumber}`,
@@ -128,7 +131,7 @@ export async function POST(
             where: { id: invoice.user.wallet.id },
             data: {
               balance: { decrement: invoice.total },
-              lockedBalance: { decrement: Math.min(invoice.total, invoice.user.wallet.lockedBalance) },
+              lockedBalance: { decrement: Math.min(Number(invoice.total), Number(invoice.user.wallet.lockedBalance)) },
             },
           });
         }
