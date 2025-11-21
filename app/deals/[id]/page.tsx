@@ -51,64 +51,32 @@ export default function DealDetailPage({ params }: { params: { id: string } }) {
     setProcessing(true);
 
     try {
-      // Load Yoco SDK if not already loaded
-      if (!(window as any).YocoSDK) {
-        const script = document.createElement('script');
-        script.src = 'https://js.yoco.com/sdk/v1/yoco-sdk-web.js';
-        script.async = true;
-        document.body.appendChild(script);
-        
-        await new Promise((resolve, reject) => {
-          script.onload = resolve;
-          script.onerror = reject;
-        });
+      console.log('Creating Yoco checkout for investment:', { dealId: deal.id, amount });
+
+      // Create Yoco Checkout session (supports Card, Google Pay, Apple Pay, Instant EFT)
+      const response = await fetch('/api/investments/yoco-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          dealId: deal.id,
+          amount: amount,
+          dealName: deal.name,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create checkout');
       }
 
-      const sdk = new (window as any).YocoSDK({
-        publicKey: process.env.NEXT_PUBLIC_YOCO_PUBLIC_KEY || 'pk_live_ada4bd2dWkbjz3L74d84'
-      });
+      console.log('Checkout created successfully:', data.checkoutId);
 
-      sdk.showPopup({
-        amountInCents: Math.round(amount * 100),
-        currency: 'ZAR',
-        name: 'Octrivium',
-        description: `Investment in ${deal.name}`,
-        metadata: {
-          dealId: deal.id.toString(),
-          dealName: deal.name,
-          investorEmail: 'investor@octrivium.com' // Replace with actual user email
-        },
-        callback: async (result: any) => {
-          if (result.error) {
-            const errorMessage = result.error.message;
-            alert(`Payment failed: ${errorMessage}`);
-            setProcessing(false);
-          } else {
-            // Create investment record
-            const response = await fetch('/api/investments', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                dealId: deal.id,
-                amount: amount,
-                paymentMethod: 'yoco',
-                paymentToken: result.id,
-              }),
-            });
-
-            if (response.ok) {
-              alert(`Successfully invested R${amount.toLocaleString()} in ${deal.name}!`);
-              window.location.href = '/dashboard';
-            } else {
-              alert('Investment failed. Please contact support.');
-            }
-            setProcessing(false);
-          }
-        }
-      });
+      // Redirect to Yoco's hosted checkout page
+      window.location.href = data.checkoutUrl;
     } catch (error) {
       console.error('Yoco payment error:', error);
-      alert('Payment initialization failed. Please try again.');
+      alert(error instanceof Error ? error.message : 'Payment initialization failed. Please try again.');
       setProcessing(false);
     }
   };
