@@ -47,20 +47,29 @@ export async function POST(request: Request) {
 
     console.log(`Processing payment via ${useCustomYoco ? 'merchant' : 'platform'} Yoco account`);
 
-    // Process payment with Yoco API
-    const yocoResponse = await fetch('https://online.yoco.com/v1/charges/', {
+    // Convert amount to cents (amount is in ZAR)
+    const amountInCents = Math.round(amount * 100);
+    
+    console.log(`Charging ${amountInCents} cents (R${amount}) with token:`, token.substring(0, 20) + '...');
+
+    // Process payment with Yoco Charges API (for popup SDK tokens)
+    // Reference: https://developer.yoco.com/online/resources/integration-documentation/payments
+    const yocoResponse = await fetch('https://payments.yoco.com/api/charges', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${yocoSecretKey}`,
+        'X-Auth-Secret-Key': yocoSecretKey, // Some Yoco implementations need this
       },
       body: JSON.stringify({
-        token: token,
-        amountInCents: amount,
+        token: token, // Token from SDK popup
+        amountInCents: amountInCents,
         currency: 'ZAR',
         metadata: {
           invoiceId: invoice.id,
           invoiceNumber: invoice.invoiceNumber,
+          customerEmail: invoice.customer?.email || invoice.user.email,
+          customerName: invoice.customer?.name || `${invoice.user.firstName} ${invoice.user.lastName}`,
         },
       }),
     });

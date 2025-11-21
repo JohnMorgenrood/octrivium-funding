@@ -1,5 +1,36 @@
 # Yoco Payment Integration Setup
 
+## ⚠️ CRITICAL UPDATE (November 2025)
+
+### Recent Fixes Applied:
+1. ✅ **Corrected API Endpoint** - Now using `https://payments.yoco.com/api/charges`
+2. ✅ **Fixed Amount Conversion** - Properly converting ZAR to cents only once
+3. ✅ **Enhanced Error Logging** - Better debugging for payment failures
+4. ✅ **Added Environment Variables** - Updated `.env.example` with Yoco keys
+
+---
+
+## 🚨 WHY PAYMENTS MIGHT BE FAILING
+
+### Most Common Causes:
+
+1. **Environment Variables Not Set in Vercel**
+   - `NEXT_PUBLIC_YOCO_PUBLIC_KEY` missing
+   - `YOCO_SECRET_KEY` missing
+   - **Fix:** Add to Vercel → Settings → Environment Variables → Redeploy
+
+2. **Using Wrong API Keys**
+   - Test keys (`pk_test_`) in production
+   - Live keys (`pk_live_`) in development
+   - **Fix:** Match keys to environment
+
+3. **Yoco Account Not Activated**
+   - Banking details not linked
+   - Online Payments not enabled
+   - **Fix:** Complete Yoco portal setup
+
+---
+
 ## Overview
 Yoco is a South African payment gateway that allows you to accept ZAR payments directly. The integration is now complete and ready to test.
 

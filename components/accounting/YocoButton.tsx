@@ -91,6 +91,8 @@ export default function YocoButton({ invoiceId, amount, invoiceNumber, customPub
       });
 
       console.log('Opening Yoco popup...');
+      console.log('Payment amount:', amount, 'ZAR =', Math.round(amount * 100), 'cents');
+      
       // Create inline payment with enhanced styling
       yoco.showPopup({
         amountInCents: Math.round(amount * 100), // Convert ZAR to cents
