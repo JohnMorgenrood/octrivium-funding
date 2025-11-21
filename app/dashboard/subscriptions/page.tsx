@@ -36,7 +36,7 @@ export default function SubscriptionsPage() {
     setLoading(true);
     setSelectedTier(tier);
     
-    const amount = tier === 'STARTER' ? 5000 : 10000; // R50 or R100 in cents
+    const amount = tier === 'STARTER' ? 9900 : 19900; // R99 or R199 in cents
     const tierName = tier === 'STARTER' ? 'Starter' : 'Business';
 
     try {
@@ -262,7 +262,7 @@ export default function SubscriptionsPage() {
               Starter
             </CardTitle>
             <div className="mt-4">
-              <span className="text-4xl font-bold">R50</span>
+              <span className="text-4xl font-bold">R99</span>
               <span className="text-muted-foreground">/month</span>
             </div>
             <CardDescription>Great for small businesses</CardDescription>
@@ -340,7 +340,7 @@ export default function SubscriptionsPage() {
               Business
             </CardTitle>
             <div className="mt-4">
-              <span className="text-4xl font-bold">R100</span>
+              <span className="text-4xl font-bold">R199</span>
               <span className="text-muted-foreground">/month</span>
             </div>
             <CardDescription>For growing teams</CardDescription>
