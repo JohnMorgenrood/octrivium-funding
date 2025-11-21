@@ -2,36 +2,162 @@
 
 ## ⚠️ CRITICAL UPDATE (November 2025)
 
-### Recent Fixes Applied:
-1. ✅ **Corrected API Endpoint** - Now using `https://payments.yoco.com/api/charges`
-2. ✅ **Fixed Amount Conversion** - Properly converting ZAR to cents only once
-3. ✅ **Enhanced Error Logging** - Better debugging for payment failures
-4. ✅ **Added Environment Variables** - Updated `.env.example` with Yoco keys
+### ✅ MAJOR UPGRADE - Now Using Yoco Checkout API!
+
+**What Changed:**
+1. ✅ **Switched to Checkout API** - Now supports ALL payment methods:
+   - 💳 Card payments
+   - 📱 Google Pay
+   - 🍎 Apple Pay
+   - 🏦 Instant EFT (Bank transfers)
+2. ✅ **Secure hosted checkout** - Users redirected to Yoco's secure payment page
+3. ✅ **Webhook support** - Automatic payment confirmation
+4. ✅ **Better UX** - No popup, proper redirect flow
+5. ✅ **Only needs Secret Key** - Public key no longer required!
 
 ---
 
 ## 🚨 WHY PAYMENTS MIGHT BE FAILING
 
-### Most Common Causes:
+### Most Common Cause:
 
-1. **Environment Variables Not Set in Vercel**
-   - `NEXT_PUBLIC_YOCO_PUBLIC_KEY` missing
-   - `YOCO_SECRET_KEY` missing
-   - **Fix:** Add to Vercel → Settings → Environment Variables → Redeploy
+**Environment Variables Not Set in Vercel**
+- `YOCO_SECRET_KEY` missing
+- **Fix:** Add to Vercel → Settings → Environment Variables → Redeploy
 
-2. **Using Wrong API Keys**
-   - Test keys (`pk_test_`) in production
-   - Live keys (`pk_live_`) in development
-   - **Fix:** Match keys to environment
-
-3. **Yoco Account Not Activated**
-   - Banking details not linked
-   - Online Payments not enabled
-   - **Fix:** Complete Yoco portal setup
+**Note:** `NEXT_PUBLIC_YOCO_PUBLIC_KEY` is NO LONGER NEEDED with Checkout API!
 
 ---
 
-## Overview
+## 📋 Quick Setup (5 Minutes)
+
+### Step 1: Get Your Yoco Secret Key
+1. Go to: https://portal.yoco.com/online/settings/api-keys
+2. Copy your **Secret Key** (starts with `sk_live_`)
+
+### Step 2: Add to Vercel
+1. Vercel Dashboard → octrivium-funding → **Settings** → **Environment Variables**
+2. Add:
+   ```
+   YOCO_SECRET_KEY = sk_live_yourSecretKey123
+   ```
+3. Click **Save**
+4. Go to **Deployments** → Redeploy latest
+
+### Step 3: Set Up Webhook (Important!)
+1. Go to: https://portal.yoco.com/online/settings/webhooks
+2. Add webhook URL: `https://octrivium.co.za/api/webhooks/yoco`
+3. Select events:
+   - ✅ `checkout.succeeded`
+   - ✅ `checkout.failed`
+   - ✅ `payment.refunded`
+4. Save webhook
+
+### Step 4: Test Payment
+1. Create an invoice in your app
+2. Click "Pay with Yoco"
+3. You'll be redirected to Yoco's secure checkout
+4. Choose payment method (Card, Google Pay, Apple Pay, or EFT)
+5. Complete payment
+6. You'll be redirected back to success page
+
+---
+
+## 🎯 How It Works Now
+
+```
+1. User clicks "Pay with Yoco" button
+   ↓
+2. Frontend calls /api/yoco/create-checkout
+   ↓
+3. Backend creates Yoco Checkout session
+   ↓
+4. User redirected to Yoco's hosted payment page
+   ↓
+5. User chooses payment method:
+   - Card (Visa/Mastercard)
+   - Google Pay
+   - Apple Pay
+   - Instant EFT (bank transfer)
+   ↓
+6. Yoco processes payment
+   ↓
+7. User redirected back to /payment/success or /payment/failed
+   ↓
+8. Yoco sends webhook to /api/webhooks/yoco
+   ↓
+9. Backend updates invoice to PAID
+   ↓
+10. Funds added to user's wallet
+```
+
+---
+
+## 🧪 Testing
+
+### Test with Live Keys
+Since you have Online Checkout enabled, you can test with small amounts (like R1) using real payment methods.
+
+### Test Cards (if using test keys)
+- **Success:** `4242 4242 4242 4242`
+- **Declined:** `4000 0000 0000 0002`
+- Expiry: Any future date, CVV: Any 3 digits
+
+---
+
+## 📊 Payment Methods Supported
+
+| Method | Icon | Availability |
+|--------|------|--------------|
+| Card | 💳 | Always |
+| Google Pay | 📱 | Android/Chrome users |
+| Apple Pay | 🍎 | iOS/Safari users |
+| Instant EFT | 🏦 | SA bank account holders |
+
+All methods are automatically shown based on user's device and location!
+
+---
+
+## ✅ Verification Checklist
+
+Before testing payments, confirm:
+
+- [ ] Secret key added to Vercel environment variables
+- [ ] Deployed after adding environment variable
+- [ ] Using correct key (test vs live)
+- [ ] Yoco account is active and verified
+- [ ] Online Checkout enabled in Yoco portal (✅ You have this!)
+- [ ] Webhook URL added to Yoco portal
+- [ ] Banking details linked in Yoco account
+
+---
+
+## 🔍 Debugging
+
+### Check Vercel Logs
+```bash
+vercel logs --follow
+```
+
+Look for:
+- ✅ "Creating Yoco checkout for invoice: ..."
+- ✅ "Checkout created successfully: ..."
+- ❌ "Payment system not configured"
+
+### Check Webhook Logs
+In Yoco Portal → Webhooks → View logs to see if webhooks are being delivered
+
+---
+
+## 📞 Support
+
+- **Yoco Support:** support@yoco.com | +27 87 550 0570
+- **Yoco Portal:** https://portal.yoco.com
+- **Octrivium Support:** support@octrivium.co.za
+
+---
+
+**Once secret key and webhook are set up, all payment methods work automatically! 🎉**
 Yoco is a South African payment gateway that allows you to accept ZAR payments directly. The integration is now complete and ready to test.
 
 ## What's Been Implemented

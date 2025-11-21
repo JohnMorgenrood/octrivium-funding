@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
@@ -14,151 +13,45 @@ interface YocoButtonProps {
 }
 
 export default function YocoButton({ invoiceId, amount, invoiceNumber, customPublicKey }: YocoButtonProps) {
-  const router = useRouter();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
-
-  // Format currency helper
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-ZA', {
-      style: 'currency',
-      currency: 'ZAR',
-    }).format(amount);
-  };
-
-  // Log on component mount to check if env var is available
-  useEffect(() => {
-    const key = process.env.NEXT_PUBLIC_YOCO_PUBLIC_KEY;
-    console.log('YocoButton mounted. Public key available:', !!key);
-    if (key) {
-      console.log('Key starts with:', key.substring(0, 10));
-    }
-  }, []);
 
   const handleYocoPayment = async () => {
     try {
       setLoading(true);
 
-      // Get public key - use custom key for BUSINESS tier, otherwise platform key
-      const publicKey = customPublicKey || process.env.NEXT_PUBLIC_YOCO_PUBLIC_KEY;
+      console.log('Creating Yoco checkout for invoice:', invoiceId);
+      console.log('Payment amount:', amount, 'ZAR');
 
-      if (!publicKey) {
-        console.error('Yoco public key not found');
-        toast({
-          title: 'Configuration Error',
-          description: 'Payment system not properly configured. Please contact support.',
-          variant: 'destructive',
-        });
-        setLoading(false);
-        return;
-      }
-
-      const isCustomKey = !!customPublicKey;
-      console.log(`Initializing Yoco with ${isCustomKey ? 'merchant' : 'platform'} key:`, publicKey.substring(0, 10) + '...');
-
-      // Load Yoco SDK if not already loaded
-      if (!(window as any).YocoSDK) {
-        console.log('Loading Yoco SDK...');
-        const script = document.createElement('script');
-        script.src = 'https://js.yoco.com/sdk/v1/yoco-sdk-web.js';
-        script.async = true;
-        document.body.appendChild(script);
-
-        await new Promise((resolve, reject) => {
-          script.onload = () => {
-            console.log('Yoco SDK loaded successfully');
-            resolve(true);
-          };
-          script.onerror = () => {
-            console.error('Failed to load Yoco SDK');
-            reject(new Error('Failed to load Yoco SDK'));
-          };
-        });
-      }
-
-      if (!(window as any).YocoSDK) {
-        throw new Error('Yoco SDK not loaded');
-      }
-
-      if (!(window as any).YocoSDK) {
-        throw new Error('Yoco SDK not loaded');
-      }
-
-      // Initialize Yoco SDK
-      console.log('Creating Yoco instance...');
-      const yoco = new (window as any).YocoSDK({
-        publicKey: publicKey,
-      });
-
-      console.log('Opening Yoco popup...');
-      console.log('Payment amount:', amount, 'ZAR =', Math.round(amount * 100), 'cents');
-      
-      // Create inline payment with enhanced styling
-      yoco.showPopup({
-        amountInCents: Math.round(amount * 100), // Convert ZAR to cents
-        currency: 'ZAR',
-        name: 'Octrivium Funding',
-        description: `Invoice #${invoiceNumber} - ${formatCurrency(amount)}`,
-        image: '/assets/logo.png',
-        locale: 'en',
-        callback: async (result: any) => {
-          console.log('Yoco callback received:', result);
-          if (result.error) {
-            console.error('Yoco payment error:', result.error);
-            toast({
-              title: 'Payment Failed',
-              description: result.error.message || 'Payment was unsuccessful',
-              variant: 'destructive',
-            });
-            setLoading(false);
-            return;
-          }
-
-          // Process the payment on the server
-          try {
-            const response = await fetch('/api/yoco/process-payment', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                token: result.id,
-                invoiceId: invoiceId,
-                amount: amount,
-              }),
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-              throw new Error(data.error || 'Payment processing failed');
-            }
-
-            toast({
-              title: 'Payment Successful!',
-              description: 'Your payment has been processed. Redirecting to home...',
-            });
-
-            // Redirect to home page after successful payment
-            setTimeout(() => {
-              window.location.href = '/';
-            }, 1500);
-          } catch (error: any) {
-            console.error('Error processing payment:', error);
-            toast({
-              title: 'Error',
-              description: error.message || 'Failed to process payment',
-              variant: 'destructive',
-            });
-          } finally {
-            setLoading(false);
-          }
+      // Create Yoco Checkout session
+      // This supports Card, Google Pay, Apple Pay, and Instant EFT
+      const response = await fetch('/api/yoco/create-checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
+        body: JSON.stringify({
+          invoiceId: invoiceId,
+          amount: amount,
+          invoiceNumber: invoiceNumber,
+        }),
       });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create checkout');
+      }
+
+      console.log('Checkout created successfully:', data.checkoutId);
+
+      // Redirect to Yoco's hosted checkout page
+      // User can pay with Card, Google Pay, Apple Pay, or Instant EFT
+      window.location.href = data.checkoutUrl;
     } catch (error: any) {
-      console.error('Error initializing Yoco:', error);
+      console.error('Payment error:', error);
       toast({
-        title: 'Error',
+        title: 'Payment Error',
         description: error.message || 'Failed to initialize payment',
         variant: 'destructive',
       });
@@ -185,9 +78,28 @@ export default function YocoButton({ invoiceId, amount, invoiceNumber, customPub
             viewBox="0 0 24 24"
             fill="currentColor"
           >
+  return (
+    <Button
+      onClick={handleYocoPayment}
+      disabled={loading}
+      className="w-full bg-[#00A859] hover:bg-[#008f4a] text-white"
+      size="lg"
+    >
+      {loading ? (
+        <>
+          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+          Redirecting to payment...
+        </>
+      ) : (
+        <>
+          <svg
+            className="mr-2 h-5 w-5"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" />
           </svg>
-          Pay with Card (Yoco)
+          Pay with Yoco (Card • Google Pay • Apple Pay • EFT)
         </>
       )}
     </Button>
