@@ -1,0 +1,139 @@
+// Template 10: Playful Modern - Colorful with rounded corners and fun design
+export const Template10Playful = ({ invoice, user, customer, items }: any) => {
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-ZA', {
+      style: 'currency',
+      currency: 'ZAR',
+    }).format(amount);
+  };
+
+  return (
+    <div className="bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50 p-8 max-w-4xl mx-auto">
+      {/* Header Card */}
+      <div className="bg-white rounded-3xl shadow-2xl p-8 mb-6">
+        <div className="flex justify-between items-start mb-8">
+          <div>
+            <div className="inline-block bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-white px-8 py-3 rounded-full transform -rotate-2 mb-4">
+              <h1 className="text-3xl font-bold">
+                {invoice.documentType === 'QUOTE' ? '📋 Quote' : '💰 Invoice'}
+              </h1>
+            </div>
+            <p className="text-2xl font-bold text-gray-800">{invoice.invoiceNumber}</p>
+          </div>
+          <div>
+            {user.companyLogo ? (
+              <img src={user.companyLogo} alt="Logo" className="h-20 rounded-2xl shadow-lg" />
+            ) : (
+              <div className="h-20 w-20 bg-gradient-to-br from-pink-400 via-purple-400 to-blue-400 rounded-2xl flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+                {user.companyName?.charAt(0) || user.firstName?.charAt(0)}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Info Bubbles */}
+        <div className="grid grid-cols-2 gap-6 mb-8">
+          <div className="bg-gradient-to-r from-pink-100 to-purple-100 p-6 rounded-2xl">
+            <div className="flex items-start gap-3">
+              <span className="text-3xl">📤</span>
+              <div>
+                <p className="text-xs font-bold text-purple-600 uppercase mb-1">From</p>
+                <p className="font-bold text-gray-900">{user.companyName || `${user.firstName} ${user.lastName}`}</p>
+                <p className="text-sm text-gray-600">{user.email}</p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-gradient-to-r from-purple-100 to-blue-100 p-6 rounded-2xl">
+            <div className="flex items-start gap-3">
+              <span className="text-3xl">📥</span>
+              <div>
+                <p className="text-xs font-bold text-blue-600 uppercase mb-1">To</p>
+                <p className="font-bold text-gray-900">{customer.name}</p>
+                {customer.email && <p className="text-sm text-gray-600">{customer.email}</p>}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Dates */}
+        <div className="flex gap-4 mb-8">
+          <div className="flex-1 bg-green-50 p-4 rounded-xl border-2 border-green-200">
+            <p className="text-xs text-green-600 font-bold mb-1">📅 Issued</p>
+            <p className="font-semibold text-gray-900">{new Date(invoice.issueDate).toLocaleDateString()}</p>
+          </div>
+          <div className="flex-1 bg-orange-50 p-4 rounded-xl border-2 border-orange-200">
+            <p className="text-xs text-orange-600 font-bold mb-1">⏰ Due</p>
+            <p className="font-semibold text-gray-900">{new Date(invoice.dueDate).toLocaleDateString()}</p>
+          </div>
+        </div>
+
+        {/* Items */}
+        <div className="bg-gradient-to-r from-pink-50 to-blue-50 rounded-2xl p-6 mb-6">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b-2 border-purple-300">
+                <th className="text-left py-3 font-bold text-purple-700">Item</th>
+                <th className="text-center py-3 font-bold text-purple-700">Qty</th>
+                <th className="text-right py-3 font-bold text-purple-700">Price</th>
+                <th className="text-right py-3 font-bold text-purple-700">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((item: any, index: number) => (
+                <tr key={index} className="border-b border-purple-100">
+                  <td className="py-4 font-medium text-gray-900">{item.description}</td>
+                  <td className="text-center py-4 text-gray-600">{item.quantity}</td>
+                  <td className="text-right py-4 text-gray-600">{formatCurrency(item.unitPrice)}</td>
+                  <td className="text-right py-4 font-bold text-purple-600">{formatCurrency(item.total)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Total Card */}
+        <div className="flex justify-end">
+          <div className="w-96">
+            <div className="bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 p-1 rounded-2xl">
+              <div className="bg-white p-6 rounded-xl">
+                <div className="flex justify-between py-2 text-gray-700">
+                  <span className="font-medium">Subtotal</span>
+                  <span className="font-semibold">{formatCurrency(invoice.subtotal)}</span>
+                </div>
+                {invoice.taxRate > 0 && (
+                  <div className="flex justify-between py-2 text-gray-700">
+                    <span className="font-medium">Tax ({invoice.taxRate}%)</span>
+                    <span className="font-semibold">{formatCurrency(invoice.taxAmount)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between py-4 border-t-2 border-purple-200 items-center">
+                  <span className="text-2xl font-bold bg-gradient-to-r from-pink-600 to-blue-600 bg-clip-text text-transparent">
+                    Total
+                  </span>
+                  <span className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-blue-600 bg-clip-text text-transparent">
+                    {formatCurrency(invoice.total)}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {invoice.notes && (
+          <div className="mt-8 bg-yellow-50 p-6 rounded-2xl border-2 border-yellow-200">
+            <p className="text-sm text-gray-700 flex items-start gap-2">
+              <span className="text-xl">💡</span>
+              <span>{invoice.notes}</span>
+            </p>
+          </div>
+        )}
+      </div>
+
+      {invoice.terms && (
+        <div className="text-center text-xs text-gray-500 bg-white/50 backdrop-blur p-4 rounded-2xl">
+          <p>{invoice.terms}</p>
+        </div>
+      )}
+    </div>
+  );
+};

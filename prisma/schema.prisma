@@ -896,6 +896,9 @@ model Invoice {
   signedAt          DateTime?
   signerName        String?
   
+  // Template
+  templateId        Int               @default(1) // 1-10 for different designs
+  
   // Relations
   items             InvoiceItem[]
   
