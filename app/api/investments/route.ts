@@ -5,8 +5,10 @@ import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 
 const investmentSchema = z.object({
-  dealId: z.string().uuid(),
+  dealId: z.union([z.string().uuid(), z.number()]), // Accept UUID or number for fake deals
   amount: z.number().positive(),
+  paymentMethod: z.enum(['yoco', 'paypal', 'wallet']).optional(),
+  paymentToken: z.string().optional(),
 });
 
 export async function POST(req: Request) {
@@ -17,16 +19,37 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const body = await req.json();
+    const validated = investmentSchema.parse(body);
+
+    // Handle fake deals (demo mode) - dealId is a number
+    if (typeof validated.dealId === 'number') {
+      // For demo purposes, just return success
+      // In production, you would verify the payment token with Yoco/PayPal
+      if (validated.paymentMethod === 'yoco' && validated.paymentToken) {
+        // TODO: Verify Yoco payment token with their API
+        return NextResponse.json({ 
+          success: true, 
+          message: 'Demo investment successful',
+          investment: {
+            id: 'demo-' + Date.now(),
+            amount: validated.amount,
+            dealId: validated.dealId,
+            paymentMethod: validated.paymentMethod,
+          }
+        }, { status: 201 });
+      }
+      return NextResponse.json({ success: true }, { status: 201 });
+    }
+
+    // Handle real deals (database mode) - dealId is a UUID string
     if (session.user.kycStatus !== 'APPROVED') {
       return NextResponse.json({ error: 'KYC verification required' }, { status: 403 });
     }
 
-    const body = await req.json();
-    const validated = investmentSchema.parse(body);
-
     // Check deal exists and is active
     const deal = await prisma.deal.findUnique({
-      where: { id: validated.dealId },
+      where: { id: validated.dealId as string },
     });
 
     if (!deal) {
@@ -76,7 +99,7 @@ export async function POST(req: Request) {
       const investment = await tx.investment.create({
         data: {
           userId: session.user.id,
-          dealId: validated.dealId,
+          dealId: validated.dealId as string,
           amount: validated.amount,
           sharePercentage: 0, // Will be calculated after deal is fully funded
           expectedReturn: validated.amount * Number(deal.repaymentCap),
@@ -109,7 +132,7 @@ export async function POST(req: Request) {
       // Update deal funding
       const newFunding = Number(deal.currentFunding) + validated.amount;
       const updatedDeal = await tx.deal.update({
-        where: { id: validated.dealId },
+        where: { id: validated.dealId as string },
         data: {
           currentFunding: newFunding,
           investorCount: { increment: 1 },
@@ -120,7 +143,7 @@ export async function POST(req: Request) {
       // If deal is now fully funded, calculate share percentages
       if (updatedDeal.status === 'FUNDED') {
         const allInvestments = await tx.investment.findMany({
-          where: { dealId: validated.dealId },
+          where: { dealId: validated.dealId as string },
         });
 
         const totalFunding = allInvestments.reduce((sum: number, inv: any) => sum + Number(inv.amount), 0);

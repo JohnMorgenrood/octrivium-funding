@@ -21,7 +21,7 @@ const fakeDeals: any[] = [
 
 export default function DealDetailPage({ params }: { params: { id: string } }) {
   const [investmentAmount, setInvestmentAmount] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState<'card' | 'paypal'>('card');
+  const [paymentMethod, setPaymentMethod] = useState<'yoco' | 'paypal'>('yoco');
   const [processing, setProcessing] = useState(false);
   const [expandedSection, setExpandedSection] = useState<'about' | 'terms' | 'risk' | null>(null);
   const [showRevenueTooltip, setShowRevenueTooltip] = useState(false);
@@ -38,6 +38,78 @@ export default function DealDetailPage({ params }: { params: { id: string } }) {
       case 'Medium': return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400';
       case 'High': return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400';
       default: return 'bg-slate-100 text-slate-700';
+    }
+  };
+
+  const handleYocoPayment = async () => {
+    const amount = parseFloat(investmentAmount);
+    if (isNaN(amount) || amount < deal.minInvestment) {
+      alert(`Minimum investment is R${deal.minInvestment.toLocaleString()}`);
+      return;
+    }
+
+    setProcessing(true);
+
+    try {
+      // Load Yoco SDK if not already loaded
+      if (!(window as any).YocoSDK) {
+        const script = document.createElement('script');
+        script.src = 'https://js.yoco.com/sdk/v1/yoco-sdk-web.js';
+        script.async = true;
+        document.body.appendChild(script);
+        
+        await new Promise((resolve, reject) => {
+          script.onload = resolve;
+          script.onerror = reject;
+        });
+      }
+
+      const sdk = new (window as any).YocoSDK({
+        publicKey: process.env.NEXT_PUBLIC_YOCO_PUBLIC_KEY || 'pk_live_ada4bd2dWkbjz3L74d84'
+      });
+
+      sdk.showPopup({
+        amountInCents: Math.round(amount * 100),
+        currency: 'ZAR',
+        name: 'Octrivium',
+        description: `Investment in ${deal.name}`,
+        metadata: {
+          dealId: deal.id.toString(),
+          dealName: deal.name,
+          investorEmail: 'investor@octrivium.com' // Replace with actual user email
+        },
+        callback: async (result: any) => {
+          if (result.error) {
+            const errorMessage = result.error.message;
+            alert(`Payment failed: ${errorMessage}`);
+            setProcessing(false);
+          } else {
+            // Create investment record
+            const response = await fetch('/api/investments', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                dealId: deal.id,
+                amount: amount,
+                paymentMethod: 'yoco',
+                paymentToken: result.id,
+              }),
+            });
+
+            if (response.ok) {
+              alert(`Successfully invested R${amount.toLocaleString()} in ${deal.name}!`);
+              window.location.href = '/dashboard';
+            } else {
+              alert('Investment failed. Please contact support.');
+            }
+            setProcessing(false);
+          }
+        }
+      });
+    } catch (error) {
+      console.error('Yoco payment error:', error);
+      alert('Payment initialization failed. Please try again.');
+      setProcessing(false);
     }
   };
 
@@ -497,15 +569,15 @@ export default function DealDetailPage({ params }: { params: { id: string } }) {
                       <Label className="text-xs sm:text-sm text-slate-900 dark:text-white mb-3 block">Payment Method</Label>
                       <div className="grid grid-cols-2 gap-2 sm:gap-3">
                         <button
-                          onClick={() => setPaymentMethod('card')}
+                          onClick={() => setPaymentMethod('yoco')}
                           className={`p-2.5 sm:p-3 rounded-xl border-2 transition-all ${
-                            paymentMethod === 'card'
-                              ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20'
+                            paymentMethod === 'yoco'
+                              ? 'border-green-500 bg-green-50 dark:bg-green-900/20'
                               : 'border-slate-200 dark:border-slate-700 hover:border-slate-300'
                           }`}
                         >
                           <CreditCard className="h-4 w-4 sm:h-5 sm:w-5 mx-auto mb-1" />
-                          <div className="text-xs font-medium">Card</div>
+                          <div className="text-xs font-medium">Yoco</div>
                         </button>
                         <button
                           onClick={() => setPaymentMethod('paypal')}
@@ -523,15 +595,16 @@ export default function DealDetailPage({ params }: { params: { id: string } }) {
                       </div>
                     </div>
 
-                    {/* Card Payment Button */}
-                    {paymentMethod === 'card' && (
+                    {/* Yoco Payment Button */}
+                    {paymentMethod === 'yoco' && (
                       <Button 
-                        className="w-full h-11 sm:h-12 md:h-14 text-sm sm:text-base md:text-lg bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-lg" 
+                        onClick={handleYocoPayment}
+                        className="w-full h-11 sm:h-12 md:h-14 text-sm sm:text-base md:text-lg bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-lg" 
                         size="lg"
                         disabled={processing}
                       >
                         <CreditCard className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                        {processing ? 'Processing...' : 'Pay with Card'}
+                        {processing ? 'Processing...' : 'Pay with Yoco'}
                       </Button>
                     )}
 
