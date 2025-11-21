@@ -1127,7 +1127,6 @@ export default function HomePage() {
               <h4 className="font-bold text-white mb-4">Contact</h4>
               <ul className="space-y-2 text-sm">
                 <li>support@octrivium.co.za</li>
-                <li>+27 (0) 21 123 4567</li>
                 <li>Cape Town, South Africa</li>
               </ul>
             </div>

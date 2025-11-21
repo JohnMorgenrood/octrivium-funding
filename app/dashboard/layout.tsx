@@ -1,6 +1,6 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -143,7 +143,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                     <button
                       onClick={() => {
                         setMobileMenuOpen(false);
-                        router.push('/api/auth/signout');
+                        signOut({ callbackUrl: '/' });
                       }}
                       className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/30 transition-all duration-200 w-full text-left text-red-600 dark:text-red-400 font-medium mt-4 border border-transparent hover:border-red-200 dark:hover:border-red-900/50"
                     >
@@ -193,7 +193,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             ))}
             
             <button
-              onClick={() => router.push('/api/auth/signout')}
+              onClick={() => signOut({ callbackUrl: '/' })}
               className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/30 transition-all duration-200 w-full text-left text-red-600 dark:text-red-400 font-medium mt-4 border border-transparent hover:border-red-200 dark:hover:border-red-900/50"
             >
               <LogOut className="h-5 w-5" />
