@@ -15,6 +15,7 @@ import {
   ArrowDownRight,
   Users,
   Package,
+  RefreshCw,
 } from 'lucide-react';
 import { formatDistance } from 'date-fns';
 
@@ -127,6 +128,15 @@ export default function AccountingOverview({
             <FileText className="h-4 w-4 sm:mr-2" />
             <span className="hidden sm:inline">Reports</span>
             <span className="sm:hidden text-xs">Reports</span>
+          </Button>
+          <Button 
+            variant="outline" 
+            onClick={() => router.push('/dashboard/accounting/recurring')}
+            className="w-full sm:w-auto"
+          >
+            <RefreshCw className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Recurring</span>
+            <span className="sm:hidden text-xs">Recurring</span>
           </Button>
           <Button 
             variant="outline" 

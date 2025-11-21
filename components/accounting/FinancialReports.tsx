@@ -74,7 +74,7 @@ export default function FinancialReports({ invoices, expenses }: FinancialReport
 
     return {
       invoices: invoices.filter(inv => {
-        const date = inv.paidAt || inv.createdAt;
+        const date = inv.paidDate || inv.createdAt;
         return date >= startDate && date <= endDate;
       }),
       expenses: expenses.filter(exp => {

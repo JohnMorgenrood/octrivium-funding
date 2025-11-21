@@ -136,6 +136,7 @@ model User {
   bankCards     BankCard[]
   customers     Customer[]
   invoices      Invoice[]
+  recurringInvoices RecurringInvoice[]
   expenses      Expense[]
   accountingTransactions AccountingTransaction[]
   chartOfAccounts ChartOfAccounts[]
@@ -849,6 +850,7 @@ model Customer {
   
   // Relations
   invoices          Invoice[]
+  recurringInvoices RecurringInvoice[]
   
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
@@ -1047,4 +1049,47 @@ model Product {
 
   @@index([userId])
   @@index([active])
+}
+
+model RecurringInvoice {
+  id                String            @id @default(uuid())
+  userId            String
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  customerId        String
+  customer          Customer          @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  
+  // Template Details
+  invoicePrefix     String            @default("INV")
+  
+  // Recurrence Settings
+  frequency         RecurringType     // MONTHLY, ANNUALLY, CUSTOM
+  interval          Int               @default(1) // Every X months/years
+  dayOfMonth        Int?              // For monthly (1-31)
+  startDate         DateTime
+  endDate           DateTime?         // Optional end date
+  nextInvoiceDate   DateTime
+  
+  // Invoice Content
+  items             Json              // Array of invoice items
+  subtotal          Decimal           @db.Decimal(15, 2)
+  taxRate           Decimal           @db.Decimal(5, 2) @default(15.00)
+  taxAmount         Decimal           @db.Decimal(15, 2)
+  total             Decimal           @db.Decimal(15, 2)
+  
+  // Terms
+  paymentTermsDays  Int               @default(30)
+  notes             String?           @db.Text
+  terms             String?           @db.Text
+  
+  // Status
+  active            Boolean           @default(true)
+  lastGeneratedAt   DateTime?
+  
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  @@index([userId])
+  @@index([customerId])
+  @@index([active])
+  @@index([nextInvoiceDate])
 }

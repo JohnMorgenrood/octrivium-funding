@@ -21,7 +21,7 @@ export default async function ReportsPage() {
         status: true,
         dueDate: true,
         createdAt: true,
-        paidAt: true,
+        paidDate: true,
       },
     }),
     prisma.expense.findMany({
