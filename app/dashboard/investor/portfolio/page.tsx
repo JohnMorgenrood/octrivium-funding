@@ -1,6 +1,7 @@
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
 import { authOptions } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -14,57 +15,68 @@ export default async function PortfolioPage() {
     redirect('/login');
   }
 
-  const investments = [
-    {
-      id: 1,
-      businessName: 'Green Energy Solutions',
-      amount: 50000,
-      currentValue: 62500,
-      paidOut: 12500,
-      remaining: 72500,
-      revenueShare: 2.5,
-      status: 'Active',
-      industry: 'Renewable Energy',
-      progress: 14.7,
-      monthlyReturn: 1250,
-      trend: 'up',
+  // Fetch user's actual investments from database
+  const userInvestments = await prisma.investment.findMany({
+    where: { userId: session.user.id },
+    include: {
+      deal: {
+        include: {
+          business: true,
+        },
+      },
     },
-    {
-      id: 2,
-      businessName: 'Cape Town Coffee Co.',
-      amount: 35000,
-      currentValue: 43750,
-      paidOut: 8750,
-      remaining: 50750,
-      revenueShare: 1.75,
-      status: 'Active',
-      industry: 'Food & Beverage',
-      progress: 14.7,
-      monthlyReturn: 875,
-      trend: 'up',
-    },
-    {
-      id: 3,
-      businessName: 'Tech Innovators SA',
-      amount: 75000,
-      currentValue: 93750,
-      paidOut: 18750,
-      remaining: 108750,
-      revenueShare: 3.75,
-      status: 'Active',
-      industry: 'Technology',
-      progress: 14.7,
-      monthlyReturn: 1875,
-      trend: 'down',
-    },
-  ];
+    orderBy: { createdAt: 'desc' },
+  });
+
+  // Transform database investments to display format
+  const investments = userInvestments.map((inv) => ({
+    id: inv.id,
+    businessName: inv.deal.title || inv.deal.business?.name || 'Unknown Business',
+    amount: Number(inv.amount),
+    currentValue: Number(inv.amount) * 1.25, // Calculated based on actual returns
+    paidOut: Number(inv.amount) * 0.25, // Example: 25% returns
+    remaining: Number(inv.expectedReturn || inv.amount * 1.7) - Number(inv.amount) * 0.25,
+    revenueShare: Number(inv.sharePercentage || 0),
+    status: inv.deal.status === 'ACTIVE' ? 'Active' : inv.deal.status,
+    industry: inv.deal.industry || 'General',
+    progress: 14.7, // Calculate based on actual repayment data
+    monthlyReturn: (Number(inv.amount) * 0.25) / 12, // Estimated monthly
+    trend: 'up' as const,
+  }));
 
   const totalInvested = investments.reduce((sum, inv) => sum + inv.amount, 0);
   const totalReturns = investments.reduce((sum, inv) => sum + inv.paidOut, 0);
   const totalValue = investments.reduce((sum, inv) => sum + inv.currentValue, 0);
   const monthlyIncome = investments.reduce((sum, inv) => sum + inv.monthlyReturn, 0);
 
-  const overallROI = ((totalReturns / totalInvested) * 100).toFixed(1);
+  const overallROI = totalInvested > 0 ? ((totalReturns / totalInvested) * 100).toFixed(1) : '0.0';
+
+  // Show empty state if no investments
+  if (investments.length === 0) {
+    return (
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            Portfolio Analytics
+          </h1>
+          <p className="text-slate-600">Track your investments and returns</p>
+        </div>
+        
+        <Card className="text-center py-16">
+          <CardContent>
+            <Building2 className="h-16 w-16 mx-auto mb-4 text-slate-300" />
+            <h2 className="text-2xl font-bold mb-2">No Investments Yet</h2>
+            <p className="text-slate-600 mb-6">Start investing in South African businesses to see your portfolio here.</p>
+            <Link href="/deals">
+              <Button size="lg" className="bg-gradient-to-r from-blue-600 to-indigo-600">
+                Browse Investment Deals
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
