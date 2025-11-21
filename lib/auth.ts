@@ -17,8 +17,15 @@ export const authOptions: NextAuthOptions = {
   },
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      clientId: process.env.GOOGLE_CLIENT_ID || 'dummy-client-id',
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || 'dummy-secret',
+      authorization: {
+        params: {
+          prompt: 'consent',
+          access_type: 'offline',
+          response_type: 'code',
+        },
+      },
     }),
     CredentialsProvider({
       name: 'credentials',
@@ -56,12 +63,71 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async signIn({ user, account, profile }) {
+      if (account?.provider === 'google') {
+        const email = user.email;
+        if (!email) return false;
+
+        // Check if user exists
+        const existingUser = await prisma.user.findUnique({
+          where: { email },
+        });
+
+        if (existingUser) {
+          // User exists, allow sign in
+          return true;
+        }
+
+        // Create new user from Google
+        const names = user.name?.split(' ') || ['', ''];
+        const isAdmin = email === 'golearnx@gmail.com'; // Admin account
+
+        await prisma.user.create({
+          data: {
+            email: email,
+            firstName: names[0] || 'User',
+            lastName: names.slice(1).join(' ') || 'Account',
+            password: '', // No password for Google accounts
+            role: isAdmin ? 'ADMIN' : 'INVESTOR',
+            emailVerified: new Date(),
+            avatar: user.image,
+            subscriptionTier: isAdmin ? 'BUSINESS' : 'FREE', // Admin gets BUSINESS tier
+            subscriptionStatus: 'ACTIVE',
+          },
+        });
+
+        return true;
+      }
+      return true;
+    },
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id;
         token.role = user.role;
         token.kycStatus = user.kycStatus;
       }
+      
+      // Fetch latest user data
+      if (token.email) {
+        const dbUser = await prisma.user.findUnique({
+          where: { email: token.email },
+          select: {
+            id: true,
+            role: true,
+            kycStatus: true,
+            subscriptionTier: true,
+            email: true,
+          },
+        });
+        
+        if (dbUser) {
+          token.id = dbUser.id;
+          token.role = dbUser.role;
+          token.kycStatus = dbUser.kycStatus;
+          token.subscriptionTier = dbUser.subscriptionTier;
+        }
+      }
+      
       return token;
     },
     async session({ session, token }) {
@@ -69,6 +135,7 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.id as string;
         session.user.role = token.role as string;
         session.user.kycStatus = token.kycStatus as string;
+        (session.user as any).subscriptionTier = token.subscriptionTier as string;
       }
       return session;
     },

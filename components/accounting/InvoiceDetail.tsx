@@ -39,9 +39,46 @@ export default function InvoiceDetail({ invoice }: InvoiceDetailProps) {
   const [copied, setCopied] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [sendingEmail, setSendingEmail] = useState(false);
+  const [sendingReminder, setSendingReminder] = useState(false);
 
   const handleEdit = () => {
     router.push(`/dashboard/accounting/invoices/${invoice.id}/edit`);
+  };
+
+  const handleSendReminder = async () => {
+    if (!invoice.customer?.email) {
+      toast({
+        title: 'Error',
+        description: 'Customer email not found',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setSendingReminder(true);
+    try {
+      const res = await fetch('/api/invoices/send-reminder', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ invoiceId: invoice.id }),
+      });
+
+      if (!res.ok) throw new Error('Failed to send reminder');
+
+      const data = await res.json();
+      toast({
+        title: 'Success',
+        description: `Payment reminder sent to ${data.details.to}`,
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to send reminder email',
+        variant: 'destructive',
+      });
+    } finally {
+      setSendingReminder(false);
+    }
   };
 
   const handleDownloadPDF = () => {
@@ -291,6 +328,18 @@ export default function InvoiceDetail({ invoice }: InvoiceDetailProps) {
             <Edit className="h-4 w-4 mr-2" />
             Edit
           </Button>
+          {invoice.status !== 'PAID' && invoice.customer?.email && (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleSendReminder}
+              disabled={sendingReminder}
+              className="border-orange-300 text-orange-700 hover:bg-orange-50"
+            >
+              <Mail className="h-4 w-4 mr-2" />
+              {sendingReminder ? 'Sending...' : 'Send Reminder'}
+            </Button>
+          )}
           <Button variant="outline" size="sm" onClick={() => setShowDeleteDialog(true)}>
             <Trash2 className="h-4 w-4 mr-2 text-red-600" />
             Delete
