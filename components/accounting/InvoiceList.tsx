@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,13 +25,25 @@ import {
   Trash2,
   Link,
   Share2,
+  Edit,
 } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { formatDistance } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 
@@ -65,8 +78,18 @@ interface InvoiceListProps {
 export default function InvoiceList({ invoices, stats }: InvoiceListProps) {
   const router = useRouter();
   const { toast } = useToast();
+  const { data: session } = useSession();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
+  const [statusDialog, setStatusDialog] = useState<{ open: boolean; invoice: Invoice | null }>({
+    open: false,
+    invoice: null,
+  });
+  const [newStatus, setNewStatus] = useState('');
+  const [statusReason, setStatusReason] = useState('');
+  const [updating, setUpdating] = useState(false);
+
+  const isAdmin = session?.user?.email === 'golearnx@gmail.com';
 
   const handleDelete = async (invoiceId: string) => {
     if (!confirm('Are you sure you want to delete this invoice?')) return;
@@ -102,6 +125,49 @@ export default function InvoiceList({ invoices, stats }: InvoiceListProps) {
     });
   };
 
+  const handleUpdateStatus = async () => {
+    if (!statusDialog.invoice || !newStatus) return;
+
+    setUpdating(true);
+    try {
+      // Use different endpoint for quotes vs invoices
+      const isQuote = statusDialog.invoice.items?.[0]?.description?.toLowerCase().includes('quote') || 
+                      statusDialog.invoice.invoiceNumber.startsWith('QUO');
+      
+      const endpoint = isQuote 
+        ? `/api/admin/quotes/${statusDialog.invoice.id}/update-status`
+        : `/api/admin/invoices/${statusDialog.invoice.id}/update-status`;
+
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus, reason: statusReason }),
+      });
+
+      if (res.ok) {
+        toast({
+          title: 'Status Updated',
+          description: `${isQuote ? 'Quote' : 'Invoice'} status changed to ${newStatus}`,
+        });
+        setStatusDialog({ open: false, invoice: null });
+        setNewStatus('');
+        setStatusReason('');
+        router.refresh();
+      } else {
+        const error = await res.json();
+        throw new Error(error.error || 'Failed to update status');
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'Failed to update status',
+        variant: 'destructive',
+      });
+    } finally {
+      setUpdating(false);
+    }
+  };
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-ZA', {
       style: 'currency',
@@ -121,6 +187,20 @@ export default function InvoiceList({ invoices, stats }: InvoiceListProps) {
         return 'bg-gray-500/10 text-gray-600 border-gray-500/20';
       case 'PARTIAL':
         return 'bg-yellow-500/10 text-yellow-600 border-yellow-500/20';
+      case 'ACCEPTED':
+        return 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20';
+      case 'SIGNED':
+        return 'bg-teal-500/10 text-teal-600 border-teal-500/20';
+      case 'PENDING_PAYMENT':
+        return 'bg-amber-500/10 text-amber-600 border-amber-500/20';
+      case 'REJECTED':
+        return 'bg-red-500/10 text-red-600 border-red-500/20';
+      case 'CANCELLED':
+        return 'bg-gray-500/10 text-gray-600 border-gray-500/20';
+      case 'EXPIRED':
+        return 'bg-orange-500/10 text-orange-600 border-orange-500/20';
+      case 'REFUNDED':
+        return 'bg-purple-500/10 text-purple-600 border-purple-500/20';
       default:
         return 'bg-gray-500/10 text-gray-600 border-gray-500/20';
     }
@@ -324,6 +404,21 @@ export default function InvoiceList({ invoices, stats }: InvoiceListProps) {
                           <Download className="h-4 w-4 mr-2" />
                           Download PDF
                         </DropdownMenuItem>
+                        {isAdmin && (
+                          <>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setStatusDialog({ open: true, invoice });
+                                setNewStatus(invoice.status);
+                              }}
+                            >
+                              <Edit className="h-4 w-4 mr-2" />
+                              Update Status
+                            </DropdownMenuItem>
+                          </>
+                        )}
+                        <DropdownMenuSeparator />
                         <DropdownMenuItem className="text-red-600" onClick={() => handleDelete(invoice.id)}>
                           <Trash2 className="h-4 w-4 mr-2" />
                           Delete
@@ -337,6 +432,116 @@ export default function InvoiceList({ invoices, stats }: InvoiceListProps) {
           )}
         </CardContent>
       </Card>
+
+      {/* Status Update Dialog */}
+      <Dialog open={statusDialog.open} onOpenChange={(open) => setStatusDialog({ open, invoice: null })}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Update {statusDialog.invoice?.invoiceNumber.startsWith('QUO') ? 'Quote' : 'Invoice'} Status</DialogTitle>
+            <DialogDescription>
+              Change the status of {statusDialog.invoice?.invoiceNumber.startsWith('QUO') ? 'quote' : 'invoice'} {statusDialog.invoice?.invoiceNumber}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>New Status</Label>
+              <Select value={newStatus} onValueChange={setNewStatus}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent>
+                  {statusDialog.invoice?.invoiceNumber.startsWith('QUO') ? (
+                    // Quote statuses
+                    <>
+                      <SelectItem value="DRAFT">Draft</SelectItem>
+                      <SelectItem value="SENT">Sent</SelectItem>
+                      <SelectItem value="ACCEPTED">Accepted</SelectItem>
+                      <SelectItem value="SIGNED">Signed</SelectItem>
+                      <SelectItem value="PENDING_PAYMENT">Pending Payment</SelectItem>
+                      <SelectItem value="PAID">Paid</SelectItem>
+                      <SelectItem value="REJECTED">Rejected</SelectItem>
+                      <SelectItem value="CANCELLED">Cancelled</SelectItem>
+                      <SelectItem value="EXPIRED">Expired</SelectItem>
+                    </>
+                  ) : (
+                    // Invoice statuses
+                    <>
+                      <SelectItem value="DRAFT">Draft</SelectItem>
+                      <SelectItem value="SENT">Sent</SelectItem>
+                      <SelectItem value="PAID">Paid</SelectItem>
+                      <SelectItem value="OVERDUE">Overdue</SelectItem>
+                      <SelectItem value="CANCELLED">Cancelled</SelectItem>
+                      <SelectItem value="REFUNDED">Refunded</SelectItem>
+                    </>
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Reason (Optional)</Label>
+              <Textarea
+                placeholder="Enter reason for status change..."
+                value={statusReason}
+                onChange={(e) => setStatusReason(e.target.value)}
+                rows={3}
+              />
+            </div>
+
+            {newStatus === 'PAID' && statusDialog.invoice?.status !== 'PAID' && (
+              <div className="bg-blue-50 border border-blue-200 rounded-md p-3 text-sm">
+                <p className="text-blue-900 font-medium">This will:</p>
+                <ul className="text-blue-700 mt-1 space-y-1 list-disc list-inside">
+                  <li>Mark {statusDialog.invoice?.invoiceNumber.startsWith('QUO') ? 'quote' : 'invoice'} as paid</li>
+                  <li>Add {formatCurrency(Number(statusDialog.invoice?.total))} to user wallet</li>
+                  <li>Lock funds for 7 days</li>
+                </ul>
+              </div>
+            )}
+
+            {newStatus === 'ACCEPTED' && statusDialog.invoice?.invoiceNumber.startsWith('QUO') && (
+              <div className="bg-green-50 border border-green-200 rounded-md p-3 text-sm">
+                <p className="text-green-900 font-medium">Quote Accepted:</p>
+                <p className="text-green-700 mt-1">Customer has accepted the quote terms</p>
+              </div>
+            )}
+
+            {newStatus === 'SIGNED' && statusDialog.invoice?.invoiceNumber.startsWith('QUO') && (
+              <div className="bg-green-50 border border-green-200 rounded-md p-3 text-sm">
+                <p className="text-green-900 font-medium">Quote Signed:</p>
+                <p className="text-green-700 mt-1">Customer has signed the quote agreement</p>
+              </div>
+            )}
+
+            {newStatus === 'REJECTED' && statusDialog.invoice?.invoiceNumber.startsWith('QUO') && (
+              <div className="bg-red-50 border border-red-200 rounded-md p-3 text-sm">
+                <p className="text-red-900 font-medium">Quote Rejected:</p>
+                <p className="text-red-700 mt-1">Customer has declined this quote</p>
+              </div>
+            )}
+
+            {newStatus === 'CANCELLED' && statusDialog.invoice?.status === 'PAID' && (
+              <div className="bg-red-50 border border-red-200 rounded-md p-3 text-sm">
+                <p className="text-red-900 font-medium">Warning:</p>
+                <ul className="text-red-700 mt-1 space-y-1 list-disc list-inside">
+                  <li>This will remove {formatCurrency(Number(statusDialog.invoice?.total))} from user wallet</li>
+                  <li>Funds will be refunded</li>
+                </ul>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setStatusDialog({ open: false, invoice: null })}>
+              Cancel
+            </Button>
+            <Button onClick={handleUpdateStatus} disabled={!newStatus || updating}>
+              {updating ? 'Updating...' : 'Update Status'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
