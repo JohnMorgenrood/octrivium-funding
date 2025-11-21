@@ -6,15 +6,39 @@ import { Providers } from '@/components/providers';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Octrivium Funding | Revenue-Based Crowdfunding for South African Businesses',
+  metadataBase: new URL('https://octrivium.co.za'),
+  title: {
+    default: 'Octrivium Funding | Revenue-Based Crowdfunding for South African Businesses',
+    template: '%s | Octrivium Funding',
+  },
   description: 'Invest in South African small businesses and earn revenue-based returns. Octrivium connects verified SA businesses with community investors. Start investing from R1,000 or raise capital for your business.',
-  keywords: 'South African crowdfunding, invest in SA businesses, revenue-based financing, South Africa small business funding, community investment, equity crowdfunding South Africa, SME funding, startup investment SA, black-owned businesses, Cape Town businesses, Johannesburg investment, business loans alternative',
-  authors: [{ name: 'Octrivium Funding' }],
+  keywords: [
+    'South African crowdfunding',
+    'invest in SA businesses',
+    'revenue-based financing',
+    'South Africa small business funding',
+    'community investment',
+    'SME funding',
+    'startup investment SA',
+    'Cape Town businesses',
+    'Johannesburg investment',
+    'business loans alternative',
+    'accounting software South Africa',
+    'FICA compliant platform',
+    'Yoco payments',
+  ],
+  authors: [{ name: 'Octrivium Funding', url: 'https://octrivium.co.za' }],
   creator: 'Octrivium Funding',
   publisher: 'Octrivium Funding',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
   robots: {
     index: true,
     follow: true,
+    nocache: false,
     googleBot: {
       index: true,
       follow: true,
@@ -32,7 +56,7 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=1200&h=630&fit=crop',
+        url: '/assets/og-image.png',
         width: 1200,
         height: 630,
         alt: 'Octrivium Funding - South African Business Investment Platform',
@@ -41,16 +65,21 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
+    site: '@octriviumza',
+    creator: '@octriviumza',
     title: 'Octrivium Funding - Revenue-Based Crowdfunding for SA Businesses',
     description: 'Invest in South African businesses, earn as they grow. Start from R1,000.',
-    images: ['https://images.unsplash.com/photo-1557804506-669a67965ba0?w=1200&h=630&fit=crop'],
+    images: ['/assets/og-image.png'],
   },
   verification: {
-    google: 'your-google-verification-code',
+    google: 'ADD_YOUR_GOOGLE_SEARCH_CONSOLE_CODE_HERE',
+    // yandex: 'your-yandex-verification-code',
+    // bing: 'your-bing-verification-code',
   },
   alternates: {
     canonical: 'https://octrivium.co.za',
   },
+  category: 'Financial Services',
 };
 
 export default function RootLayout({

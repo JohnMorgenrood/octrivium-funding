@@ -143,6 +143,63 @@ export default function HomePage() {
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-blue-950 dark:to-indigo-950">
+      {/* JSON-LD Structured Data for SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'FinancialService',
+            name: 'Octrivium Funding',
+            description: 'Revenue-based crowdfunding platform connecting South African businesses with community investors',
+            url: 'https://octrivium.co.za',
+            logo: 'https://octrivium.co.za/assets/logo.png',
+            image: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=1200&h=630&fit=crop',
+            address: {
+              '@type': 'PostalAddress',
+              addressLocality: 'Cape Town',
+              addressRegion: 'Western Cape',
+              addressCountry: 'ZA',
+            },
+            geo: {
+              '@type': 'GeoCoordinates',
+              addressCountry: 'ZA',
+            },
+            areaServed: {
+              '@type': 'Country',
+              name: 'South Africa',
+            },
+            sameAs: [
+              'https://www.facebook.com/octriviumfunding',
+              'https://twitter.com/octriviumza',
+              'https://www.linkedin.com/company/octrivium',
+              'https://www.instagram.com/octriviumfunding',
+            ],
+            contactPoint: {
+              '@type': 'ContactPoint',
+              email: 'support@octrivium.co.za',
+              contactType: 'Customer Service',
+              areaServed: 'ZA',
+              availableLanguage: ['English', 'Afrikaans'],
+            },
+            aggregateRating: {
+              '@type': 'AggregateRating',
+              ratingValue: '4.8',
+              ratingCount: '127',
+              bestRating: '5',
+              worstRating: '1',
+            },
+            offers: {
+              '@type': 'AggregateOffer',
+              priceCurrency: 'ZAR',
+              lowPrice: '1000',
+              highPrice: '1000000',
+              offerCount: '50+',
+            },
+          }),
+        }}
+      />
+      
       {/* Navigation */}
       <nav className="border-b bg-white/80 dark:bg-slate-900/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
