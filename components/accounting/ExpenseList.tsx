@@ -22,7 +22,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Plus, Search, Filter, Receipt, Trash2, Edit, TrendingDown, Calendar, DollarSign } from 'lucide-react';
+import { Plus, Search, Filter, Receipt, Trash2, Edit, TrendingDown, Calendar, DollarSign, Download, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface Expense {
@@ -276,6 +276,70 @@ export default function ExpenseList({ expenses: initialExpenses, stats: initialS
     return matchesSearch && matchesCategory;
   });
 
+  const exportToCSV = () => {
+    const headers = ['Date', 'Description', 'Category', 'Vendor', 'Amount', 'Tax Deductible', 'Tax Amount'];
+    const rows = filteredExpenses.map(exp => [
+      new Date(exp.date).toLocaleDateString(),
+      exp.description,
+      formatCategoryName(exp.category),
+      exp.vendor || '',
+      exp.amount.toFixed(2),
+      exp.taxDeductible ? 'Yes' : 'No',
+      exp.taxAmount?.toFixed(2) || '0.00',
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(',')),
+      '',
+      `Total Expenses,,,,"${stats.totalExpenses.toFixed(2)}"`,
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `expenses-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+
+    toast({
+      title: 'Success',
+      description: 'Expenses exported to CSV',
+    });
+  };
+
+  const exportToPDF = async () => {
+    try {
+      const response = await fetch('/api/accounting/expenses/export-pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ expenses: filteredExpenses, stats }),
+      });
+
+      if (!response.ok) throw new Error('Export failed');
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `expenses-${new Date().toISOString().split('T')[0]}.pdf`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+
+      toast({
+        title: 'Success',
+        description: 'Expenses exported to PDF',
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to export PDF',
+        variant: 'destructive',
+      });
+    }
+  };
+
   return (
     <div className="space-y-4 sm:space-y-6 px-2 sm:px-0">
       {/* Header */}
@@ -286,10 +350,20 @@ export default function ExpenseList({ expenses: initialExpenses, stats: initialS
             Track and manage expenses
           </p>
         </div>
-        <Button onClick={handleOpenAdd} size="sm" className="w-full sm:w-auto">
-          <Plus className="h-4 w-4 mr-2" />
-          Add Expense
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={exportToCSV} variant="outline" size="sm">
+            <Download className="h-4 w-4 mr-2" />
+            CSV
+          </Button>
+          <Button onClick={exportToPDF} variant="outline" size="sm">
+            <FileText className="h-4 w-4 mr-2" />
+            PDF
+          </Button>
+          <Button onClick={handleOpenAdd} size="sm" className="w-full sm:w-auto">
+            <Plus className="h-4 w-4 mr-2" />
+            Add Expense
+          </Button>
+        </div>
       </div>
 
       {/* Stats Cards */}

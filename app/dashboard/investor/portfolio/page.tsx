@@ -31,14 +31,14 @@ export default async function PortfolioPage() {
   // Transform database investments to display format
   const investments = userInvestments.map((inv) => ({
     id: inv.id,
-    businessName: inv.deal.title || inv.deal.business?.name || 'Unknown Business',
+    businessName: inv.deal.title || inv.deal.business?.tradingName || 'Unknown Business',
     amount: Number(inv.amount),
     currentValue: Number(inv.amount) * 1.25, // Calculated based on actual returns
     paidOut: Number(inv.amount) * 0.25, // Example: 25% returns
-    remaining: Number(inv.expectedReturn || inv.amount * 1.7) - Number(inv.amount) * 0.25,
+    remaining: Number(inv.expectedReturn || Number(inv.amount) * 1.7) - Number(inv.amount) * 0.25,
     revenueShare: Number(inv.sharePercentage || 0),
     status: inv.deal.status === 'ACTIVE' ? 'Active' : inv.deal.status,
-    industry: inv.deal.industry || 'General',
+    industry: inv.deal.business?.industry || 'General',
     progress: 14.7, // Calculate based on actual repayment data
     monthlyReturn: (Number(inv.amount) * 0.25) / 12, // Estimated monthly
     trend: 'up' as const,
