@@ -14,7 +14,7 @@ export default async function AccountingOverviewPage() {
   const userId = session.user.id;
 
   // Fetch accounting data
-  const [invoices, expenses, recentTransactions] = await Promise.all([
+  const [invoices, expenses] = await Promise.all([
     prisma.invoice.findMany({
       where: { userId },
       include: { customer: true, items: true },
@@ -26,12 +26,20 @@ export default async function AccountingOverviewPage() {
       orderBy: { date: 'desc' },
       take: 5,
     }),
-    prisma.accountingTransaction.findMany({
+  ]);
+
+  // Fetch transactions separately to handle potential errors
+  let recentTransactions: any[] = [];
+  try {
+    recentTransactions = await prisma.accountingTransaction.findMany({
       where: { userId },
       orderBy: { date: 'desc' },
       take: 10,
-    }),
-  ]);
+    });
+  } catch (error) {
+    console.error('Error fetching accounting transactions:', error);
+    // Continue without transactions
+  }
 
   // Calculate totals for current month
   const now = new Date();
