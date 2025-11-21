@@ -7,7 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { User, Lock, Bell, Building2, Loader2 } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { User, Lock, Bell, Building2, Loader2, CreditCard, Users, Landmark } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export default function SettingsPage() {
@@ -31,6 +32,26 @@ export default function SettingsPage() {
     newPassword: '',
     confirmPassword: '',
   });
+  const [subscriptionTier, setSubscriptionTier] = useState<string>('FREE');
+  const [bankData, setBankData] = useState({
+    bankName: '',
+    bankAccountName: '',
+    bankAccountNumber: '',
+    bankBranchCode: '',
+    bankAccountType: '',
+  });
+  const [yocoData, setYocoData] = useState({
+    yocoPublicKey: '',
+    yocoSecretKey: '',
+    hasSecretKey: false,
+  });
+  const [teamMembers, setTeamMembers] = useState<any[]>([]);
+  const [newMember, setNewMember] = useState({
+    email: '',
+    firstName: '',
+    lastName: '',
+  });
+  const [isOwner, setIsOwner] = useState(true);
 
   useEffect(() => {
     if (session?.user) {
@@ -44,8 +65,61 @@ export default function SettingsPage() {
       
       // Fetch company data
       fetchCompanyData();
+      fetchBankData();
+      fetchYocoData();
+      fetchTeamMembers();
     }
   }, [session]);
+
+  const fetchBankData = async () => {
+    try {
+      const res = await fetch('/api/user/bank-details');
+      if (res.ok) {
+        const data = await res.json();
+        setBankData({
+          bankName: data.bankName || '',
+          bankAccountName: data.bankAccountName || '',
+          bankAccountNumber: data.bankAccountNumber || '',
+          bankBranchCode: data.bankBranchCode || '',
+          bankAccountType: data.bankAccountType || '',
+        });
+        setSubscriptionTier(data.subscriptionTier || 'FREE');
+      }
+    } catch (error) {
+      console.error('Failed to fetch bank data:', error);
+    }
+  };
+
+  const fetchYocoData = async () => {
+    try {
+      const res = await fetch('/api/user/yoco-keys');
+      if (res.ok) {
+        const data = await res.json();
+        setYocoData({
+          yocoPublicKey: data.yocoPublicKey || '',
+          yocoSecretKey: '', // Never send secret key to frontend
+          hasSecretKey: data.hasSecretKey || false,
+        });
+        setSubscriptionTier(data.subscriptionTier || 'FREE');
+      }
+    } catch (error) {
+      console.error('Failed to fetch Yoco data:', error);
+    }
+  };
+
+  const fetchTeamMembers = async () => {
+    try {
+      const res = await fetch('/api/team/members');
+      if (res.ok) {
+        const data = await res.json();
+        setTeamMembers(data.teamMembers || []);
+        setIsOwner(!data.companyOwnerId);
+        setSubscriptionTier(data.subscriptionTier || 'FREE');
+      }
+    } catch (error) {
+      console.error('Failed to fetch team members:', error);
+    }
+  };
 
   const fetchCompanyData = async () => {
     try {
@@ -262,6 +336,155 @@ export default function SettingsPage() {
     }
   };
 
+  const handleBankUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const res = await fetch('/api/user/bank-details', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(bankData),
+      });
+
+      if (res.ok) {
+        toast({
+          title: 'Success',
+          description: 'Bank details updated successfully',
+        });
+      } else {
+        const data = await res.json();
+        toast({
+          title: 'Error',
+          description: data.error || 'Failed to update bank details',
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'An error occurred',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleYocoUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const res = await fetch('/api/user/yoco-keys', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          yocoPublicKey: yocoData.yocoPublicKey,
+          yocoSecretKey: yocoData.yocoSecretKey,
+        }),
+      });
+
+      if (res.ok) {
+        toast({
+          title: 'Success',
+          description: 'Yoco API keys saved and validated successfully',
+        });
+        fetchYocoData();
+      } else {
+        const data = await res.json();
+        toast({
+          title: 'Error',
+          description: data.error || 'Failed to save Yoco keys',
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'An error occurred',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddTeamMember = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const res = await fetch('/api/team/members', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newMember),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        toast({
+          title: 'Success',
+          description: `Team member added! Temporary password: ${data.tempPassword}`,
+        });
+        setNewMember({ email: '', firstName: '', lastName: '' });
+        fetchTeamMembers();
+      } else {
+        const data = await res.json();
+        toast({
+          title: 'Error',
+          description: data.error || 'Failed to add team member',
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'An error occurred',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRemoveTeamMember = async (memberId: string) => {
+    if (!confirm('Are you sure you want to remove this team member?')) {
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const res = await fetch(`/api/team/members?memberId=${memberId}`, {
+        method: 'DELETE',
+      });
+
+      if (res.ok) {
+        toast({
+          title: 'Success',
+          description: 'Team member removed successfully',
+        });
+        fetchTeamMembers();
+      } else {
+        const data = await res.json();
+        toast({
+          title: 'Error',
+          description: data.error || 'Failed to remove team member',
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'An error occurred',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6">
       <div>
@@ -281,6 +504,29 @@ export default function SettingsPage() {
             <span className="hidden sm:inline">Company</span>
             <span className="sm:hidden">Co.</span>
           </TabsTrigger>
+          {(subscriptionTier === 'STARTER' || subscriptionTier === 'BUSINESS') && (
+            <TabsTrigger value="bank" className="flex-shrink-0">
+              <Landmark className="h-4 w-4 mr-2" />
+              <span className="hidden sm:inline">Bank Details</span>
+              <span className="sm:hidden">Bank</span>
+            </TabsTrigger>
+          )}
+          {subscriptionTier === 'BUSINESS' && (
+            <>
+              <TabsTrigger value="yoco" className="flex-shrink-0">
+                <CreditCard className="h-4 w-4 mr-2" />
+                <span className="hidden sm:inline">Yoco API</span>
+                <span className="sm:hidden">Yoco</span>
+              </TabsTrigger>
+              {isOwner && (
+                <TabsTrigger value="team" className="flex-shrink-0">
+                  <Users className="h-4 w-4 mr-2" />
+                  <span className="hidden sm:inline">Team</span>
+                  <span className="sm:hidden">Team</span>
+                </TabsTrigger>
+              )}
+            </>
+          )}
           <TabsTrigger value="security" className="flex-shrink-0">
             <Lock className="h-4 w-4 mr-2" />
             <span className="hidden sm:inline">Security</span>
@@ -418,6 +664,290 @@ export default function SettingsPage() {
             </CardContent>
           </Card>
         </TabsContent>
+
+        {/* Bank Details Tab - STARTER/BUSINESS */}
+        {(subscriptionTier === 'STARTER' || subscriptionTier === 'BUSINESS') && (
+          <TabsContent value="bank">
+            <Card>
+              <CardHeader>
+                <CardTitle>Bank Account Details</CardTitle>
+                <CardDescription>
+                  Add your bank details to receive EFT payments from customers
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleBankUpdate} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="bankName">Bank Name</Label>
+                    <Select 
+                      value={bankData.bankName} 
+                      onValueChange={(value) => setBankData({ ...bankData, bankName: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select your bank" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="ABSA">ABSA</SelectItem>
+                        <SelectItem value="Capitec">Capitec Bank</SelectItem>
+                        <SelectItem value="FNB">First National Bank (FNB)</SelectItem>
+                        <SelectItem value="Nedbank">Nedbank</SelectItem>
+                        <SelectItem value="Standard Bank">Standard Bank</SelectItem>
+                        <SelectItem value="Investec">Investec</SelectItem>
+                        <SelectItem value="African Bank">African Bank</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="bankAccountName">Account Holder Name</Label>
+                    <Input
+                      id="bankAccountName"
+                      value={bankData.bankAccountName}
+                      onChange={(e) => setBankData({ ...bankData, bankAccountName: e.target.value })}
+                      placeholder="Full name as per bank account"
+                      required
+                    />
+                  </div>
+
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="bankAccountNumber">Account Number</Label>
+                      <Input
+                        id="bankAccountNumber"
+                        value={bankData.bankAccountNumber}
+                        onChange={(e) => setBankData({ ...bankData, bankAccountNumber: e.target.value })}
+                        placeholder="1234567890"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="bankBranchCode">Branch Code</Label>
+                      <Input
+                        id="bankBranchCode"
+                        value={bankData.bankBranchCode}
+                        onChange={(e) => setBankData({ ...bankData, bankBranchCode: e.target.value })}
+                        placeholder="123456"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="bankAccountType">Account Type</Label>
+                    <Select 
+                      value={bankData.bankAccountType} 
+                      onValueChange={(value) => setBankData({ ...bankData, bankAccountType: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select account type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Cheque">Cheque/Current Account</SelectItem>
+                        <SelectItem value="Savings">Savings Account</SelectItem>
+                        <SelectItem value="Business">Business Account</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <p className="text-sm text-blue-800">
+                      <strong>Note:</strong> These bank details will be displayed on your invoices for customers to make EFT payments directly to your account.
+                    </p>
+                  </div>
+
+                  <Button type="submit" disabled={loading}>
+                    {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                    Save Bank Details
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        )}
+
+        {/* Yoco API Tab - BUSINESS ONLY */}
+        {subscriptionTier === 'BUSINESS' && (
+          <TabsContent value="yoco">
+            <Card>
+              <CardHeader>
+                <CardTitle>Yoco API Configuration</CardTitle>
+                <CardDescription>
+                  Connect your own Yoco account to receive payments directly (100% of revenue minus Yoco fees)
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg p-4">
+                    <h4 className="font-semibold text-green-900 mb-2">✓ Direct Payment Routing</h4>
+                    <p className="text-sm text-green-800">
+                      When you add your own Yoco API keys, customer payments go directly to YOUR Yoco account. You keep 100% of your revenue (minus Yoco's standard transaction fees).
+                    </p>
+                    <p className="text-sm text-green-800 mt-2">
+                      <strong>Without custom keys:</strong> Payments are processed through the platform's Yoco account.
+                    </p>
+                  </div>
+
+                  <form onSubmit={handleYocoUpdate} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="yocoPublicKey">Yoco Public Key</Label>
+                      <Input
+                        id="yocoPublicKey"
+                        value={yocoData.yocoPublicKey}
+                        onChange={(e) => setYocoData({ ...yocoData, yocoPublicKey: e.target.value })}
+                        placeholder="pk_live_... or pk_test_..."
+                        required
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Starts with pk_live_ (production) or pk_test_ (testing)
+                      </p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="yocoSecretKey">Yoco Secret Key</Label>
+                      <Input
+                        id="yocoSecretKey"
+                        type="password"
+                        value={yocoData.yocoSecretKey}
+                        onChange={(e) => setYocoData({ ...yocoData, yocoSecretKey: e.target.value })}
+                        placeholder={yocoData.hasSecretKey ? '••••••••••••••••' : 'sk_live_... or sk_test_...'}
+                        required={!yocoData.hasSecretKey}
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Starts with sk_live_ (production) or sk_test_ (testing)
+                      </p>
+                      {yocoData.hasSecretKey && (
+                        <p className="text-xs text-green-600">
+                          ✓ Secret key already saved. Leave blank to keep existing key.
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                      <p className="text-sm text-yellow-800">
+                        <strong>Where to find your Yoco API keys:</strong>
+                      </p>
+                      <ol className="text-sm text-yellow-800 mt-2 ml-4 list-decimal space-y-1">
+                        <li>Log in to your Yoco Business Portal</li>
+                        <li>Go to Settings → Developers → API Keys</li>
+                        <li>Copy both your Public Key and Secret Key</li>
+                      </ol>
+                    </div>
+
+                    <Button type="submit" disabled={loading}>
+                      {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                      {yocoData.hasSecretKey ? 'Update' : 'Save'} Yoco API Keys
+                    </Button>
+                  </form>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        )}
+
+        {/* Team Members Tab - BUSINESS ONLY */}
+        {subscriptionTier === 'BUSINESS' && isOwner && (
+          <TabsContent value="team">
+            <Card>
+              <CardHeader>
+                <CardTitle>Team Members</CardTitle>
+                <CardDescription>
+                  Invite up to 4 team members to share access to your accounting software
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  {/* Current Team Members */}
+                  {teamMembers.length > 0 && (
+                    <div>
+                      <h4 className="font-semibold mb-3">Current Team Members ({teamMembers.length}/4)</h4>
+                      <div className="space-y-2">
+                        {teamMembers.map((member: any) => (
+                          <div key={member.id} className="flex items-center justify-between p-3 border rounded-lg">
+                            <div>
+                              <p className="font-medium">{member.firstName} {member.lastName}</p>
+                              <p className="text-sm text-muted-foreground">{member.email}</p>
+                              <p className="text-xs text-muted-foreground">
+                                Added {new Date(member.createdAt).toLocaleDateString()}
+                              </p>
+                            </div>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => handleRemoveTeamMember(member.id)}
+                              disabled={loading}
+                            >
+                              Remove
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Add New Member Form */}
+                  {teamMembers.length < 4 && (
+                    <div>
+                      <h4 className="font-semibold mb-3">Add New Team Member</h4>
+                      <form onSubmit={handleAddTeamMember} className="space-y-4">
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="memberFirstName">First Name</Label>
+                            <Input
+                              id="memberFirstName"
+                              value={newMember.firstName}
+                              onChange={(e) => setNewMember({ ...newMember, firstName: e.target.value })}
+                              required
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="memberLastName">Last Name</Label>
+                            <Input
+                              id="memberLastName"
+                              value={newMember.lastName}
+                              onChange={(e) => setNewMember({ ...newMember, lastName: e.target.value })}
+                              required
+                            />
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="memberEmail">Email Address</Label>
+                          <Input
+                            id="memberEmail"
+                            type="email"
+                            value={newMember.email}
+                            onChange={(e) => setNewMember({ ...newMember, email: e.target.value })}
+                            placeholder="teammate@example.com"
+                            required
+                          />
+                        </div>
+
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                          <p className="text-sm text-blue-800">
+                            <strong>Note:</strong> A temporary password will be generated and shown to you. The team member will need to change it on first login.
+                          </p>
+                        </div>
+
+                        <Button type="submit" disabled={loading}>
+                          {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                          Add Team Member
+                        </Button>
+                      </form>
+                    </div>
+                  )}
+
+                  {teamMembers.length >= 4 && (
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                      <p className="text-sm text-yellow-800">
+                        <strong>Maximum team members reached.</strong> Remove a member to add a new one.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        )}
 
         <TabsContent value="security">
           <Card>
