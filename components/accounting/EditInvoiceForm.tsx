@@ -440,9 +440,13 @@ export default function EditInvoiceForm({ invoice, customers, products }: EditIn
             <Save className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
             <span className="text-xs sm:text-sm">Draft</span>
           </Button>
-          <Button size="sm" onClick={() => handleSubmit('SENT')} disabled={loading}>
-            <Send className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-            <span className="text-xs sm:text-sm">{loading ? 'Creating...' : 'Send'}</span>
+          <Button size="sm" onClick={() => handleSubmit(formData.documentType === 'QUOTE' ? 'DRAFT' : 'SENT')} disabled={loading}>
+            {formData.documentType === 'QUOTE' ? (
+              <Save className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+            ) : (
+              <Send className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+            )}
+            <span className="text-xs sm:text-sm">{loading ? 'Saving...' : formData.documentType === 'QUOTE' ? 'Save Quote' : 'Send Invoice'}</span>
           </Button>
         </div>
       </div>

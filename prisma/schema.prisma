@@ -52,6 +52,18 @@ enum TransactionStatus {
   CANCELLED
 }
 
+enum SubscriptionTier {
+  FREE
+  PREMIUM
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELLED
+  EXPIRED
+  TRIAL
+}
+
 enum RevenueSourceType {
   BANK_FEED      // Stitch bank integration
   ACCOUNTING     // Sage, Xero, QuickBooks, Zoho
@@ -90,6 +102,21 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
+  // Subscription fields
+  subscriptionTier      SubscriptionTier     @default(FREE)
+  subscriptionStatus    SubscriptionStatus   @default(ACTIVE)
+  subscriptionStartDate DateTime?
+  subscriptionEndDate   DateTime?
+  invoiceCount          Int                  @default(0) // Resets monthly for FREE tier
+  lastInvoiceReset      DateTime?            // Track when we last reset the count
+
+  // Bank details for invoices (EFT/Bank Transfer) - PREMIUM ONLY
+  bankName          String?
+  bankAccountName   String?
+  bankAccountNumber String?
+  bankBranchCode    String?
+  bankAccountType   String?  // Cheque, Savings, Business
+
   // Relations
   wallet        Wallet?
   investments   Investment[]
@@ -104,10 +131,13 @@ model User {
   accountingTransactions AccountingTransaction[]
   chartOfAccounts ChartOfAccounts[]
   products      Product[]
+  subscriptions Subscription[]
 
   @@index([email])
   @@index([role])
   @@index([kycStatus])
+  @@index([subscriptionTier])
+  @@index([subscriptionStatus])
 }
 
 model Wallet {
@@ -145,6 +175,29 @@ model BankCard {
 
   @@index([userId])
   @@index([isDefault])
+}
+
+model Subscription {
+  id              String             @id @default(uuid())
+  userId          String
+  tier            SubscriptionTier
+  status          SubscriptionStatus @default(ACTIVE)
+  amount          Decimal            @db.Decimal(10, 2) // R50.00
+  currency        String             @default("ZAR")
+  startDate       DateTime
+  endDate         DateTime
+  autoRenew       Boolean            @default(true)
+  yocoChargeId    String?            // Yoco payment reference
+  cancelledAt     DateTime?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  // Relations
+  user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+  @@index([endDate])
 }
 
 model Transaction {
