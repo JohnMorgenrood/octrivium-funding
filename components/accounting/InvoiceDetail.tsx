@@ -18,6 +18,18 @@ import {
   PenTool,
 } from 'lucide-react';
 import {
+  Template1Classic,
+  Template2Modern,
+  Template3Minimal,
+  Template4Bold,
+  Template5Corporate,
+  Template6Creative,
+  Template7Elegant,
+  Template8Tech,
+  Template9Luxury,
+  Template10Playful,
+} from './invoice-templates';
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -40,6 +52,22 @@ export default function InvoiceDetail({ invoice }: InvoiceDetailProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [sendingEmail, setSendingEmail] = useState(false);
   const [sendingReminder, setSendingReminder] = useState(false);
+
+  // Template mapping
+  const TEMPLATE_COMPONENTS: any = {
+    1: Template1Classic,
+    2: Template2Modern,
+    3: Template3Minimal,
+    4: Template4Bold,
+    5: Template5Corporate,
+    6: Template6Creative,
+    7: Template7Elegant,
+    8: Template8Tech,
+    9: Template9Luxury,
+    10: Template10Playful,
+  };
+
+  const TemplateComponent = TEMPLATE_COMPONENTS[invoice.templateId || 1] || Template1Classic;
 
   const handleEdit = () => {
     router.push(`/dashboard/accounting/invoices/${invoice.id}/edit`);
@@ -357,144 +385,50 @@ export default function InvoiceDetail({ invoice }: InvoiceDetailProps) {
       {/* Invoice Preview */}
       <Card>
         <CardContent className="p-6 sm:p-8">
-          <div className="space-y-8">
-            {/* Header */}
-            <div className="flex justify-between items-start flex-wrap gap-4">
-              <div className="flex items-start gap-4">
-                {invoice.user?.companyLogo && (
-                  <img 
-                    src={invoice.user.companyLogo} 
-                    alt="Company Logo" 
-                    className="w-20 h-20 object-contain rounded"
-                  />
-                )}
-                <div>
-                  {invoice.user?.companyName && (
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">{invoice.user.companyName}</h3>
-                  )}
-                  <h2 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mt-1">INVOICE</h2>
-                </div>
-              </div>
-              <div className="text-left sm:text-right">
-                <p className="text-sm text-gray-600 dark:text-gray-300"><strong>Invoice #:</strong> {invoice.invoiceNumber}</p>
-                <p className="text-sm text-gray-600 dark:text-gray-300 mt-1"><strong>Date:</strong> {new Date(invoice.issueDate).toLocaleDateString()}</p>
-                <p className="text-sm text-gray-600 dark:text-gray-300"><strong>Due:</strong> {new Date(invoice.dueDate).toLocaleDateString()}</p>
-              </div>
-            </div>
-
-            {/* Bill To */}
-            <div className="grid sm:grid-cols-2 gap-6">
-              <div>
-                <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">From:</p>
-                <p className="text-sm text-gray-600 dark:text-gray-300">{invoice.user.firstName} {invoice.user.lastName}</p>
-                <p className="text-sm text-gray-600 dark:text-gray-300">{invoice.user.email}</p>
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">Bill To:</p>
-                <p className="text-sm text-gray-600 dark:text-gray-300">{invoice.customer?.name}</p>
-                <p className="text-sm text-gray-600 dark:text-gray-300">{invoice.customer?.email}</p>
-                {invoice.customer?.company && (
-                  <p className="text-sm text-gray-600 dark:text-gray-300">{invoice.customer.company}</p>
-                )}
-              </div>
-            </div>
-
-            {/* Items Table */}
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b-2 border-gray-300 dark:border-gray-600">
-                    <th className="text-left py-3 px-2 text-sm font-semibold text-gray-900 dark:text-gray-100">Description</th>
-                    <th className="text-right py-3 px-2 text-sm font-semibold text-gray-900 dark:text-gray-100">Qty</th>
-                    <th className="text-right py-3 px-2 text-sm font-semibold text-gray-900 dark:text-gray-100">Price</th>
-                    <th className="text-right py-3 px-2 text-sm font-semibold text-gray-900 dark:text-gray-100">Amount</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {invoice.items.map((item: any, index: number) => (
-                    <tr key={index} className="border-b border-gray-200 dark:border-gray-700">
-                      <td className="py-3 px-2 text-sm text-gray-900 dark:text-gray-100">{item.description}</td>
-                      <td className="py-3 px-2 text-sm text-gray-600 dark:text-gray-300 text-right font-medium">{Number(item.quantity)}</td>
-                      <td className="py-3 px-2 text-sm text-gray-600 dark:text-gray-300 text-right">{formatCurrency(Number(item.unitPrice))}</td>
-                      <td className="py-3 px-2 text-sm text-gray-900 dark:text-gray-100 text-right font-medium">{formatCurrency(Number(item.total))}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Totals */}
-            <div className="flex justify-end">
-              <div className="w-full sm:w-64 space-y-2">
-                <div className="flex justify-between py-2">
-                  <span className="text-sm text-gray-600 dark:text-gray-300">Subtotal:</span>
-                  <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{formatCurrency(Number(invoice.subtotal))}</span>
-                </div>
-                <div className="flex justify-between py-2">
-                  <span className="text-sm text-gray-600 dark:text-gray-300">Tax ({Number(invoice.taxRate)}%):</span>
-                  <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{formatCurrency(Number(invoice.taxAmount))}</span>
-                </div>
-                <div className="flex justify-between py-3 border-t-2 border-gray-300 dark:border-gray-600">
-                  <span className="text-base font-semibold text-gray-900 dark:text-gray-100">Total:</span>
-                  <span className="text-base font-bold text-gray-900 dark:text-gray-100">{formatCurrency(Number(invoice.total))}</span>
-                </div>
-                {invoice.status !== 'PAID' && (
-                  <div className="flex justify-between py-2 bg-orange-50 px-3 rounded">
-                    <span className="text-sm font-semibold text-orange-900">Amount Due:</span>
-                    <span className="text-sm font-bold text-orange-900">{formatCurrency(Number(invoice.amountDue))}</span>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Notes and Terms */}
-            {(invoice.notes || invoice.terms) && (
-              <div className="space-y-4 pt-4 border-t dark:border-gray-700">
-                {invoice.notes && (
-                  <div>
-                    <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">Notes:</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-300 whitespace-pre-wrap">{invoice.notes}</p>
-                  </div>
-                )}
-                {invoice.terms && (
-                  <div>
-                    <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">Terms:</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-300 whitespace-pre-wrap">{invoice.terms}</p>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Bank Details for Manual Payment - STARTER/BUSINESS ONLY */}
-            {(invoice.user?.subscriptionTier === 'STARTER' || invoice.user?.subscriptionTier === 'BUSINESS') && invoice.user?.bankAccountNumber && (
-              <div className="space-y-3 pt-4 border-t dark:border-gray-700 bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
-                <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">Bank Transfer Details:</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                  <div>
-                    <p className="text-gray-600 dark:text-gray-400 text-xs">Bank Name</p>
-                    <p className="text-gray-900 dark:text-gray-100 font-medium">{invoice.user?.bankName || 'First National Bank (FNB)'}</p>
-                  </div>
-                  <div>
-                    <p className="text-gray-600 dark:text-gray-400 text-xs">Account Holder</p>
-                    <p className="text-gray-900 dark:text-gray-100 font-medium">{invoice.user?.bankAccountName || `${invoice.user.firstName} ${invoice.user.lastName}`}</p>
-                  </div>
-                  <div>
-                    <p className="text-gray-600 dark:text-gray-400 text-xs">Account Number</p>
-                    <p className="text-gray-900 dark:text-gray-100 font-medium">{invoice.user?.bankAccountNumber}</p>
-                  </div>
-                  <div>
-                    <p className="text-gray-600 dark:text-gray-400 text-xs">Branch Code</p>
-                    <p className="text-gray-900 dark:text-gray-100 font-medium">{invoice.user?.bankBranchCode || '250655'}</p>
-                  </div>
-                  <div className="sm:col-span-2">
-                    <p className="text-gray-600 dark:text-gray-400 text-xs">Reference</p>
-                    <p className="text-gray-900 dark:text-gray-100 font-medium">{invoice.invoiceNumber}</p>
-                  </div>
-                </div>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">Please use the invoice number as your payment reference.</p>
-              </div>
-            )}
-          </div>
+          <TemplateComponent
+            invoice={{
+              invoiceNumber: invoice.invoiceNumber,
+              issueDate: invoice.issueDate,
+              dueDate: invoice.dueDate,
+              paidDate: invoice.paidDate,
+              notes: invoice.notes,
+              terms: invoice.terms,
+              subtotal: Number(invoice.subtotal),
+              taxRate: Number(invoice.taxRate),
+              taxAmount: Number(invoice.taxAmount),
+              total: Number(invoice.total),
+              amountPaid: Number(invoice.amountPaid),
+              amountDue: Number(invoice.amountDue),
+              status: invoice.status,
+              documentType: invoice.documentType || 'INVOICE',
+            }}
+            user={{
+              name: invoice.user?.companyName || `${invoice.user.firstName} ${invoice.user.lastName}`,
+              firstName: invoice.user.firstName,
+              lastName: invoice.user.lastName,
+              email: invoice.user.email,
+              logo: invoice.user?.companyLogo,
+              companyName: invoice.user?.companyName,
+              bankAccountNumber: invoice.user?.bankAccountNumber,
+              bankAccountName: invoice.user?.bankAccountName,
+              bankName: invoice.user?.bankName,
+              bankBranchCode: invoice.user?.bankBranchCode,
+              subscriptionTier: invoice.user?.subscriptionTier,
+            }}
+            customer={{
+              name: invoice.customer?.name || '',
+              email: invoice.customer?.email || '',
+              company: invoice.customer?.company,
+            }}
+            items={invoice.items.map((item: any) => ({
+              description: item.description,
+              quantity: Number(item.quantity),
+              unitPrice: Number(item.unitPrice),
+              costPrice: item.costPrice ? Number(item.costPrice) : undefined,
+              total: Number(item.total),
+              profit: item.profit ? Number(item.profit) : undefined,
+            }))}
+          />
         </CardContent>
       </Card>
 
