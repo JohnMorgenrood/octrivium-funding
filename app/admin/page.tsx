@@ -3,10 +3,11 @@
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Users, TrendingUp, FileText, CreditCard, Loader2, Search, Crown, Shield } from 'lucide-react';
+import { Users, TrendingUp, FileText, CreditCard, Loader2, Search, Crown, Shield, AlertTriangle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 export default function AdminDashboard() {
@@ -81,14 +82,22 @@ export default function AdminDashboard() {
   return (
     <div className="container mx-auto p-4 sm:p-6 space-y-6">
       {/* Header */}
-      <div className="flex items-center gap-3">
-        <div className="h-12 w-12 bg-gradient-to-br from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
-          <Crown className="h-6 w-6 text-white" />
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="h-12 w-12 bg-gradient-to-br from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
+            <Crown className="h-6 w-6 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold">Admin Dashboard</h1>
+            <p className="text-sm text-muted-foreground">Platform overview and user management</p>
+          </div>
         </div>
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold">Admin Dashboard</h1>
-          <p className="text-sm text-muted-foreground">Platform overview and user management</p>
-        </div>
+        <Link href="/admin/duplicate-payments">
+          <Button variant="outline" className="flex items-center gap-2">
+            <AlertTriangle className="h-4 w-4" />
+            <span className="hidden sm:inline">Duplicate Payments</span>
+          </Button>
+        </Link>
       </div>
 
       {/* Stats Overview */}
