@@ -5,7 +5,29 @@ import InvoicePayment from '@/components/accounting/InvoicePayment';
 export default async function PaymentPage({ params }: { params: { link: string } }) {
   const invoice = await prisma.invoice.findUnique({
     where: { paymentLink: params.link },
-    include: {
+    select: {
+      id: true,
+      invoiceNumber: true,
+      status: true,
+      documentType: true,
+      issueDate: true,
+      dueDate: true,
+      paidDate: true,
+      subtotal: true,
+      taxRate: true,
+      taxAmount: true,
+      total: true,
+      amountPaid: true,
+      amountDue: true,
+      notes: true,
+      terms: true,
+      requiresSignature: true,
+      signatureData: true,
+      signedAt: true,
+      signerName: true,
+      templateId: true,
+      paymentLink: true,
+      includeVat: true,
       customer: true,
       items: true,
       user: {
