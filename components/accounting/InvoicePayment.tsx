@@ -9,6 +9,18 @@ import SignaturePad from './SignaturePad';
 import PayPalButton from './PayPalButton';
 import YocoButton from './YocoButton';
 import CurrencyConverter from './CurrencyConverter';
+import {
+  Template1Classic,
+  Template2Modern,
+  Template3Minimal,
+  Template4Bold,
+  Template5Corporate,
+  Template6Creative,
+  Template7Elegant,
+  Template8Tech,
+  Template9Luxury,
+  Template10Playful,
+} from './invoice-templates';
 
 interface InvoicePaymentProps {
   invoice: {
@@ -29,6 +41,8 @@ interface InvoicePaymentProps {
     signatureData: string | null;
     signerName: string | null;
     signedAt: Date | null;
+    templateId?: number;
+    documentType?: string;
     customer: {
       name: string;
       email: string | null;
@@ -66,12 +80,30 @@ export default function InvoicePayment({ invoice }: InvoicePaymentProps) {
   const [signatureSaved, setSignatureSaved] = useState(!!invoice.signatureData);
   const [usdAmountWithFees, setUsdAmountWithFees] = useState<number>(0);
 
+  // Template mapping
+  const TEMPLATE_COMPONENTS: any = {
+    1: Template1Classic,
+    2: Template2Modern,
+    3: Template3Minimal,
+    4: Template4Bold,
+    5: Template5Corporate,
+    6: Template6Creative,
+    7: Template7Elegant,
+    8: Template8Tech,
+    9: Template9Luxury,
+    10: Template10Playful,
+  };
+
+  const TemplateComponent = TEMPLATE_COMPONENTS[invoice.templateId || 1] || Template1Classic;
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-ZA', {
       style: 'currency',
       currency: 'ZAR',
     }).format(amount);
   };
+
+  const isOverdue = new Date(invoice.dueDate) < new Date() && invoice.status !== 'PAID';
 
   const handleSaveSignature = async (signatureData: string, signerName: string) => {
     try {
@@ -130,130 +162,53 @@ export default function InvoicePayment({ invoice }: InvoicePaymentProps) {
   const isOverdue = new Date(invoice.dueDate) < new Date() && invoice.status !== 'PAID';
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4">
-      <div className="max-w-4xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="bg-white rounded-lg shadow-lg p-6 sm:p-8">
-          <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
-            <div className="flex items-start gap-4">
-              {invoice.user.companyLogo && (
-                <img 
-                  src={invoice.user.companyLogo} 
-                  alt="Company Logo" 
-                  className="w-16 h-16 object-contain"
-                />
-              )}
-              <div>
-                {invoice.user.companyName && (
-                  <h2 className="text-lg font-semibold text-gray-900">{invoice.user.companyName}</h2>
-                )}
-                <h1 className="text-3xl sm:text-4xl font-bold text-gray-900">INVOICE</h1>
-                <p className="text-gray-600 mt-1">{invoice.invoiceNumber}</p>
-              </div>
-            </div>
-            <div className="text-left sm:text-right">
-              <p className="text-sm text-gray-600">Issue Date: {new Date(invoice.issueDate).toLocaleDateString()}</p>
-              <p className="text-sm text-gray-600">Due Date: {new Date(invoice.dueDate).toLocaleDateString()}</p>
-              {isOverdue && (
-                <p className="text-sm font-semibold text-red-600 mt-2">OVERDUE</p>
-              )}
-            </div>
-          </div>
-
-          <div className="grid sm:grid-cols-2 gap-6 mt-8">
-            <div>
-              <h3 className="text-sm font-semibold text-gray-900 mb-2">From:</h3>
-              <p className="text-sm text-gray-600">
-                {invoice.user.firstName} {invoice.user.lastName}
-              </p>
-              <p className="text-sm text-gray-600">{invoice.user.email}</p>
-            </div>
-            {invoice.customer && (
-              <div>
-                <h3 className="text-sm font-semibold text-gray-900 mb-2">Bill To:</h3>
-                <p className="text-sm text-gray-600">{invoice.customer.name}</p>
-                {invoice.customer.company && (
-                  <p className="text-sm text-gray-600">{invoice.customer.company}</p>
-                )}
-                {invoice.customer.email && (
-                  <p className="text-sm text-gray-600">{invoice.customer.email}</p>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Items */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Items</CardTitle>
-          </CardHeader>
-          <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="border-b-2 border-gray-300 bg-gray-50">
-                  <tr>
-                    <th className="text-left p-4 text-sm font-semibold">Description</th>
-                    <th className="text-right p-4 text-sm font-semibold">Qty</th>
-                    <th className="text-right p-4 text-sm font-semibold">Price</th>
-                    <th className="text-right p-4 text-sm font-semibold">Total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {invoice.items.map((item) => (
-                    <tr key={item.id} className="border-b">
-                      <td className="p-4 text-sm">{item.description}</td>
-                      <td className="text-right p-4 text-sm">{item.quantity}</td>
-                      <td className="text-right p-4 text-sm">{formatCurrency(item.unitPrice)}</td>
-                      <td className="text-right p-4 text-sm font-medium">{formatCurrency(item.total)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            <div className="flex justify-end p-6 bg-gray-50 border-t">
-              <div className="w-full sm:w-64 space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Subtotal:</span>
-                  <span className="font-medium">{formatCurrency(invoice.subtotal)}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">VAT ({invoice.taxRate}%):</span>
-                  <span className="font-medium">{formatCurrency(invoice.taxAmount)}</span>
-                </div>
-                <div className="flex justify-between text-xl font-bold border-t-2 border-gray-300 pt-2">
-                  <span>Total:</span>
-                  <span>{formatCurrency(invoice.total)}</span>
-                </div>
-                <div className="flex justify-between text-lg font-semibold text-blue-600">
-                  <span>Amount Due:</span>
-                  <span>{formatCurrency(invoice.amountDue)}</span>
-                </div>
-              </div>
-            </div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-4 sm:py-8 px-2 sm:px-4">
+      <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6">
+        {/* Invoice Template Display */}
+        <Card className="print:shadow-none">
+          <CardContent className="p-4 sm:p-6">
+            <TemplateComponent
+              invoice={{
+                invoiceNumber: invoice.invoiceNumber,
+                issueDate: invoice.issueDate,
+                dueDate: invoice.dueDate,
+                notes: invoice.notes,
+                terms: invoice.terms,
+                subtotal: invoice.subtotal,
+                taxRate: invoice.taxRate,
+                taxAmount: invoice.taxAmount,
+                total: invoice.total,
+                amountDue: invoice.amountDue,
+                status: invoice.status,
+                documentType: invoice.documentType || 'INVOICE',
+              }}
+              user={{
+                name: invoice.user.companyName || `${invoice.user.firstName} ${invoice.user.lastName}`,
+                firstName: invoice.user.firstName,
+                lastName: invoice.user.lastName,
+                email: invoice.user.email,
+                logo: invoice.user.companyLogo,
+                companyName: invoice.user.companyName,
+                bankAccountNumber: invoice.user.bankAccountNumber,
+                bankAccountName: invoice.user.bankAccountName,
+                bankName: invoice.user.bankName,
+                bankBranchCode: invoice.user.bankBranchCode,
+                subscriptionTier: invoice.user.subscriptionTier,
+              }}
+              customer={{
+                name: invoice.customer?.name || '',
+                email: invoice.customer?.email || '',
+                company: invoice.customer?.company,
+              }}
+              items={invoice.items.map((item: any) => ({
+                description: item.description,
+                quantity: item.quantity,
+                unitPrice: item.unitPrice,
+                total: item.total,
+              }))}
+            />
           </CardContent>
         </Card>
-
-        {/* Notes and Terms */}
-        {(invoice.notes || invoice.terms) && (
-          <Card>
-            <CardContent className="p-6 space-y-4">
-              {invoice.notes && (
-                <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">Notes:</h3>
-                  <p className="text-sm text-gray-600 whitespace-pre-wrap">{invoice.notes}</p>
-                </div>
-              )}
-              {invoice.terms && (
-                <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">Terms:</h3>
-                  <p className="text-sm text-gray-600 whitespace-pre-wrap">{invoice.terms}</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        )}
 
         {/* Signature Section */}
         {invoice.status !== 'PAID' && invoice.requiresSignature && (

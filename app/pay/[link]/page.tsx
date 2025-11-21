@@ -56,6 +56,8 @@ export default async function PaymentPage({ params }: { params: { link: string }
     <InvoicePayment
       invoice={{
         ...invoice,
+        templateId: invoice.templateId || 1,
+        documentType: invoice.documentType || 'INVOICE',
         subtotal: Number(invoice.subtotal),
         taxRate: Number(invoice.taxRate),
         taxAmount: Number(invoice.taxAmount),
