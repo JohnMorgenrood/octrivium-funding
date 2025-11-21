@@ -13,79 +13,103 @@ export default async function AccountingOverviewPage() {
 
   const userId = session.user.id;
 
-  // Fetch accounting data
-  const [invoices, expenses] = await Promise.all([
-    prisma.invoice.findMany({
+  // Initialize with empty data
+  let invoices: any[] = [];
+  let expenses: any[] = [];
+  let recentTransactions: any[] = [];
+  let stats = {
+    totalIncome: 0,
+    totalExpenses: 0,
+    profit: 0,
+    overdueInvoices: 0,
+    totalInvoices: 0,
+    paidInvoices: 0,
+    unpaidAmount: 0,
+  };
+
+  try {
+    // Fetch invoices and expenses
+    const invoicesData = await prisma.invoice.findMany({
       where: { userId },
-      include: { customer: true, items: true },
+      include: { 
+        customer: true, 
+        items: true 
+      },
       orderBy: { issueDate: 'desc' },
       take: 5,
-    }),
-    prisma.expense.findMany({
+    });
+    invoices = invoicesData;
+
+    const expensesData = await prisma.expense.findMany({
       where: { userId },
       orderBy: { date: 'desc' },
       take: 5,
-    }),
-  ]);
-
-  // Fetch transactions separately to handle potential errors
-  let recentTransactions: any[] = [];
-  try {
-    recentTransactions = await prisma.accountingTransaction.findMany({
-      where: { userId },
-      orderBy: { date: 'desc' },
-      take: 10,
     });
-  } catch (error) {
-    console.error('Error fetching accounting transactions:', error);
-    // Continue without transactions
-  }
+    expenses = expensesData;
 
-  // Calculate totals for current month
-  const now = new Date();
-  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-  const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-
-  const [monthlyIncome, monthlyExpenses, overdueInvoices] = await Promise.all([
-    prisma.invoice.aggregate({
-      where: {
-        userId,
-        status: 'PAID',
-        paidDate: { gte: startOfMonth, lte: endOfMonth },
+    // Calculate stats from invoices
+    const allInvoices = await prisma.invoice.findMany({
+      where: { userId },
+      select: { 
+        status: true, 
+        total: true, 
+        amountPaid: true, 
+        amountDue: true,
+        paidDate: true,
+        dueDate: true,
       },
-      _sum: { total: true },
-    }),
-    prisma.expense.aggregate({
+    });
+
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+    // Calculate monthly income from paid invoices
+    const monthlyIncome = allInvoices
+      .filter(inv => 
+        inv.status === 'PAID' && 
+        inv.paidDate && 
+        inv.paidDate >= startOfMonth && 
+        inv.paidDate <= endOfMonth
+      )
+      .reduce((sum, inv) => sum + Number(inv.total || 0), 0);
+
+    // Get monthly expenses
+    const monthlyExpensesData = await prisma.expense.findMany({
       where: {
         userId,
         date: { gte: startOfMonth, lte: endOfMonth },
       },
-      _sum: { amount: true },
-    }),
-    prisma.invoice.count({
-      where: {
-        userId,
-        status: { in: ['SENT', 'OVERDUE', 'PARTIAL'] },
-        dueDate: { lt: now },
-      },
-    }),
-  ]);
+      select: { amount: true },
+    });
 
-  // All invoices for stats
-  const allInvoices = await prisma.invoice.findMany({
-    where: { userId },
-    select: { status: true, total: true, amountPaid: true, amountDue: true },
-  });
+    const monthlyExpenses = monthlyExpensesData.reduce(
+      (sum, exp) => sum + Number(exp.amount || 0), 
+      0
+    );
 
-  const stats = {
-    totalIncome: Number(monthlyIncome._sum.total || 0),
-    totalExpenses: Number(monthlyExpenses._sum.amount || 0),
-    profit: Number(monthlyIncome._sum.total || 0) - Number(monthlyExpenses._sum.amount || 0),
-    overdueInvoices,
-    totalInvoices: allInvoices.length,
-    paidInvoices: allInvoices.filter((i) => i.status === 'PAID').length,
-    unpaidAmount: allInvoices.reduce((sum, i) => sum + Number(i.amountDue), 0),
-  };
+    // Count overdue invoices
+    const overdueInvoices = allInvoices.filter(
+      inv => 
+        ['SENT', 'OVERDUE', 'PARTIAL'].includes(inv.status) && 
+        inv.dueDate && 
+        inv.dueDate < now
+    ).length;
+
+    stats = {
+      totalIncome: monthlyIncome,
+      totalExpenses: monthlyExpenses,
+      profit: monthlyIncome - monthlyExpenses,
+      overdueInvoices,
+      totalInvoices: allInvoices.length,
+      paidInvoices: allInvoices.filter(i => i.status === 'PAID').length,
+      unpaidAmount: allInvoices.reduce((sum, i) => sum + Number(i.amountDue || 0), 0),
+    };
+
+  } catch (error) {
+    console.error('Error loading accounting data:', error);
+    // Continue with empty data
+  }
 
   return (
     <AccountingOverview
