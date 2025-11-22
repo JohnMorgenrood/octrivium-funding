@@ -133,7 +133,7 @@ export default function TemplateSelector({
                   }`}
                   onClick={() => canUse && setSelectedTemplate(template.id)}
                 >
-                  {template.premium && (
+                  {template.premium && userRole !== 'ADMIN' && (
                     <div className={`absolute top-2 right-2 ${canUse ? 'bg-gradient-to-r from-yellow-400 to-yellow-600' : 'bg-gray-400'} text-white rounded-full px-2 py-1 text-xs font-bold flex items-center gap-1`}>
                       {canUse ? <Crown className="h-3 w-3" /> : <Lock className="h-3 w-3" />}
                       PREMIUM
