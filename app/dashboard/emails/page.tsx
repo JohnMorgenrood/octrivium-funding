@@ -20,7 +20,8 @@ import {
   ArrowLeft,
   Zap,
   Settings,
-  Menu
+  Menu,
+  Activity
 } from 'lucide-react';
 
 interface Email {
@@ -172,6 +173,14 @@ export default function EmailDashboard() {
               </div>
 
               {/* Settings Button */}
+              <Link
+                href="/dashboard/emails/diagnostics"
+                className="hidden sm:block p-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all hover:scale-105"
+                title="Email Diagnostics"
+              >
+                <Activity className="w-5 h-5" />
+              </Link>
+
               <Link
                 href="/dashboard/emails/settings"
                 className="hidden sm:block p-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all hover:scale-105"

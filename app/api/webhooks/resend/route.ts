@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import crypto from 'crypto';
 
 // Add GET for testing
 export async function GET() {
@@ -10,9 +11,43 @@ export async function GET() {
   });
 }
 
+// Verify webhook signature
+function verifySignature(payload: string, signature: string, secret: string): boolean {
+  try {
+    const hmac = crypto.createHmac('sha256', secret);
+    const digest = hmac.update(payload).digest('hex');
+    return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(digest));
+  } catch (error) {
+    console.error('Signature verification error:', error);
+    return false;
+  }
+}
+
 export async function POST(request: Request) {
   try {
-    const payload = await request.json();
+    // Get raw body for signature verification
+    const rawBody = await request.text();
+    const payload = JSON.parse(rawBody);
+    
+    // Verify webhook signature if secret is configured
+    if (process.env.RESEND_WEBHOOK_SECRET) {
+      const signature = request.headers.get('svix-signature') || 
+                       request.headers.get('webhook-signature') || 
+                       request.headers.get('x-resend-signature');
+      
+      if (signature) {
+        const isValid = verifySignature(rawBody, signature, process.env.RESEND_WEBHOOK_SECRET);
+        if (!isValid) {
+          console.log('❌ Invalid webhook signature');
+          return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
+        }
+        console.log('✅ Webhook signature verified');
+      } else {
+        console.log('⚠️ No signature header found');
+      }
+    } else {
+      console.log('⚠️ RESEND_WEBHOOK_SECRET not configured - skipping signature verification');
+    }
     
     console.log('🔔 ===== RESEND WEBHOOK RECEIVED =====');
     console.log('Timestamp:', new Date().toISOString());
