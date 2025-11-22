@@ -158,15 +158,13 @@ export async function POST(request: Request) {
 
       console.log('✅ Email stored successfully:', newEmail.id);
 
-      // Optional: Forward to user's personal email
-      // Uncomment this section if you want customers to receive emails in their personal inbox too
-      /*
+      // Forward to user's personal email so they receive it in Gmail/Outlook/etc
       if (user.email && process.env.RESEND_API_KEY) {
         try {
-          const Resend = require('resend').Resend;
-          const resend = new Resend(process.env.RESEND_API_KEY);
+          const { Resend } = require('resend');
+          const forwardResend = new Resend(process.env.RESEND_API_KEY);
           
-          await resend.emails.send({
+          await forwardResend.emails.send({
             from: 'notifications@octrivium.co.za',
             to: user.email,
             subject: `Fwd: ${subject}`,
@@ -197,7 +195,6 @@ export async function POST(request: Request) {
           // Don't fail the whole webhook if forwarding fails
         }
       }
-      */
 
       return NextResponse.json({ 
         received: true, 
