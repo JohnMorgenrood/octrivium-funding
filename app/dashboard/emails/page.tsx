@@ -520,10 +520,10 @@ function ComposeModal({ onClose, onSent }: { onClose: () => void; onSent: () => 
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[100] p-4">
+      <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0">
           <h2 className="text-lg font-bold text-gray-900">New Message</h2>
           <button
             onClick={onClose}
@@ -533,8 +533,8 @@ function ComposeModal({ onClose, onSent }: { onClose: () => void; onSent: () => 
           </button>
         </div>
 
-        {/* Form */}
-        <div className="p-6 space-y-4">
+        {/* Form - Scrollable */}
+        <div className="p-6 space-y-4 overflow-y-auto flex-1">
           {error && (
             <div className="p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-red-700 text-sm">
               <AlertCircle className="w-4 h-4" />
@@ -576,14 +576,14 @@ function ComposeModal({ onClose, onSent }: { onClose: () => void; onSent: () => 
               value={body}
               onChange={(e) => setBody(e.target.value)}
               placeholder="Write your message..."
-              rows={12}
+              rows={10}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
             />
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="flex items-center justify-between p-4 border-t border-gray-200 bg-gray-50">
+        {/* Footer - Always Visible */}
+        <div className="flex items-center justify-between p-4 border-t border-gray-200 bg-gray-50 flex-shrink-0">
           <button
             onClick={onClose}
             className="px-4 py-2 text-gray-700 hover:bg-gray-200 rounded-lg transition-colors"
