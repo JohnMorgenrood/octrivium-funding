@@ -25,6 +25,8 @@ export async function GET() {
         taxNumber: true,
         registrationNumber: true,
         website: true,
+        subscriptionTier: true,
+        role: true,
       },
     });
 

@@ -29,6 +29,7 @@ interface TemplateSelectorProps {
   customer: any;
   items: any[];
   userSubscriptionTier?: string;
+  userRole?: string;
 }
 
 const TEMPLATE_COMPONENTS: any = {
@@ -54,12 +55,17 @@ export default function TemplateSelector({
   customer,
   items,
   userSubscriptionTier = 'FREE',
+  userRole = 'USER',
 }: TemplateSelectorProps) {
   const [selectedTemplate, setSelectedTemplate] = useState(currentTemplate);
   const [previewTemplate, setPreviewTemplate] = useState<number | null>(null);
 
   const canUseTemplate = (template: any) => {
+    // Admin users can access all templates
+    if (userRole === 'ADMIN') return true;
+    // Non-premium templates are free for everyone
     if (!template.premium) return true;
+    // Premium templates require STARTER or BUSINESS subscription
     return userSubscriptionTier === 'BUSINESS' || userSubscriptionTier === 'STARTER';
   };
 
