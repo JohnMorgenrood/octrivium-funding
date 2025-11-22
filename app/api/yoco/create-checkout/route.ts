@@ -11,8 +11,74 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { invoiceId, amount, invoiceNumber } = await request.json();
+    const body = await request.json();
+    const { invoiceId, amount, invoiceNumber, type, metadata } = body;
 
+    // Handle wallet deposits
+    if (type === 'wallet_deposit') {
+      console.log('Creating Yoco checkout for wallet deposit:', amount);
+
+      if (!amount || amount < 100) {
+        return NextResponse.json({ error: 'Minimum deposit is R100' }, { status: 400 });
+      }
+
+      const yocoSecretKey = process.env.YOCO_SECRET_KEY;
+
+      if (!yocoSecretKey) {
+        console.error('No Yoco secret key available');
+        return NextResponse.json({ error: 'Payment system not configured' }, { status: 500 });
+      }
+
+      // Convert amount to cents
+      const amountInCents = Math.round(amount * 100);
+
+      const baseUrl = process.env.NEXTAUTH_URL || 'https://octrivium.co.za';
+      
+      const yocoResponse = await fetch('https://payments.yoco.com/api/checkouts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${yocoSecretKey}`,
+        },
+        body: JSON.stringify({
+          amount: amountInCents,
+          currency: 'ZAR',
+          successUrl: `${baseUrl}/dashboard/wallet?deposit=success&amount=${amount}`,
+          cancelUrl: `${baseUrl}/dashboard/wallet`,
+          failureUrl: `${baseUrl}/dashboard/wallet?deposit=failed`,
+          metadata: {
+            type: 'wallet_deposit',
+            userId: session.user.id,
+            userEmail: session.user.email,
+            amount: amount,
+            ...metadata,
+          },
+        }),
+      });
+
+      const yocoData = await yocoResponse.json();
+
+      console.log('Yoco wallet deposit checkout response:', yocoData);
+
+      if (!yocoResponse.ok) {
+        console.error('Yoco API error:', yocoData);
+        return NextResponse.json(
+          {
+            error: 'Failed to create checkout',
+            details: yocoData.message || yocoData.displayMessage || 'Unknown error',
+          },
+          { status: yocoResponse.status }
+        );
+      }
+
+      return NextResponse.json({
+        success: true,
+        redirectUrl: yocoData.redirectUrl,
+        checkoutId: yocoData.id,
+      });
+    }
+
+    // Handle invoice payments (existing code)
     console.log('Creating Yoco checkout for invoice:', invoiceId);
 
     // Get the invoice with user details

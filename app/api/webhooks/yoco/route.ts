@@ -48,8 +48,81 @@ export async function POST(request: Request) {
 async function handlePaymentSuccess(eventPayload: any) {
   try {
     const { metadata, amount, id: checkoutId } = eventPayload;
-    const { invoiceId } = metadata || {};
+    const { invoiceId, type, userId } = metadata || {};
 
+    // Handle wallet deposits
+    if (type === 'wallet_deposit') {
+      console.log('Processing wallet deposit for user:', userId);
+
+      if (!userId) {
+        console.error('No userId in wallet deposit metadata');
+        return;
+      }
+
+      const depositAmount = amount / 100; // Convert from cents
+
+      // Get or create wallet
+      let wallet = await prisma.wallet.findUnique({
+        where: { userId },
+      });
+
+      if (!wallet) {
+        wallet = await prisma.wallet.create({
+          data: {
+            userId,
+            balance: 0,
+            availableBalance: 0,
+            lockedBalance: 0,
+          },
+        });
+      }
+
+      // Check for duplicate transaction
+      const existingTransaction = await prisma.transaction.findFirst({
+        where: {
+          walletId: wallet.id,
+          reference: `DEPOSIT-${checkoutId}`,
+          status: 'COMPLETED',
+        },
+      });
+
+      if (existingTransaction) {
+        console.log('Duplicate wallet deposit detected:', checkoutId);
+        return;
+      }
+
+      // Add funds to wallet
+      await prisma.$transaction([
+        prisma.wallet.update({
+          where: { id: wallet.id },
+          data: {
+            balance: { increment: depositAmount },
+            availableBalance: { increment: depositAmount },
+          },
+        }),
+        prisma.transaction.create({
+          data: {
+            walletId: wallet.id,
+            type: 'DEPOSIT',
+            status: 'COMPLETED',
+            amount: depositAmount,
+            netAmount: depositAmount, // No fees for deposits
+            reference: `DEPOSIT-${checkoutId}`,
+            description: `Wallet deposit via Yoco`,
+            metadata: {
+              checkoutId,
+              paymentMethod: 'yoco',
+              ...metadata,
+            },
+          },
+        }),
+      ]);
+
+      console.log(`✅ Wallet deposit successful: R${depositAmount} added to user ${userId}`);
+      return;
+    }
+
+    // Handle invoice payments (existing code)
     if (!invoiceId) {
       console.error('No invoiceId in webhook metadata');
       return;
