@@ -145,7 +145,8 @@ model User {
   emailQuotaLimit       Int     @default(50) // Monthly send limit
   emailQuotaUsed        Int     @default(0) // Emails sent this month
   emailQuotaResetDate   DateTime? // When quota resets
-  customEmailAddress    String? // their@company.octrivium.co.za
+  customEmailAddress    String? @unique // john@octrivium.co.za or support@octrivium.co.za
+  companySubdomain      String? @unique // businessname (for email@businessname.octrivium.co.za)
 
   // Relations
   wallet        Wallet?

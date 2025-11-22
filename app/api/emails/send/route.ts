@@ -27,6 +27,7 @@ export async function POST(request: Request) {
         emailQuotaLimit: true,
         emailQuotaUsed: true,
         emailQuotaResetDate: true,
+        customEmailAddress: true,
       },
     });
 
@@ -61,11 +62,13 @@ export async function POST(request: Request) {
 
     // Send email via Resend
     const { data, error } = await resend.emails.send({
-      from: `${user.firstName} ${user.lastName} <${process.env.RESEND_FROM_EMAIL}>`,
+      from: user.customEmailAddress 
+        ? `${user.firstName} ${user.lastName} <${user.customEmailAddress}>`
+        : `${user.firstName} ${user.lastName} <${process.env.RESEND_FROM_EMAIL}>`,
       to: [to],
       subject: subject,
       text: body,
-      reply_to: user.email,
+      reply_to: user.customEmailAddress || user.email,
     });
 
     if (error) {
@@ -81,7 +84,7 @@ export async function POST(request: Request) {
       data: {
         messageId: data?.id || `sent-${Date.now()}`,
         subject,
-        fromEmail: user.email,
+        fromEmail: user.customEmailAddress || user.email,
         fromName: `${user.firstName} ${user.lastName}`,
         toEmail: to,
         textBody: body,

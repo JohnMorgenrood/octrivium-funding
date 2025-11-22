@@ -18,7 +18,8 @@ import {
   X,
   Paperclip,
   ArrowLeft,
-  Zap
+  Zap,
+  Settings
 } from 'lucide-react';
 
 interface Email {
@@ -155,6 +156,15 @@ export default function EmailDashboard() {
                   <div className="text-xs text-gray-500">{quotaInfo.plan} Plan</div>
                 </div>
               </div>
+
+              {/* Settings Button */}
+              <Link
+                href="/dashboard/emails/settings"
+                className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                title="Email Settings"
+              >
+                <Settings className="w-5 h-5" />
+              </Link>
 
               {/* Upgrade Button */}
               {quotaInfo.plan === 'FREE' && (
