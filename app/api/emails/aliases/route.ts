@@ -41,37 +41,41 @@ export async function POST(request: Request) {
 
     const { aliasEmail, displayName, isPrimary } = await request.json();
 
-    // Get user's plan
+    // Get user's plan and role
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { emailPlanType: true }
+      select: { emailPlanType: true, role: true }
     });
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // Check plan permissions
-    if (user.emailPlanType === 'FREE') {
-      return NextResponse.json(
-        { error: 'Email aliases require PRO or BUSINESS plan' },
-        { status: 403 }
-      );
-    }
+    const isAdmin = user.role === 'ADMIN';
 
-    // Count existing aliases
-    const aliasCount = await prisma.emailAlias.count({
-      where: { userId: session.user.id }
-    });
+    // Check plan permissions (admins bypass all restrictions)
+    if (!isAdmin) {
+      if (user.emailPlanType === 'FREE') {
+        return NextResponse.json(
+          { error: 'Email aliases require PRO or BUSINESS plan' },
+          { status: 403 }
+        );
+      }
 
-    // PRO: 3 aliases, BUSINESS: unlimited
-    const maxAliases = user.emailPlanType === 'PRO' ? 3 : 999;
-    
-    if (aliasCount >= maxAliases) {
-      return NextResponse.json(
-        { error: `${user.emailPlanType} plan allows maximum ${maxAliases} email aliases` },
-        { status: 403 }
-      );
+      // Count existing aliases
+      const aliasCount = await prisma.emailAlias.count({
+        where: { userId: session.user.id }
+      });
+
+      // PRO: 3 aliases, BUSINESS: unlimited
+      const maxAliases = user.emailPlanType === 'PRO' ? 3 : 999;
+      
+      if (aliasCount >= maxAliases) {
+        return NextResponse.json(
+          { error: `${user.emailPlanType} plan allows maximum ${maxAliases} email aliases` },
+          { status: 403 }
+        );
+      }
     }
 
     // Validate email format (must be @octrivium.co.za or @*.octrivium.co.za)

@@ -17,6 +17,7 @@ export async function GET() {
         emailPlanType: true,
         customEmailAddress: true,
         companySubdomain: true,
+        role: true,
       },
     });
 
@@ -44,19 +45,21 @@ export async function POST(request: Request) {
 
     const { customEmailAddress, companySubdomain } = await request.json();
 
-    // Get user's current plan
+    // Get user's current plan and role
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { emailPlanType: true },
+      select: { emailPlanType: true, role: true },
     });
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // Check permissions
+    const isAdmin = user.role === 'ADMIN';
+
+    // Check permissions (admins bypass all restrictions)
     if (customEmailAddress) {
-      if (user.emailPlanType === 'FREE') {
+      if (!isAdmin && user.emailPlanType === 'FREE') {
         return NextResponse.json(
           { error: 'Custom email addresses require PRO or BUSINESS plan' },
           { status: 403 }

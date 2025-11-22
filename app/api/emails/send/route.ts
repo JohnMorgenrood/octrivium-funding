@@ -45,12 +45,15 @@ export async function POST(request: Request) {
         emailQuotaUsed: true,
         emailQuotaResetDate: true,
         customEmailAddress: true,
+        role: true,
       },
     });
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
+
+    const isAdmin = user.role === 'ADMIN';
 
     // Check if quota reset is needed
     const now = new Date();
@@ -66,8 +69,8 @@ export async function POST(request: Request) {
       user.emailQuotaUsed = 0;
     }
 
-    // Check if user has quota available (unless BUSINESS plan)
-    if (user.emailPlanType !== 'BUSINESS' && user.emailQuotaUsed >= user.emailQuotaLimit) {
+    // Check if user has quota available (admins and BUSINESS plan users bypass quota)
+    if (!isAdmin && user.emailPlanType !== 'BUSINESS' && user.emailQuotaUsed >= user.emailQuotaLimit) {
       return NextResponse.json(
         { 
           error: 'Email quota exceeded',

@@ -96,8 +96,9 @@ export default function EmailSettings() {
 
   const isPro = userSettings.emailPlanType === 'PRO';
   const isBusiness = userSettings.emailPlanType === 'BUSINESS';
-  const canUseCustomEmail = isPro || isBusiness;
-  const canUseSubdomain = isBusiness;
+  const isAdmin = userSettings.role === 'ADMIN';
+  const canUseCustomEmail = isPro || isBusiness || isAdmin;
+  const canUseSubdomain = isBusiness || isAdmin;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 py-12">
