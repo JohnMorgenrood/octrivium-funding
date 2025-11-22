@@ -14,10 +14,15 @@ export async function POST(request: Request) {
   try {
     const payload = await request.json();
     
-    console.log('Received Resend webhook:', JSON.stringify(payload, null, 2));
+    console.log('🔔 ===== RESEND WEBHOOK RECEIVED =====');
+    console.log('Timestamp:', new Date().toISOString());
+    console.log('Full Payload:', JSON.stringify(payload, null, 2));
+    console.log('====================================');
 
     // Resend webhook structure for incoming emails
     const { type, data } = payload;
+
+    console.log('Event Type:', type);
 
     if (type === 'email.received') {
       const {
@@ -125,14 +130,19 @@ export async function POST(request: Request) {
       });
     }
 
-    console.log('Unhandled webhook type:', type);
-    return NextResponse.json({ received: true, message: 'Unhandled event type' });
+    console.log('ℹ️ Unhandled webhook type:', type);
+    console.log('Returning success for unhandled event');
+    return NextResponse.json({ received: true, message: 'Unhandled event type', type });
   } catch (error) {
-    console.error('❌ Resend webhook error:', error);
+    console.error('❌ ===== RESEND WEBHOOK ERROR =====');
+    console.error('Error:', error);
+    console.error('Stack:', error instanceof Error ? error.stack : 'No stack trace');
+    console.error('===================================');
     return NextResponse.json(
       { 
         error: 'Webhook processing failed',
-        message: error instanceof Error ? error.message : 'Unknown error'
+        message: error instanceof Error ? error.message : 'Unknown error',
+        timestamp: new Date().toISOString()
       },
       { status: 500 }
     );
