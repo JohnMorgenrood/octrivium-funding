@@ -19,7 +19,7 @@ export const Template4Bold = ({ invoice, user, customer, items }: any) => {
       {/* Colored Sidebar */}
       <div className="w-full sm:w-48 bg-gradient-to-b from-purple-600 to-purple-900 text-white p-4 sm:p-6 flex flex-col sm:flex-col items-center justify-start print:w-48 print:p-6">
         {user.companyLogo ? (
-          <img src={user.companyLogo} alt="Logo" className="h-16 w-16 sm:h-20 sm:w-20 bg-white p-2 rounded-full mb-4 print:h-20 print:w-20" />
+          <img src={user.companyLogo} alt="Logo" className="h-16 sm:h-20 mb-4 object-contain print:h-20" style={{maxWidth: '200px'}} />
         ) : (
           <div className="h-16 w-16 sm:h-20 sm:w-20 bg-white rounded-full flex items-center justify-center text-purple-600 text-xl sm:text-2xl font-bold mb-4 print:h-20 print:w-20">
             {user.companyName?.charAt(0) || user.firstName?.charAt(0)}

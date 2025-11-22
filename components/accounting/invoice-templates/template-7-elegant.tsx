@@ -22,7 +22,7 @@ export const Template7Elegant = ({ invoice, user, customer, items }: any) => {
       {/* Header */}
       <div className="text-center mb-6 sm:mb-10 md:mb-12 print:mb-12">
         {user.companyLogo ? (
-          <img src={user.companyLogo} alt="Logo" className="h-20 sm:h-24 mx-auto mb-4" />
+          <img src={user.companyLogo} alt="Logo" className="h-20 sm:h-24 mx-auto mb-4 object-contain" style={{maxWidth: '250px'}} />
         ) : (
           <div className="h-20 w-20 sm:h-24 sm:w-24 border-4 border-double border-gray-800 mx-auto flex items-center justify-center text-2xl sm:text-3xl md:text-4xl font-serif mb-4">
             {user.companyName?.charAt(0) || user.firstName?.charAt(0)}

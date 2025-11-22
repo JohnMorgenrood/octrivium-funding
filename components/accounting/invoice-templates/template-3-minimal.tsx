@@ -27,7 +27,7 @@ export const Template3Minimal = ({ invoice, user, customer, items }: any) => {
         </div>
         <div className="text-right">
           {user.companyLogo ? (
-            <img src={user.companyLogo} alt="Logo" className="h-20 sm:h-24 mb-4" />
+            <img src={user.companyLogo} alt="Logo" className="h-20 sm:h-24 mb-4 object-contain" style={{maxWidth: '250px'}} />
           ) : (
             <div className="h-20 w-20 sm:h-24 sm:w-24 border-2 border-gray-900 flex items-center justify-center text-2xl sm:text-3xl md:text-4xl font-light">
               {user.companyName?.charAt(0) || user.firstName?.charAt(0)}

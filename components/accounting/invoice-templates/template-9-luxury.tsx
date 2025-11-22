@@ -21,7 +21,7 @@ export const Template9Luxury = ({ invoice, user, customer, items }: any) => {
         <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:gap-0 mb-6 sm:mb-10 md:mb-12 pb-4 sm:pb-6 md:pb-8 border-b-2 border-yellow-600/50 print:flex-row print:mb-12 print:pb-8">
           <div>
             {user.companyLogo ? (
-              <img src={user.companyLogo} alt="Logo" className="h-20 sm:h-24 mb-4 bg-white p-2" />
+              <img src={user.companyLogo} alt="Logo" className="h-20 sm:h-24 mb-4 object-contain" style={{maxWidth: '250px', filter: 'brightness(0) invert(1)'}} />
             ) : (
               <div className="h-20 w-20 sm:h-24 sm:w-24 bg-gradient-to-br from-yellow-600 to-yellow-800 flex items-center justify-center text-2xl sm:text-3xl md:text-4xl font-bold text-black mb-4">
                 {user.companyName?.charAt(0) || user.firstName?.charAt(0)}

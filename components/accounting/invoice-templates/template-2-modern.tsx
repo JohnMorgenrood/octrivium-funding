@@ -27,7 +27,7 @@ export const Template2Modern = ({ invoice, user, customer, items }: any) => {
           </div>
           <div className="text-right">
             {user.companyLogo ? (
-              <img src={user.companyLogo} alt="Logo" className="h-16 sm:h-20 bg-white p-2 rounded" />
+              <img src={user.companyLogo} alt="Logo" className="h-16 sm:h-20 object-contain" style={{maxWidth: '200px'}} />
             ) : (
               <div className="h-16 w-16 sm:h-20 sm:w-20 bg-white rounded-lg flex items-center justify-center text-blue-600 text-xl sm:text-2xl md:text-3xl font-bold">
                 {user.companyName?.charAt(0) || user.firstName?.charAt(0)}

@@ -109,8 +109,10 @@ export async function POST(
             }
             .header img {
               max-height: 70px;
+              max-width: 200px;
               margin-bottom: 15px;
-              border-radius: 8px;
+              object-fit: contain;
+              background: transparent;
             }
             .header h1 {
               margin: 10px 0;
@@ -275,22 +277,23 @@ export async function POST(
             .payment-options {
               display: flex;
               flex-wrap: wrap;
-              gap: 10px;
+              gap: 8px;
               margin: 20px 0;
-              padding: 15px;
+              padding: 12px;
               background: white;
               border-radius: 8px;
             }
             .payment-method {
               display: inline-flex;
               align-items: center;
-              gap: 6px;
-              padding: 8px 12px;
+              gap: 5px;
+              padding: 6px 10px;
               background: #f8f9fa;
               border: 1px solid #dee2e6;
               border-radius: 6px;
-              font-size: 13px;
+              font-size: 12px;
               color: #495057;
+              white-space: nowrap;
             }
             .primary-button {
               display: inline-block;
@@ -375,6 +378,15 @@ export async function POST(
               }
               .payment-section {
                 padding: 20px 15px;
+              }
+              .payment-options {
+                padding: 10px;
+                gap: 6px;
+              }
+              .payment-method {
+                padding: 5px 8px;
+                font-size: 11px;
+                gap: 4px;
               }
               .primary-button {
                 display: block;
@@ -542,10 +554,12 @@ export async function POST(
       </html>
     `;
 
-    // Send email
+    // Send email - Use company email if available
+    const fromEmail = invoice.user.companyEmail || process.env.RESEND_FROM_EMAIL || 'support@octrivium.co.za';
+    
     const resend = getResendClient();
     const { data, error } = await resend.emails.send({
-      from: process.env.RESEND_FROM_EMAIL || 'invoices@octrivium.com',
+      from: fromEmail,
       to: [invoice.customer.email],
       subject: `Invoice ${invoice.invoiceNumber} from ${invoice.user.companyName || invoice.user.firstName + ' ' + invoice.user.lastName}`,
       html: emailHtml,
