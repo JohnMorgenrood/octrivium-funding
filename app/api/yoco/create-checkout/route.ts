@@ -14,6 +14,70 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { invoiceId, amount, invoiceNumber, type, metadata } = body;
 
+    // Handle email subscription upgrades
+    if (type === 'email_subscription') {
+      console.log('Creating Yoco checkout for email subscription:', metadata?.planId);
+
+      if (!amount || amount < 99) {
+        return NextResponse.json({ error: 'Invalid subscription amount' }, { status: 400 });
+      }
+
+      const yocoSecretKey = process.env.YOCO_SECRET_KEY;
+
+      if (!yocoSecretKey) {
+        console.error('No Yoco secret key available');
+        return NextResponse.json({ error: 'Payment system not configured' }, { status: 500 });
+      }
+
+      // Convert amount to cents
+      const amountInCents = Math.round(amount * 100);
+
+      const baseUrl = process.env.NEXTAUTH_URL || 'https://octrivium.co.za';
+      
+      const yocoResponse = await fetch('https://payments.yoco.com/api/checkouts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${yocoSecretKey}`,
+        },
+        body: JSON.stringify({
+          amount: amountInCents,
+          currency: 'ZAR',
+          successUrl: `${baseUrl}/dashboard/emails?upgrade=success&plan=${metadata?.planId}`,
+          cancelUrl: `${baseUrl}/dashboard/emails/upgrade`,
+          failureUrl: `${baseUrl}/dashboard/emails/upgrade?error=payment_failed`,
+          metadata: {
+            type: 'email_subscription',
+            userId: session.user.id,
+            userEmail: session.user.email,
+            planId: metadata?.planId,
+            amount: amount,
+          },
+        }),
+      });
+
+      const yocoData = await yocoResponse.json();
+
+      console.log('Yoco email subscription checkout response:', yocoData);
+
+      if (!yocoResponse.ok) {
+        console.error('Yoco API error:', yocoData);
+        return NextResponse.json(
+          {
+            error: 'Failed to create checkout',
+            details: yocoData.message || yocoData.displayMessage || 'Unknown error',
+          },
+          { status: yocoResponse.status }
+        );
+      }
+
+      return NextResponse.json({
+        success: true,
+        redirectUrl: yocoData.redirectUrl,
+        checkoutId: yocoData.id,
+      });
+    }
+
     // Handle wallet deposits
     if (type === 'wallet_deposit') {
       console.log('Creating Yoco checkout for wallet deposit:', amount);

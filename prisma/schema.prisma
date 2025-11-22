@@ -140,6 +140,13 @@ model User {
   pushNotifications     Boolean @default(false)
   notificationPreferences Json? // { invoicePaid: true, invoiceOverdue: true, etc. }
 
+  // Email Service fields
+  emailPlanType         String  @default("FREE") // FREE, PRO, BUSINESS
+  emailQuotaLimit       Int     @default(50) // Monthly send limit
+  emailQuotaUsed        Int     @default(0) // Emails sent this month
+  emailQuotaResetDate   DateTime? // When quota resets
+  customEmailAddress    String? // their@company.octrivium.co.za
+
   // Relations
   wallet        Wallet?
   investments   Investment[]
@@ -156,6 +163,8 @@ model User {
   chartOfAccounts ChartOfAccounts[]
   products      Product[]
   subscriptions Subscription[]
+  sentEmails    Email[]  @relation("SentEmails")
+  receivedEmails Email[] @relation("ReceivedEmails")
 
   @@index([email])
   @@index([role])
@@ -1124,4 +1133,56 @@ model RecurringInvoice {
   @@index([customerId])
   @@index([active])
   @@index([nextInvoiceDate])
+}
+
+model Email {
+  id              String    @id @default(uuid())
+  
+  // Email metadata
+  messageId       String    @unique // Resend message ID or email Message-ID header
+  threadId        String?   // Group emails in conversations
+  subject         String
+  fromEmail       String
+  fromName        String?
+  toEmail         String
+  toName          String?
+  ccEmails        String[]  @default([])
+  bccEmails       String[]  @default([])
+  replyTo         String?
+  
+  // Content
+  htmlBody        String?   @db.Text
+  textBody        String?   @db.Text
+  attachments     Json?     // Array of {filename, url, size, contentType}
+  
+  // Status
+  isRead          Boolean   @default(false)
+  isStarred       Boolean   @default(false)
+  isArchived      Boolean   @default(false)
+  isDeleted       Boolean   @default(false)
+  isSent          Boolean   @default(false) // true if sent by user, false if received
+  
+  // Spam/Folder management
+  folder          String    @default("inbox") // inbox, sent, drafts, spam, trash
+  spamScore       Float?
+  
+  // Relations
+  senderId        String?   // User who sent this email
+  sender          User?     @relation("SentEmails", fields: [senderId], references: [id], onDelete: SetNull)
+  
+  receiverId      String?   // User who received this email
+  receiver        User?     @relation("ReceivedEmails", fields: [receiverId], references: [id], onDelete: SetNull)
+  
+  // Timestamps
+  sentAt          DateTime  @default(now())
+  receivedAt      DateTime  @default(now())
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([senderId])
+  @@index([receiverId])
+  @@index([threadId])
+  @@index([folder])
+  @@index([isDeleted])
+  @@index([sentAt])
 }

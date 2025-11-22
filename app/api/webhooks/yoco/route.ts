@@ -48,7 +48,45 @@ export async function POST(request: Request) {
 async function handlePaymentSuccess(eventPayload: any) {
   try {
     const { metadata, amount, id: checkoutId } = eventPayload;
-    const { invoiceId, type, userId } = metadata || {};
+    const { invoiceId, type, userId, planId } = metadata || {};
+
+    // Handle email subscription upgrades
+    if (type === 'email_subscription') {
+      console.log('Processing email subscription upgrade for user:', userId, 'Plan:', planId);
+
+      if (!userId || !planId) {
+        console.error('Missing userId or planId in subscription metadata');
+        return;
+      }
+
+      const paidAmount = amount / 100; // Convert from cents
+
+      // Define plan limits
+      const planLimits: Record<string, number> = {
+        'PRO': 500,
+        'BUSINESS': 999999,
+      };
+
+      const quotaLimit = planLimits[planId] || 50;
+
+      // Calculate next reset date (1st of next month)
+      const now = new Date();
+      const nextResetDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+
+      // Update user's email plan
+      await prisma.user.update({
+        where: { id: userId },
+        data: {
+          emailPlanType: planId,
+          emailQuotaLimit: quotaLimit,
+          emailQuotaUsed: 0, // Reset on upgrade
+          emailQuotaResetDate: nextResetDate,
+        },
+      });
+
+      console.log(`✅ Email subscription upgraded: User ${userId} now on ${planId} plan (${quotaLimit} emails/month)`);
+      return;
+    }
 
     // Handle wallet deposits
     if (type === 'wallet_deposit') {
