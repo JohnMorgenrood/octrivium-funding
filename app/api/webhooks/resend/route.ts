@@ -158,6 +158,47 @@ export async function POST(request: Request) {
 
       console.log('✅ Email stored successfully:', newEmail.id);
 
+      // Optional: Forward to user's personal email
+      // Uncomment this section if you want customers to receive emails in their personal inbox too
+      /*
+      if (user.email && process.env.RESEND_API_KEY) {
+        try {
+          const Resend = require('resend').Resend;
+          const resend = new Resend(process.env.RESEND_API_KEY);
+          
+          await resend.emails.send({
+            from: 'notifications@octrivium.co.za',
+            to: user.email,
+            subject: `Fwd: ${subject}`,
+            html: `
+              <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+                <div style="background: #f3f4f6; padding: 16px; border-radius: 8px; margin-bottom: 16px;">
+                  <p style="margin: 0; color: #6b7280; font-size: 14px;">
+                    📧 You received an email at <strong>${recipientEmail}</strong>
+                  </p>
+                </div>
+                <div style="background: white; padding: 20px; border-radius: 8px; border: 1px solid #e5e7eb;">
+                  <p style="margin: 0 0 8px 0;"><strong>From:</strong> ${from}</p>
+                  <p style="margin: 0 0 8px 0;"><strong>To:</strong> ${recipientEmail}</p>
+                  <p style="margin: 0 0 16px 0;"><strong>Subject:</strong> ${subject}</p>
+                  <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 16px 0;">
+                  ${html || text || '(No content)'}
+                </div>
+                <div style="margin-top: 16px; text-align: center; color: #9ca3af; font-size: 12px;">
+                  <p>View and reply in your <a href="https://octrivium.co.za/dashboard/emails" style="color: #8b5cf6;">Octrivium Dashboard</a></p>
+                </div>
+              </div>
+            `,
+          });
+          
+          console.log('✅ Email forwarded to user personal inbox:', user.email);
+        } catch (fwdError) {
+          console.error('Failed to forward email:', fwdError);
+          // Don't fail the whole webhook if forwarding fails
+        }
+      }
+      */
+
       return NextResponse.json({ 
         received: true, 
         message: 'Email processed successfully',
