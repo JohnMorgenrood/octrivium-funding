@@ -24,6 +24,7 @@ export default function EmailAliasesPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [userPlan, setUserPlan] = useState('FREE');
+  const [userRole, setUserRole] = useState('');
 
   useEffect(() => {
     fetchAliases();
@@ -35,6 +36,7 @@ export default function EmailAliasesPage() {
       const res = await fetch('/api/emails/quota');
       const data = await res.json();
       setUserPlan(data.plan);
+      setUserRole(data.role);
     } catch (error) {
       console.error('Failed to fetch user plan:', error);
     }
@@ -132,7 +134,8 @@ export default function EmailAliasesPage() {
     }
   };
 
-  const maxAliases = userPlan === 'PRO' ? 3 : userPlan === 'BUSINESS' ? 999 : 0;
+  const isAdmin = userRole === 'ADMIN';
+  const maxAliases = isAdmin ? 999 : (userPlan === 'PRO' ? 3 : userPlan === 'BUSINESS' ? 999 : 0);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 dark:from-gray-950 dark:via-purple-950/20 dark:to-blue-950/20 p-4 sm:p-6 lg:p-8">
@@ -157,7 +160,7 @@ export default function EmailAliasesPage() {
               </p>
             </div>
             
-            {userPlan !== 'FREE' && aliases.length < maxAliases && (
+            {(userPlan !== 'FREE' || isAdmin) && aliases.length < maxAliases && (
               <button
                 onClick={() => setShowAddForm(true)}
                 className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-xl transition-all shadow-lg hover:scale-105 font-semibold"
@@ -170,7 +173,7 @@ export default function EmailAliasesPage() {
         </div>
 
         {/* Plan Notice */}
-        {userPlan === 'FREE' && (
+        {userPlan === 'FREE' && !isAdmin && (
           <div className="mb-6 p-4 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-200 dark:border-amber-800 rounded-xl">
             <div className="flex items-start gap-3">
               <Shield className="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5" />
@@ -191,7 +194,7 @@ export default function EmailAliasesPage() {
         )}
 
         {/* Add Alias Form */}
-        {showAddForm && userPlan !== 'FREE' && (
+        {showAddForm && (userPlan !== 'FREE' || isAdmin) && (
           <div className="mb-6 bg-white dark:bg-gray-900 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-800 p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Add New Email Alias</h2>

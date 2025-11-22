@@ -17,6 +17,7 @@ export async function GET() {
         emailPlanType: true,
         emailQuotaLimit: true,
         emailQuotaUsed: true,
+        role: true,
       },
     });
 
@@ -28,6 +29,7 @@ export async function GET() {
       plan: user.emailPlanType,
       limit: user.emailQuotaLimit,
       used: user.emailQuotaUsed,
+      role: user.role,
     });
   } catch (error) {
     console.error('Error fetching quota:', error);
