@@ -21,8 +21,7 @@ import {
   Zap,
   Settings,
   Menu,
-  Activity,
-  RefreshCw
+  Activity
 } from 'lucide-react';
 
 interface Email {
@@ -51,7 +50,6 @@ export default function EmailDashboard() {
   const [showCompose, setShowCompose] = useState(false);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [quotaInfo, setQuotaInfo] = useState({ used: 0, limit: 50, plan: 'FREE' });
-  const [syncing, setSyncing] = useState(false);
 
   useEffect(() => {
     fetchEmails();
@@ -119,27 +117,6 @@ export default function EmailDashboard() {
     }
   };
 
-  const syncEmails = async () => {
-    setSyncing(true);
-    try {
-      const res = await fetch('/api/emails/sync', {
-        method: 'POST',
-      });
-      const data = await res.json();
-      
-      if (res.ok) {
-        console.log('Sync complete:', data);
-        fetchEmails();
-      } else {
-        console.error('Sync failed:', data.error);
-      }
-    } catch (error) {
-      console.error('Failed to sync emails:', error);
-    } finally {
-      setSyncing(false);
-    }
-  };
-
   const handleEmailClick = (email: Email) => {
     setSelectedEmail(email);
     if (!email.isRead) {
@@ -196,15 +173,6 @@ export default function EmailDashboard() {
               </div>
 
               {/* Settings Button */}
-              <button
-                onClick={syncEmails}
-                disabled={syncing}
-                className="hidden sm:block p-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
-                title="Sync Emails from Resend"
-              >
-                <RefreshCw className={`w-5 h-5 ${syncing ? 'animate-spin' : ''}`} />
-              </button>
-
               <Link
                 href="/dashboard/emails/diagnostics"
                 className="hidden sm:block p-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all hover:scale-105"
