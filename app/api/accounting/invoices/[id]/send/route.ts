@@ -108,11 +108,11 @@ export async function POST(
               text-align: center;
             }
             .header img {
-              max-height: 70px;
-              max-width: 200px;
-              margin-bottom: 15px;
+              max-height: 80px;
+              max-width: 220px;
+              margin: 0 auto 15px;
               object-fit: contain;
-              background: transparent;
+              display: block;
             }
             .header h1 {
               margin: 10px 0;
@@ -275,8 +275,8 @@ export async function POST(
               font-size: 15px;
             }
             .payment-options {
-              display: flex;
-              flex-wrap: wrap;
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
               gap: 8px;
               margin: 20px 0;
               padding: 12px;
@@ -284,16 +284,17 @@ export async function POST(
               border-radius: 8px;
             }
             .payment-method {
-              display: inline-flex;
+              display: flex;
               align-items: center;
-              gap: 5px;
-              padding: 6px 10px;
+              justify-content: center;
+              padding: 10px 12px;
               background: #f8f9fa;
               border: 1px solid #dee2e6;
               border-radius: 6px;
-              font-size: 12px;
+              font-size: 13px;
               color: #495057;
-              white-space: nowrap;
+              text-align: center;
+              font-weight: 500;
             }
             .primary-button {
               display: inline-block;
@@ -380,17 +381,18 @@ export async function POST(
                 padding: 20px 15px;
               }
               .payment-options {
+                grid-template-columns: repeat(2, 1fr);
                 padding: 10px;
                 gap: 6px;
               }
               .payment-method {
-                padding: 5px 8px;
-                font-size: 11px;
-                gap: 4px;
+                padding: 8px 10px;
+                font-size: 12px;
               }
               .primary-button {
                 display: block;
                 width: 100%;
+                padding: 14px 20px;
               }
             }
           </style>
@@ -487,32 +489,29 @@ export async function POST(
               <!-- Payment Section -->
               ${paymentLink && invoice.status !== 'PAID' ? `
                 <div class="payment-section">
-                  <h3>
-                    <span style="font-size: 24px;">💳</span>
-                    Pay Securely Online
-                  </h3>
-                  <p>Click the button below to view your invoice and make payment. We accept multiple payment methods for your convenience:</p>
+                  <h3>Pay Securely Online</h3>
+                  <p>Click the button below to view your invoice and make payment. We accept multiple payment methods for your convenience.</p>
                   
                   <div class="payment-options">
-                    <div class="payment-method">💳 Credit/Debit Card</div>
-                    <div class="payment-method">📱 Google Pay</div>
-                    <div class="payment-method">🍎 Apple Pay</div>
-                    <div class="payment-method">🏦 Instant EFT</div>
-                    <div class="payment-method">🌐 PayPal (USD)</div>
+                    <div class="payment-method">Credit/Debit Card</div>
+                    <div class="payment-method">Google Pay</div>
+                    <div class="payment-method">Apple Pay</div>
+                    <div class="payment-method">Instant EFT</div>
+                    <div class="payment-method">PayPal (USD)</div>
                   </div>
 
                   <div style="text-align: center; margin-top: 25px;">
-                    <a href="${paymentLink}" class="primary-button">View & Pay Invoice →</a>
+                    <a href="${paymentLink}" class="primary-button" style="color: white; text-decoration: none;">View & Pay Invoice</a>
                   </div>
 
                   <div class="info-box">
-                    <strong>🔒 Secure Payment Processing</strong><br>
+                    <strong>Secure Payment Processing</strong><br>
                     Your payment is processed securely through Yoco (for ZAR) or PayPal (for USD). We never see or store your card details.
                   </div>
                 </div>
               ` : invoice.status === 'PAID' ? `
                 <div class="info-box" style="background: #d4edda; border-left-color: #28a745;">
-                  <strong>✅ Payment Received</strong><br>
+                  <strong>Payment Received</strong><br>
                   Thank you! This invoice has been paid in full.
                 </div>
               ` : ''}
@@ -520,7 +519,7 @@ export async function POST(
               <!-- Notes -->
               ${invoice.notes ? `
                 <div class="notes-section">
-                  <h4>📝 Notes:</h4>
+                  <h4>Notes</h4>
                   <p>${invoice.notes}</p>
                 </div>
               ` : ''}
@@ -528,7 +527,7 @@ export async function POST(
               <!-- Terms -->
               ${invoice.terms ? `
                 <div class="terms-section">
-                  <h4>📋 Terms & Conditions:</h4>
+                  <h4>Terms & Conditions</h4>
                   <p>${invoice.terms}</p>
                 </div>
               ` : ''}
@@ -537,8 +536,8 @@ export async function POST(
               <div class="contact-info">
                 <p style="font-weight: 600; color: #333; margin-bottom: 10px;">Questions about this invoice?</p>
                 <p>Contact ${invoice.user.firstName} ${invoice.user.lastName}</p>
-                <p><a href="mailto:${invoice.user.email}" style="color: #667eea; text-decoration: none;">${invoice.user.email}</a></p>
-                ${invoice.user.companyPhone ? `<p>📞 ${invoice.user.companyPhone}</p>` : ''}
+                <p><a href="mailto:${invoice.user.companyEmail || invoice.user.email}" style="color: #667eea; text-decoration: none;">${invoice.user.companyEmail || invoice.user.email}</a></p>
+                ${invoice.user.companyPhone ? `<p>${invoice.user.companyPhone}</p>` : ''}
               </div>
             </div>
 
