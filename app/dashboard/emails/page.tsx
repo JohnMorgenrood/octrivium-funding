@@ -19,7 +19,8 @@ import {
   Paperclip,
   ArrowLeft,
   Zap,
-  Settings
+  Settings,
+  Menu
 } from 'lucide-react';
 
 interface Email {
@@ -46,6 +47,7 @@ export default function EmailDashboard() {
   const [folder, setFolder] = useState('inbox');
   const [searchQuery, setSearchQuery] = useState('');
   const [showCompose, setShowCompose] = useState(false);
+  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [quotaInfo, setQuotaInfo] = useState({ used: 0, limit: 50, plan: 'FREE' });
 
   useEffect(() => {
@@ -132,104 +134,139 @@ export default function EmailDashboard() {
   const isNearLimit = quotaPercentage >= 80;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 dark:from-gray-950 dark:via-purple-950/20 dark:to-blue-950/20">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+      <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-gray-200 dark:border-gray-800 sticky top-0 z-10 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Mail className="w-8 h-8 text-purple-600" />
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">Email</h1>
-                <p className="text-sm text-gray-500">{session?.user?.email}</p>
+            <div className="flex items-center gap-3">
+              {/* Mobile Menu Button */}
+              <button
+                onClick={() => setShowMobileSidebar(!showMobileSidebar)}
+                className="lg:hidden p-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all"
+              >
+                <Menu className="w-5 h-5" />
+              </button>
+              
+              <div className="p-2 bg-gradient-to-br from-purple-500 to-blue-600 rounded-xl shadow-lg">
+                <Mail className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+              </div>
+              <div className="hidden sm:block">
+                <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 dark:from-purple-400 dark:to-blue-400 bg-clip-text text-transparent">
+                  Email
+                </h1>
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 truncate max-w-[150px] sm:max-w-none">{session?.user?.email}</p>
               </div>
             </div>
             
-            <div className="flex items-center gap-4">
-              {/* Quota Display */}
-              <div className="flex items-center gap-2 bg-gray-50 px-4 py-2 rounded-lg">
-                <Zap className={`w-4 h-4 ${isNearLimit ? 'text-amber-500' : 'text-purple-600'}`} />
+            <div className="flex items-center gap-2 sm:gap-3">
+              {/* Quota Display - Hidden on mobile */}
+              <div className="hidden md:flex items-center gap-2 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/30 dark:to-blue-900/30 px-3 py-1.5 rounded-xl border border-purple-200 dark:border-purple-800 shadow-sm">
+                <Zap className={`w-4 h-4 ${isNearLimit ? 'text-amber-500 dark:text-amber-400' : 'text-purple-600 dark:text-purple-400'}`} />
                 <div className="text-sm">
-                  <div className="font-medium text-gray-900">
+                  <div className="font-semibold text-gray-900 dark:text-gray-100">
                     {quotaInfo.used} / {quotaInfo.plan === 'BUSINESS' ? '∞' : quotaInfo.limit}
                   </div>
-                  <div className="text-xs text-gray-500">{quotaInfo.plan} Plan</div>
+                  <div className="text-xs text-gray-600 dark:text-gray-400">{quotaInfo.plan} Plan</div>
                 </div>
               </div>
 
               {/* Settings Button */}
               <Link
                 href="/dashboard/emails/settings"
-                className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                className="hidden sm:block p-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all hover:scale-105"
                 title="Email Settings"
               >
                 <Settings className="w-5 h-5" />
               </Link>
 
-              {/* Upgrade Button */}
+              {/* Upgrade Button - Hidden on mobile */}
               {quotaInfo.plan === 'FREE' && (
                 <Link
                   href="/dashboard/emails/upgrade"
-                  className="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all text-sm font-medium"
+                  className="hidden sm:inline-flex items-center px-3 sm:px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-xl transition-all text-xs sm:text-sm font-semibold shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/40 hover:scale-105"
                 >
-                  Upgrade Plan
+                  Upgrade
                 </Link>
               )}
 
               {/* Compose Button */}
               <button
                 onClick={() => setShowCompose(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-xl transition-all shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/40 hover:scale-105 font-semibold text-sm sm:text-base"
               >
                 <Pencil className="w-4 h-4" />
-                Compose
+                <span className="hidden sm:inline">Compose</span>
               </button>
             </div>
           </div>
 
           {/* Search Bar */}
           <div className="mt-4 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
             <input
               type="text"
               placeholder="Search emails..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full pl-8 sm:pl-10 pr-3 sm:pr-4 py-2 sm:py-2.5 text-sm sm:text-base bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-600 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 shadow-sm"
             />
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="grid grid-cols-12 gap-6">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
+          {/* Mobile Sidebar Overlay */}
+          {showMobileSidebar && (
+            <div
+              className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+              onClick={() => setShowMobileSidebar(false)}
+            />
+          )}
+
           {/* Sidebar */}
-          <div className="col-span-3">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+          <div className={`
+            fixed lg:relative inset-y-0 left-0 z-50 lg:z-0
+            w-72 lg:w-auto lg:col-span-3
+            transform lg:transform-none transition-transform duration-300 ease-in-out
+            ${showMobileSidebar ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+          `}>
+            <div className="h-full lg:h-auto bg-white dark:bg-gray-900 lg:bg-white/80 lg:dark:bg-gray-900/80 backdrop-blur-xl lg:rounded-2xl shadow-lg border-r lg:border border-gray-200 dark:border-gray-800 p-4 pt-20 lg:pt-4">
               <nav className="space-y-1">
                 <button
-                  onClick={() => setFolder('inbox')}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+                  onClick={() => {
+                    setFolder('inbox');
+                    setShowMobileSidebar(false);
+                  }}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium ${
                     folder === 'inbox'
-                      ? 'bg-purple-50 text-purple-700 font-medium'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? 'bg-gradient-to-r from-purple-500 to-blue-600 text-white shadow-lg shadow-purple-500/30'
+                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
                   }`}
                 >
                   <Inbox className="w-5 h-5" />
                   <span className="flex-1 text-left">Inbox</span>
                   {unreadCount > 0 && (
-                    <span className="px-2 py-1 bg-purple-600 text-white text-xs rounded-full">
+                    <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${
+                      folder === 'inbox' 
+                        ? 'bg-white/30 text-white' 
+                        : 'bg-purple-600 dark:bg-purple-500 text-white'
+                    }`}>
                       {unreadCount}
                     </span>
                   )}
                 </button>
 
                 <button
-                  onClick={() => setFolder('sent')}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+                  onClick={() => {
+                    setFolder('sent');
+                    setShowMobileSidebar(false);
+                  }}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium ${
                     folder === 'sent'
-                      ? 'bg-purple-50 text-purple-700 font-medium'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? 'bg-gradient-to-r from-purple-500 to-blue-600 text-white shadow-lg shadow-purple-500/30'
+                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
                   }`}
                 >
                   <Send className="w-5 h-5" />
@@ -237,11 +274,14 @@ export default function EmailDashboard() {
                 </button>
 
                 <button
-                  onClick={() => setFolder('drafts')}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+                  onClick={() => {
+                    setFolder('drafts');
+                    setShowMobileSidebar(false);
+                  }}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium ${
                     folder === 'drafts'
-                      ? 'bg-purple-50 text-purple-700 font-medium'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? 'bg-gradient-to-r from-purple-500 to-blue-600 text-white shadow-lg shadow-purple-500/30'
+                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
                   }`}
                 >
                   <Clock className="w-5 h-5" />
@@ -249,11 +289,14 @@ export default function EmailDashboard() {
                 </button>
 
                 <button
-                  onClick={() => setFolder('starred')}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+                  onClick={() => {
+                    setFolder('starred');
+                    setShowMobileSidebar(false);
+                  }}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium ${
                     folder === 'starred'
-                      ? 'bg-purple-50 text-purple-700 font-medium'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? 'bg-gradient-to-r from-purple-500 to-blue-600 text-white shadow-lg shadow-purple-500/30'
+                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
                   }`}
                 >
                   <Star className="w-5 h-5" />
@@ -261,11 +304,14 @@ export default function EmailDashboard() {
                 </button>
 
                 <button
-                  onClick={() => setFolder('trash')}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+                  onClick={() => {
+                    setFolder('trash');
+                    setShowMobileSidebar(false);
+                  }}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium ${
                     folder === 'trash'
-                      ? 'bg-purple-50 text-purple-700 font-medium'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? 'bg-gradient-to-r from-purple-500 to-blue-600 text-white shadow-lg shadow-purple-500/30'
+                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
                   }`}
                 >
                   <Trash2 className="w-5 h-5" />
@@ -276,27 +322,31 @@ export default function EmailDashboard() {
           </div>
 
           {/* Email List */}
-          <div className="col-span-4">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className={`lg:col-span-4 ${selectedEmail ? 'hidden lg:block' : ''}`}>
+            <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200 dark:border-gray-800 overflow-hidden">
               {loading ? (
-                <div className="p-8 text-center text-gray-500">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto"></div>
-                  <p className="mt-4">Loading emails...</p>
+                <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 dark:border-purple-400 mx-auto"></div>
+                  <p className="mt-4 font-medium">Loading emails...</p>
                 </div>
               ) : filteredEmails.length === 0 ? (
-                <div className="p-8 text-center text-gray-500">
+                <div className="p-8 text-center text-gray-500 dark:text-gray-400">
                   <Mail className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                  <p>No emails in {folder}</p>
+                  <p className="font-medium">No emails in {folder}</p>
                 </div>
               ) : (
-                <div className="divide-y divide-gray-200">
+                <div className="divide-y divide-gray-200 dark:divide-gray-800">
                   {filteredEmails.map((email) => (
                     <div
                       key={email.id}
                       onClick={() => handleEmailClick(email)}
-                      className={`p-4 cursor-pointer transition-all hover:bg-gray-50 ${
-                        selectedEmail?.id === email.id ? 'bg-purple-50' : ''
-                      } ${!email.isRead ? 'bg-blue-50' : ''}`}
+                      className={`p-4 cursor-pointer transition-all ${
+                        selectedEmail?.id === email.id 
+                          ? 'bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/30 dark:to-blue-900/30 border-l-4 border-purple-600' 
+                          : !email.isRead 
+                          ? 'bg-blue-50/50 dark:bg-blue-900/20 hover:bg-blue-100/50 dark:hover:bg-blue-900/30' 
+                          : 'hover:bg-gray-50 dark:hover:bg-gray-800/50'
+                      }`}
                     >
                       <div className="flex items-start gap-3">
                         <button
@@ -304,13 +354,13 @@ export default function EmailDashboard() {
                             e.stopPropagation();
                             toggleStar(email.id, email.isStarred);
                           }}
-                          className="mt-1"
+                          className="mt-1 transition-transform hover:scale-110"
                         >
                           <Star
                             className={`w-4 h-4 ${
                               email.isStarred
                                 ? 'text-yellow-500 fill-yellow-500'
-                                : 'text-gray-400 hover:text-yellow-500'
+                                : 'text-gray-400 dark:text-gray-600 hover:text-yellow-500'
                             }`}
                           />
                         </button>
@@ -318,28 +368,28 @@ export default function EmailDashboard() {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
                             <span
-                              className={`font-medium text-sm truncate ${
-                                !email.isRead ? 'text-gray-900' : 'text-gray-600'
+                              className={`font-semibold text-sm truncate ${
+                                !email.isRead ? 'text-gray-900 dark:text-gray-100' : 'text-gray-600 dark:text-gray-400'
                               }`}
                             >
                               {email.isSent ? email.toEmail : (email.fromName || email.fromEmail)}
                             </span>
                             {!email.isRead && (
-                              <span className="w-2 h-2 bg-purple-600 rounded-full"></span>
+                              <span className="w-2 h-2 bg-purple-600 dark:bg-purple-400 rounded-full animate-pulse"></span>
                             )}
                           </div>
                           <p
                             className={`text-sm truncate mb-1 ${
-                              !email.isRead ? 'font-medium text-gray-900' : 'text-gray-600'
+                              !email.isRead ? 'font-semibold text-gray-900 dark:text-gray-100' : 'text-gray-600 dark:text-gray-400'
                             }`}
                           >
                             {email.subject}
                           </p>
-                          <p className="text-xs text-gray-500 truncate">
+                          <p className="text-xs text-gray-500 dark:text-gray-500 truncate">
                             {email.textBody?.substring(0, 100)}
                           </p>
                           <div className="flex items-center gap-2 mt-2">
-                            <span className="text-xs text-gray-400">
+                            <span className="text-xs text-gray-400 dark:text-gray-500 font-medium">
                               {new Date(email.sentAt).toLocaleDateString('en-ZA', {
                                 month: 'short',
                                 day: 'numeric',
@@ -348,7 +398,7 @@ export default function EmailDashboard() {
                               })}
                             </span>
                             {email.attachments && (
-                              <Paperclip className="w-3 h-3 text-gray-400" />
+                              <Paperclip className="w-3 h-3 text-gray-400 dark:text-gray-500" />
                             )}
                           </div>
                         </div>
@@ -361,31 +411,31 @@ export default function EmailDashboard() {
           </div>
 
           {/* Email Preview */}
-          <div className="col-span-5">
+          <div className={`lg:col-span-5 ${selectedEmail ? 'col-span-1' : 'hidden lg:block'}`}>
             {selectedEmail ? (
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+              <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200 dark:border-gray-800 overflow-hidden">
                 {/* Email Header */}
-                <div className="p-6 border-b border-gray-200">
+                <div className="p-6 border-b border-gray-200 dark:border-gray-800 bg-gradient-to-r from-purple-50/50 to-blue-50/50 dark:from-purple-900/20 dark:to-blue-900/20">
                   <div className="flex items-start justify-between mb-4">
                     <button
                       onClick={() => setSelectedEmail(null)}
-                      className="lg:hidden text-gray-600 hover:text-gray-900"
+                      className="lg:hidden mr-3 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
                     >
                       <ArrowLeft className="w-5 h-5" />
                     </button>
                     <div className="flex-1">
-                      <h2 className="text-xl font-bold text-gray-900 mb-2">
+                      <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
                         {selectedEmail.subject}
                       </h2>
-                      <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <span className="font-medium">
+                      <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                        <span className="font-semibold">
                           {selectedEmail.isSent ? 'To:' : 'From:'}{' '}
                           {selectedEmail.isSent
                             ? selectedEmail.toEmail
                             : selectedEmail.fromName || selectedEmail.fromEmail}
                         </span>
                       </div>
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 font-medium">
                         {new Date(selectedEmail.sentAt).toLocaleString('en-ZA', {
                           weekday: 'long',
                           year: 'numeric',
@@ -402,17 +452,17 @@ export default function EmailDashboard() {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => toggleStar(selectedEmail.id, selectedEmail.isStarred)}
-                      className={`p-2 rounded-lg transition-colors ${
+                      className={`p-2.5 rounded-xl transition-all hover:scale-105 ${
                         selectedEmail.isStarred
-                          ? 'bg-yellow-100 text-yellow-600'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                          ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 shadow-lg shadow-yellow-500/20'
+                          : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
                       }`}
                     >
                       <Star className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => deleteEmail(selectedEmail.id)}
-                      className="p-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-red-100 hover:text-red-600 transition-colors"
+                      className="p-2.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 transition-all hover:scale-105"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -423,19 +473,20 @@ export default function EmailDashboard() {
                 <div className="p-6 max-h-[600px] overflow-y-auto">
                   {selectedEmail.htmlBody ? (
                     <div
-                      className="prose prose-sm max-w-none"
+                      className="prose prose-sm dark:prose-invert max-w-none"
                       dangerouslySetInnerHTML={{ __html: selectedEmail.htmlBody }}
                     />
                   ) : (
-                    <p className="text-gray-700 whitespace-pre-wrap">
+                    <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">
                       {selectedEmail.textBody}
                     </p>
                   )}
 
                   {/* Attachments */}
                   {selectedEmail.attachments && Array.isArray(selectedEmail.attachments) && selectedEmail.attachments.length > 0 && (
-                    <div className="mt-6 pt-6 border-t border-gray-200">
-                      <h3 className="text-sm font-medium text-gray-900 mb-3">
+                    <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-800">
+                      <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
+                        <Paperclip className="w-4 h-4" />
                         Attachments ({selectedEmail.attachments.length})
                       </h3>
                       <div className="space-y-2">
@@ -445,14 +496,16 @@ export default function EmailDashboard() {
                             href={attachment.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                            className="flex items-center gap-3 p-3 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-xl hover:from-purple-100 hover:to-blue-100 dark:hover:from-purple-900/30 dark:hover:to-blue-900/30 transition-all border border-purple-200 dark:border-purple-800 hover:scale-[1.02] hover:shadow-lg"
                           >
-                            <Paperclip className="w-4 h-4 text-gray-400" />
+                            <div className="p-2 bg-white dark:bg-gray-900 rounded-lg shadow-sm">
+                              <Paperclip className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                            </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-gray-900 truncate">
+                              <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
                                 {attachment.filename}
                               </p>
-                              <p className="text-xs text-gray-500">
+                              <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
                                 {(attachment.size / 1024).toFixed(1)} KB
                               </p>
                             </div>
@@ -464,10 +517,12 @@ export default function EmailDashboard() {
                 </div>
               </div>
             ) : (
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full flex items-center justify-center">
-                <div className="text-center text-gray-500">
-                  <Mail className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                  <p className="text-lg font-medium">Select an email to read</p>
+              <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200 dark:border-gray-800 h-full flex items-center justify-center">
+                <div className="text-center text-gray-500 dark:text-gray-400">
+                  <div className="mb-4 p-4 bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-900/30 dark:to-blue-900/30 rounded-2xl inline-block">
+                    <Mail className="w-16 h-16 text-purple-600 dark:text-purple-400 opacity-50" />
+                  </div>
+                  <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">Select an email to read</p>
                   <p className="text-sm mt-2">Choose an email from the list to view its contents</p>
                 </div>
               </div>
@@ -530,30 +585,32 @@ function ComposeModal({ onClose, onSent }: { onClose: () => void; onSent: () => 
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[100] p-4">
-      <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] flex flex-col">
+    <div className="fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-sm flex items-center justify-center z-[100] p-2 sm:p-4">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[95vh] sm:max-h-[90vh] flex flex-col border border-gray-200 dark:border-gray-800">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0">
-          <h2 className="text-lg font-bold text-gray-900">New Message</h2>
+        <div className="flex items-center justify-between p-4 sm:p-5 border-b border-gray-200 dark:border-gray-800 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 flex-shrink-0 rounded-t-2xl">
+          <h2 className="text-base sm:text-lg font-bold bg-gradient-to-r from-purple-600 to-blue-600 dark:from-purple-400 dark:to-blue-400 bg-clip-text text-transparent">
+            New Message
+          </h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors hover:scale-110"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Form - Scrollable */}
-        <div className="p-6 space-y-4 overflow-y-auto flex-1">
+        <div className="p-4 sm:p-6 space-y-3 sm:space-y-4 overflow-y-auto flex-1">
           {error && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-red-700 text-sm">
-              <AlertCircle className="w-4 h-4" />
+            <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-center gap-2 text-red-700 dark:text-red-400 text-sm shadow-sm">
+              <AlertCircle className="w-4 h-4 flex-shrink-0" />
               {error}
             </div>
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
               To
             </label>
             <input
@@ -561,12 +618,12 @@ function ComposeModal({ onClose, onSent }: { onClose: () => void; onSent: () => 
               value={to}
               onChange={(e) => setTo(e.target.value)}
               placeholder="recipient@example.com"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-600 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-all"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
               Subject
             </label>
             <input
@@ -574,36 +631,36 @@ function ComposeModal({ onClose, onSent }: { onClose: () => void; onSent: () => 
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
               placeholder="Email subject"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-600 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-all"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
               Message
             </label>
             <textarea
               value={body}
               onChange={(e) => setBody(e.target.value)}
               placeholder="Write your message..."
-              rows={10}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+              rows={8}
+              className="w-full px-3 sm:px-4 py-2 sm:py-2.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-600 focus:border-transparent text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 resize-none transition-all text-sm sm:text-base"
             />
           </div>
         </div>
 
         {/* Footer - Always Visible */}
-        <div className="flex items-center justify-between p-4 border-t border-gray-200 bg-gray-50 flex-shrink-0">
+        <div className="flex items-center justify-between p-4 sm:p-5 border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 flex-shrink-0 rounded-b-2xl gap-2">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-gray-700 hover:bg-gray-200 rounded-lg transition-colors"
+            className="px-4 sm:px-5 py-2 sm:py-2.5 text-sm sm:text-base text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-xl transition-all font-medium hover:scale-105"
           >
             Cancel
           </button>
           <button
             onClick={handleSend}
             disabled={sending}
-            className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            className="px-5 sm:px-6 py-2 sm:py-2.5 text-sm sm:text-base bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-semibold shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/40 hover:scale-105 disabled:hover:scale-100"
           >
             {sending ? (
               <>
