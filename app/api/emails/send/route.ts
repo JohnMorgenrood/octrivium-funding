@@ -86,10 +86,66 @@ export async function POST(request: Request) {
       subject,
     });
 
+    // Create professional HTML email with Octrivium branding
+    const htmlBody = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>${subject}</title>
+        </head>
+        <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f9fafb;">
+          <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f9fafb; padding: 40px 20px;">
+            <tr>
+              <td align="center">
+                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); overflow: hidden;">
+                  <!-- Header with Logo -->
+                  <tr>
+                    <td style="background: linear-gradient(135deg, #9333ea 0%, #3b82f6 100%); padding: 40px 40px 30px; text-align: center;">
+                      <img src="https://octrivium.co.za/assets/logo.png" alt="Octrivium" style="height: 50px; margin-bottom: 10px;">
+                      <div style="color: #ffffff; font-size: 14px; font-weight: 500; opacity: 0.9;">
+                        Powered by Octrivium
+                      </div>
+                    </td>
+                  </tr>
+                  
+                  <!-- Email Content -->
+                  <tr>
+                    <td style="padding: 40px;">
+                      <div style="color: #111827; font-size: 16px; line-height: 1.6; white-space: pre-wrap;">
+${body}
+                      </div>
+                    </td>
+                  </tr>
+                  
+                  <!-- Footer -->
+                  <tr>
+                    <td style="background-color: #f9fafb; padding: 30px 40px; text-align: center; border-top: 1px solid #e5e7eb;">
+                      <div style="color: #6b7280; font-size: 14px; margin-bottom: 10px;">
+                        <strong>${user.firstName} ${user.lastName}</strong>
+                      </div>
+                      <div style="color: #9ca3af; font-size: 13px; margin-bottom: 15px;">
+                        ${user.customEmailAddress || user.email}
+                      </div>
+                      <div style="color: #9ca3af; font-size: 12px;">
+                        Sent via <a href="https://octrivium.co.za" style="color: #9333ea; text-decoration: none; font-weight: 600;">Octrivium</a> Email
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </body>
+      </html>
+    `;
+
     const { data, error } = await resend.emails.send({
       from: `${user.firstName} ${user.lastName} <${fromAddress}>`,
       to: [to],
       subject: subject,
+      html: htmlBody,
       text: body,
       reply_to: user.customEmailAddress || user.email,
     });
