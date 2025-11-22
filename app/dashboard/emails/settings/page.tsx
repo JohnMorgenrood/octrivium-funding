@@ -111,8 +111,20 @@ export default function EmailSettings() {
             <ArrowLeft className="w-4 h-4" />
             Back to Inbox
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Email Settings</h1>
-          <p className="text-gray-600">Configure your custom email addresses</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Email Settings</h1>
+              <p className="text-gray-600">Configure your custom email addresses</p>
+            </div>
+            {canUseCustomEmail && (
+              <Link
+                href="/dashboard/emails/aliases"
+                className="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-lg transition-all shadow-lg hover:scale-105 font-semibold text-sm"
+              >
+                Manage Aliases
+              </Link>
+            )}
+          </div>
         </div>
 
         {/* Status Messages */}

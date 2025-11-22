@@ -166,6 +166,7 @@ model User {
   subscriptions Subscription[]
   sentEmails    Email[]  @relation("SentEmails")
   receivedEmails Email[] @relation("ReceivedEmails")
+  emailAliases  EmailAlias[] @relation("EmailAliases")
 
   @@index([email])
   @@index([role])
@@ -1186,4 +1187,23 @@ model Email {
   @@index([folder])
   @@index([isDeleted])
   @@index([sentAt])
+}
+
+model EmailAlias {
+  id              String    @id @default(uuid())
+  userId          String
+  user            User      @relation("EmailAliases", fields: [userId], references: [id], onDelete: Cascade)
+  
+  aliasEmail      String    @unique // support@octrivium.co.za, info@octrivium.co.za
+  displayName     String?   // "Support Team", "Info Desk"
+  
+  isActive        Boolean   @default(true)
+  isPrimary       Boolean   @default(false) // Primary alias for sending
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([aliasEmail])
+  @@index([isActive])
 }

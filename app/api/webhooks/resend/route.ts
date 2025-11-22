@@ -41,8 +41,8 @@ export async function POST(request: Request) {
       // Check if it's a subdomain email (e.g., support@acme.octrivium.co.za)
       const subdomainMatch = recipientEmail.match(/^.+@([^.]+)\.octrivium\.co\.za$/);
       
-      // Find user by email, customEmailAddress, companyEmail, or subdomain
-      const user = await prisma.user.findFirst({
+      // Find user by email, customEmailAddress, emailAlias, companyEmail, or subdomain
+      let user = await prisma.user.findFirst({
         where: {
           OR: [
             { email: recipientEmail },
@@ -52,6 +52,19 @@ export async function POST(request: Request) {
           ],
         },
       });
+
+      // If not found, check email aliases
+      if (!user) {
+        const alias = await prisma.emailAlias.findUnique({
+          where: { aliasEmail: recipientEmail },
+          include: { user: true }
+        });
+        
+        if (alias && alias.isActive) {
+          user = alias.user;
+          console.log('Found user via email alias:', alias.aliasEmail, '-> user:', user.id);
+        }
+      }
 
       if (!user) {
         console.log('User not found for email:', recipientEmail);
