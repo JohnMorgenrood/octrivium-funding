@@ -15,6 +15,23 @@ export async function POST(request: Request) {
     }
 
     const { to, subject, body } = await request.json();
+    
+    // Validate Resend configuration
+    if (!process.env.RESEND_API_KEY) {
+      console.error('RESEND_API_KEY not configured');
+      return NextResponse.json(
+        { error: 'Email service not configured. Please add RESEND_API_KEY to environment variables.' },
+        { status: 500 }
+      );
+    }
+
+    if (!process.env.RESEND_FROM_EMAIL) {
+      console.error('RESEND_FROM_EMAIL not configured');
+      return NextResponse.json(
+        { error: 'Email service not configured. Please add RESEND_FROM_EMAIL to environment variables.' },
+        { status: 500 }
+      );
+    }
 
     // Check quota
     const user = await prisma.user.findUnique({
@@ -61,10 +78,18 @@ export async function POST(request: Request) {
     }
 
     // Send email via Resend
+    // Note: Custom email addresses must be verified in Resend
+    const fromAddress = user.customEmailAddress || process.env.RESEND_FROM_EMAIL;
+    
+    console.log('Sending email:', {
+      from: fromAddress,
+      to,
+      subject,
+      hasCustomEmail: !!user.customEmailAddress
+    });
+
     const { data, error } = await resend.emails.send({
-      from: user.customEmailAddress 
-        ? `${user.firstName} ${user.lastName} <${user.customEmailAddress}>`
-        : `${user.firstName} ${user.lastName} <${process.env.RESEND_FROM_EMAIL}>`,
+      from: `${user.firstName} ${user.lastName} <${fromAddress}>`,
       to: [to],
       subject: subject,
       text: body,
@@ -73,8 +98,25 @@ export async function POST(request: Request) {
 
     if (error) {
       console.error('Resend error:', error);
+      
+      // Check if it's a custom email verification issue
+      if (error.message?.includes('not verified') || error.message?.includes('verify')) {
+        return NextResponse.json(
+          { 
+            error: 'Custom email not verified',
+            message: 'Your custom email address needs to be verified in Resend. Using default noreply@ address instead.',
+            details: error
+          },
+          { status: 400 }
+        );
+      }
+      
       return NextResponse.json(
-        { error: 'Failed to send email', details: error },
+        { 
+          error: 'Failed to send email', 
+          message: error.message || 'Unknown error',
+          details: error 
+        },
         { status: 500 }
       );
     }
