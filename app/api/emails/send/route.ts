@@ -78,14 +78,12 @@ export async function POST(request: Request) {
     }
 
     // Send email via Resend
-    // Temporarily use Resend's verified domain until octrivium.co.za is verified
-    const fromAddress = 'onboarding@resend.dev'; // Change back to process.env.RESEND_FROM_EMAIL once verified
+    const fromAddress = process.env.RESEND_FROM_EMAIL;
     
     console.log('Sending email:', {
       from: fromAddress,
       to,
       subject,
-      note: 'Using Resend default domain until octrivium.co.za is verified'
     });
 
     const { data, error } = await resend.emails.send({
@@ -93,7 +91,7 @@ export async function POST(request: Request) {
       to: [to],
       subject: subject,
       text: body,
-      reply_to: user.email, // Changed from customEmailAddress
+      reply_to: user.customEmailAddress || user.email,
     });
 
     if (error) {
@@ -126,7 +124,7 @@ export async function POST(request: Request) {
       data: {
         messageId: data?.id || `sent-${Date.now()}`,
         subject,
-        fromEmail: user.email, // Changed from customEmailAddress
+        fromEmail: user.customEmailAddress || user.email,
         fromName: `${user.firstName} ${user.lastName}`,
         toEmail: to,
         textBody: body,
