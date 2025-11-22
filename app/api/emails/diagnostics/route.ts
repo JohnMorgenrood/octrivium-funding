@@ -3,13 +3,17 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const session = await getServerSession(authOptions);
     
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    // Get the actual URL from the request
+    const url = new URL(request.url);
+    const baseUrl = `${url.protocol}//${url.host}`;
 
     const results: any = {
       config: {},
@@ -97,9 +101,7 @@ export async function GET() {
     }
 
     // Webhook status
-    const webhookUrl = process.env.NEXTAUTH_URL 
-      ? `${process.env.NEXTAUTH_URL}/api/webhooks/resend`
-      : 'https://octrivium.co.za/api/webhooks/resend';
+    const webhookUrl = `${baseUrl}/api/webhooks/resend`;
 
     results.webhook = {
       label: 'Webhook Endpoint',
