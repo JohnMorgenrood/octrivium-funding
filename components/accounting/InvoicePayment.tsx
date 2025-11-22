@@ -54,6 +54,7 @@ interface InvoicePaymentProps {
       email: string;
       companyName: string | null;
       companyLogo: string | null;
+      companyEmail?: string | null;
       subscriptionTier?: string | null;
       subscriptionStatus?: string | null;
       bankName?: string | null;
