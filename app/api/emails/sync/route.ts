@@ -21,14 +21,6 @@ export async function POST(request: Request) {
         emailAliases: {
           where: { isActive: true }
         }
-      },
-      select: {
-        id: true,
-        email: true,
-        customEmailAddress: true,
-        companySubdomain: true,
-        companyEmail: true,
-        emailAliases: true,
       }
     });
 
