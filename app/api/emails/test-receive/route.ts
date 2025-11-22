@@ -26,7 +26,6 @@ export async function POST(request: Request) {
         toEmail: 'support@octrivium.co.za',
         htmlBody: '<p>This is a test email created manually to verify the system works.</p>',
         textBody: 'This is a test email created manually to verify the system works.',
-        attachments: null,
         isRead: false,
         isSent: false,
         folder: 'inbox',
