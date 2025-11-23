@@ -1262,7 +1262,7 @@ export default function HomePage() {
                     
                     {/* Risk Badge */}
                     <div className="absolute top-3 left-3">
-                      <RiskBadge score={deal.riskScore} showLabel={false} />
+                      <RiskBadge score={deal.riskScore || 3} showLabel={false} />
                     </div>
                   </div>
 
