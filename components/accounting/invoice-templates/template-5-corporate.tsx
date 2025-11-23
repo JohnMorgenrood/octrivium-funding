@@ -28,7 +28,7 @@ export const Template5Corporate = ({ invoice, user, customer, items }: any) => {
             )}
           </div>
           <p className="font-bold text-xs sm:text-sm md:text-base text-gray-900">{user.companyName || `${user.firstName} ${user.lastName}`}</p>
-          <p className="text-xs sm:text-sm text-gray-600">{user.email}</p>
+          <p className="text-xs sm:text-sm text-gray-600">{user.companyEmail || user.email}</p>
         </div>
         <div className="text-right">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-green-700 mb-2">
@@ -137,3 +137,4 @@ export const Template5Corporate = ({ invoice, user, customer, items }: any) => {
     </div>
   );
 };
+

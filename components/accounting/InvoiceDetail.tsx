@@ -111,32 +111,17 @@ export default function InvoiceDetail({ invoice }: InvoiceDetailProps) {
 
   const handleDownloadPDF = async () => {
     try {
-      const res = await fetch(`/api/accounting/invoices/${invoice.id}/pdf`);
-      if (!res.ok) throw new Error('Failed to generate PDF');
-      
-      const html = await res.text();
-      
-      // Open in new window for printing/saving
-      const printWindow = window.open('', '_blank');
-      if (printWindow) {
-        printWindow.document.write(html);
-        printWindow.document.close();
-        printWindow.focus();
-        
-        // Trigger print dialog after a short delay
-        setTimeout(() => {
-          printWindow.print();
-        }, 500);
-      }
+      // Simply trigger the browser's print dialog which will use the current template
+      window.print();
       
       toast({
         title: 'Success',
-        description: 'PDF opened. Use your browser\'s print dialog to save as PDF.',
+        description: 'Use your browser\'s print dialog to save as PDF.',
       });
     } catch (error) {
       toast({
         title: 'Error',
-        description: 'Failed to generate PDF',
+        description: 'Failed to open print dialog',
         variant: 'destructive',
       });
     }
@@ -254,6 +239,26 @@ export default function InvoiceDetail({ invoice }: InvoiceDetailProps) {
 
   return (
     <div className="space-y-4 sm:space-y-6 px-2 sm:px-0 max-w-5xl mx-auto">
+      <style jsx global>{`
+        @media print {
+          body * {
+            visibility: hidden;
+          }
+          .print-area, .print-area * {
+            visibility: visible;
+          }
+          .print-area {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+          }
+          .no-print {
+            display: none !important;
+          }
+        }
+      `}</style>
+      
       {/* Share Dialog */}
       <Dialog open={showShareDialog} onOpenChange={setShowShareDialog}>
         <DialogContent>
@@ -412,7 +417,7 @@ export default function InvoiceDetail({ invoice }: InvoiceDetailProps) {
       </div>
 
       {/* Invoice Preview */}
-      <Card>
+      <Card className="print-area">
         <CardContent className="p-6 sm:p-8">
           <TemplateComponent
             invoice={{

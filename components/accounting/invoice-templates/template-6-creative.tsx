@@ -36,7 +36,7 @@ export const Template6Creative = ({ invoice, user, customer, items }: any) => {
         <div className="bg-gray-800 p-4 sm:p-6 rounded-lg border border-cyan-500/30 print:p-6">
           <p className="text-cyan-400 text-xs uppercase tracking-wider mb-3">From</p>
           <p className="font-semibold text-base sm:text-lg mb-1">{user.companyName || `${user.firstName} ${user.lastName}`}</p>
-          <p className="text-gray-400 text-xs sm:text-sm">{user.email}</p>
+          <p className="text-gray-400 text-xs sm:text-sm">{user.companyEmail || user.email}</p>
         </div>
         <div className="bg-gray-800 p-4 sm:p-6 rounded-lg border border-cyan-500/30 print:p-6">
           <p className="text-cyan-400 text-xs uppercase tracking-wider mb-3">To</p>
@@ -121,3 +121,4 @@ export const Template6Creative = ({ invoice, user, customer, items }: any) => {
     </div>
   );
 };
+

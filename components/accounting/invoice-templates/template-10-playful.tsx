@@ -42,7 +42,7 @@ export const Template10Playful = ({ invoice, user, customer, items }: any) => {
               <div>
                 <p className="text-xs font-bold text-purple-600 uppercase mb-1">From</p>
                 <p className="font-bold text-xs sm:text-sm md:text-base text-gray-900">{user.companyName || `${user.firstName} ${user.lastName}`}</p>
-                <p className="text-xs sm:text-sm text-gray-600">{user.email}</p>
+                <p className="text-xs sm:text-sm text-gray-600">{user.companyEmail || user.email}</p>
               </div>
             </div>
           </div>
@@ -142,3 +142,4 @@ export const Template10Playful = ({ invoice, user, customer, items }: any) => {
     </div>
   );
 };
+
