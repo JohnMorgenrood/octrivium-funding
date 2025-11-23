@@ -16,9 +16,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 const heroSlides = [
   {
     id: 1,
-    title: 'Invest in South African Excellence',
-    subtitle: 'Fund tomorrow\'s success stories today',
-    description: 'Connect with high-growth businesses and earn revenue-based returns',
+    title: 'Invest in South African SMEs',
+    subtitle: 'Earn 15-25% Annual Returns',
+    description: 'Revenue-based investments with transparent risk, verified businesses, and monthly repayments',
     image: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=1200&h=800&fit=crop',
     cta: 'Start Investing',
     ctaLink: '/register?role=investor',
@@ -226,6 +226,10 @@ export default function HomePage() {
             <Link href="/deals" className="text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors">
               Browse Deals
             </Link>
+            <Link href="/accounting-software" className="text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors flex items-center gap-1">
+              <Calculator className="h-4 w-4" />
+              Accounting
+            </Link>
             <Link href="/how-it-works" className="text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors">
               How It Works
             </Link>
@@ -257,6 +261,14 @@ export default function HomePage() {
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Browse Deals
+                  </Link>
+                  <Link 
+                    href="/accounting-software" 
+                    className="text-lg font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center gap-2"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <Calculator className="h-5 w-5" />
+                    Accounting Software
                   </Link>
                   <Link 
                     href="/how-it-works" 
@@ -351,22 +363,24 @@ export default function HomePage() {
                           transition={{ delay: 0.5, duration: 0.6 }}
                           className="flex flex-col sm:flex-row gap-4"
                         >
-                          <Link href={slide.ctaLink}>
+                          <Link href="/register?role=investor">
                             <Button 
                               size="lg" 
-                              className="text-lg px-8 py-6 bg-white text-slate-900 hover:bg-slate-100 shadow-2xl w-full sm:w-auto group"
+                              className="text-lg px-8 py-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-2xl w-full sm:w-auto group"
                             >
-                              {slide.cta}
+                              <TrendingUp className="mr-2 h-5 w-5" />
+                              For Investors
                               <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                             </Button>
                           </Link>
-                          <Link href="/how-it-works">
+                          <Link href="/register?role=business">
                             <Button 
                               size="lg" 
                               variant="outline" 
-                              className="text-lg px-8 py-6 bg-transparent text-white border-white/50 hover:bg-white/10 backdrop-blur-sm w-full sm:w-auto"
+                              className="text-lg px-8 py-6 bg-white text-slate-900 border-white hover:bg-slate-100 shadow-xl w-full sm:w-auto group"
                             >
-                              Learn More
+                              <DollarSign className="mr-2 h-5 w-5" />
+                              For Businesses
                             </Button>
                           </Link>
                         </motion.div>
@@ -445,6 +459,52 @@ export default function HomePage() {
                   transition={{ repeat: Infinity, duration: 1.5 }}
                   className="w-1.5 h-1.5 bg-white rounded-full"
                 />
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Trust Bar */}
+      <section className="bg-gradient-to-r from-emerald-50 via-blue-50 to-indigo-50 dark:from-slate-800 dark:via-blue-950 dark:to-indigo-950 border-y border-emerald-200 dark:border-slate-700">
+        <div className="container mx-auto px-4 py-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8"
+          >
+            <div className="text-center">
+              <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2">
+                R12.4M
+              </div>
+              <div className="text-sm md:text-base text-slate-600 dark:text-slate-300 font-medium">
+                Capital Deployed
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent mb-2">
+                47
+              </div>
+              <div className="text-sm md:text-base text-slate-600 dark:text-slate-300 font-medium">
+                Businesses Funded
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+                18.3%
+              </div>
+              <div className="text-sm md:text-base text-slate-600 dark:text-slate-300 font-medium">
+                Average IRR
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent mb-2">
+                94%
+              </div>
+              <div className="text-sm md:text-base text-slate-600 dark:text-slate-300 font-medium">
+                Repayment Rate
               </div>
             </div>
           </motion.div>
