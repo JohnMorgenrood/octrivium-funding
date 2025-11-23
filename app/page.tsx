@@ -123,6 +123,61 @@ const fakeDealss = [
   },
 ];
 
+// Closed/Successful Deals for Social Proof
+const closedDeals = [
+  {
+    id: 101,
+    name: 'Urban Farm Fresh',
+    industry: 'AgriTech',
+    description: 'Hydroponic farming delivering fresh produce to Johannesburg restaurants.',
+    fundingGoal: 450000,
+    funded: 450000,
+    investors: 98,
+    monthlyRevenue: 165000,
+    targetReturn: 1.6,
+    status: 'closed',
+    closedDate: '2025-10-15',
+    logo: '🌱',
+    image: 'https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=600&h=400&fit=crop',
+    riskScore: 4,
+    outcome: 'Successfully funded - Repaying investors monthly'
+  },
+  {
+    id: 102,
+    name: 'Cape Craft Brewery',
+    industry: 'Food & Beverage',
+    description: 'Craft beer brewery expanding distribution to Western Cape retailers.',
+    fundingGoal: 600000,
+    funded: 600000,
+    investors: 142,
+    monthlyRevenue: 280000,
+    targetReturn: 1.4,
+    status: 'closed',
+    closedDate: '2025-09-22',
+    logo: '🍺',
+    image: 'https://images.unsplash.com/photo-1532634922-8fe0b757fb13?w=600&h=400&fit=crop',
+    riskScore: 3,
+    outcome: 'Fully funded - On track for 1.4x return'
+  },
+  {
+    id: 103,
+    name: 'Solar Schools Initiative',
+    industry: 'Renewable Energy',
+    description: 'Installing solar panels in township schools to reduce energy costs.',
+    fundingGoal: 800000,
+    funded: 800000,
+    investors: 215,
+    monthlyRevenue: 145000,
+    targetReturn: 1.5,
+    status: 'closed',
+    closedDate: '2025-11-05',
+    logo: '☀️',
+    image: 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=600&h=400&fit=crop',
+    riskScore: 4,
+    outcome: 'Oversubscribed - 18 schools powered'
+  },
+];
+
 export default function HomePage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 5000 })]);
@@ -1577,7 +1632,8 @@ export default function HomePage() {
                 <Link href="/register?role=business" prefetch>
                   <Button 
                     size="lg"
-                    className="w-full sm:w-auto bg-white text-indigo-600 hover:bg-blue-50 hover:text-indigo-700 px-8 py-6 text-lg font-bold shadow-2xl group"
+                    className="w-full sm:w-auto bg-white hover:bg-gray-100 text-indigo-700 hover:text-indigo-900 px-8 py-6 text-lg font-bold shadow-2xl group border-0"
+                    style={{ backgroundColor: '#ffffff', color: '#4338ca' }}
                   >
                     List Your Deal Now
                     <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
@@ -1587,7 +1643,8 @@ export default function HomePage() {
                   <Button 
                     size="lg"
                     variant="outline"
-                    className="w-full sm:w-auto border-2 border-white text-white hover:bg-white hover:text-indigo-600 backdrop-blur-sm px-8 py-6 text-lg font-semibold transition-all"
+                    className="w-full sm:w-auto bg-indigo-700 hover:bg-indigo-800 text-white border-2 border-white/50 hover:border-white px-8 py-6 text-lg font-bold transition-all shadow-xl"
+                    style={{ backgroundColor: '#4338ca', color: '#ffffff' }}
                   >
                     See How It Works
                   </Button>
@@ -2127,6 +2184,188 @@ export default function HomePage() {
               </Button>
             </Link>
           </div>
+        </div>
+      </section>
+
+      {/* Success Stories - Closed Deals */}
+      <section className="py-20 bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50 dark:from-emerald-950 dark:via-green-950 dark:to-teal-950 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-20 left-20 w-96 h-96 bg-green-400 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 right-20 w-96 h-96 bg-emerald-400 rounded-full blur-3xl"></div>
+        </div>
+
+        <div className="container mx-auto px-4 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-16"
+          >
+            <Badge className="mb-6 bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20 px-4 py-2">
+              <Check className="w-4 h-4 mr-2" />
+              Success Stories
+            </Badge>
+            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-4">
+              Recently Funded Deals
+            </h2>
+            <p className="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
+              These businesses successfully raised capital through our platform. Join the next success story.
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            {closedDeals.map((deal, index) => {
+              const percentFunded = 100;
+              
+              return (
+                <motion.div
+                  key={deal.id}
+                  initial={{ opacity: 0, y: 50, scale: 0.95 }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.15, duration: 0.6, type: 'spring' }}
+                  whileHover={{ y: -5 }}
+                  className="group relative"
+                >
+                  <div className="relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-lg border-2 border-green-500/30 overflow-hidden">
+                    {/* Success Badge Ribbon */}
+                    <div className="absolute top-3 right-3 z-20">
+                      <Badge className="bg-green-500 text-white font-bold text-xs px-3 py-1 shadow-lg">
+                        ✓ FUNDED
+                      </Badge>
+                    </div>
+
+                    {/* Blurred Image Header */}
+                    <div className="relative h-48 overflow-hidden">
+                      <Image
+                        src={deal.image}
+                        alt={deal.name}
+                        fill
+                        className="object-cover opacity-60 blur-[2px] group-hover:blur-[1px] transition-all duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-black/40" />
+                      
+                      {/* Logo and Name Overlay */}
+                      <div className="absolute bottom-0 left-0 right-0 p-4">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-12 h-12 bg-white dark:bg-slate-900 rounded-full flex items-center justify-center text-2xl shadow-xl ring-2 ring-green-400">
+                            {deal.logo}
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="font-bold text-base text-white leading-tight">
+                              {deal.name}
+                            </h3>
+                            <p className="text-xs text-white/90">{deal.industry}</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Closed Date Badge */}
+                      <div className="absolute top-3 left-3">
+                        <Badge className="bg-slate-900/80 text-white text-xs backdrop-blur-sm">
+                          Closed {new Date(deal.closedDate).toLocaleDateString('en-ZA', { month: 'short', year: 'numeric' })}
+                        </Badge>
+                      </div>
+                    </div>
+
+                    {/* Card Content */}
+                    <div className="p-4 space-y-3 bg-gradient-to-b from-green-50/50 to-transparent dark:from-green-950/30">
+                      {/* Outcome Badge */}
+                      <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-3">
+                        <div className="flex items-start gap-2">
+                          <Check className="w-4 h-4 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
+                          <p className="text-xs font-semibold text-green-700 dark:text-green-300 leading-relaxed">
+                            {deal.outcome}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Stats Grid */}
+                      <div className="grid grid-cols-2 gap-3 pt-2">
+                        <div className="text-center p-2 bg-white/50 dark:bg-slate-900/30 rounded-lg">
+                          <div className="text-lg font-bold text-green-600 dark:text-green-400">
+                            R{(deal.funded / 1000).toFixed(0)}k
+                          </div>
+                          <div className="text-xs text-slate-600 dark:text-slate-400">Raised</div>
+                        </div>
+                        <div className="text-center p-2 bg-white/50 dark:bg-slate-900/30 rounded-lg">
+                          <div className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                            {deal.investors}
+                          </div>
+                          <div className="text-xs text-slate-600 dark:text-slate-400">Investors</div>
+                        </div>
+                      </div>
+
+                      {/* Progress Bar - Full */}
+                      <div>
+                        <div className="flex justify-between items-center mb-1.5">
+                          <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                            Funding Goal
+                          </span>
+                          <span className="text-xs font-bold text-green-600 dark:text-green-400 flex items-center gap-1">
+                            <Check className="w-3 h-3" />
+                            100%
+                          </span>
+                        </div>
+                        <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            whileInView={{ width: '100%' }}
+                            viewport={{ once: true }}
+                            transition={{ delay: index * 0.15 + 0.5, duration: 1 }}
+                            className="h-full bg-gradient-to-r from-green-500 to-emerald-500 rounded-full"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Return Badge */}
+                      <div className="flex items-center justify-between pt-2">
+                        <span className="text-xs text-slate-600 dark:text-slate-400">Target Return</span>
+                        <Badge className="bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20 font-bold">
+                          {deal.targetReturn}x
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+
+          {/* Bottom CTA */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+            className="text-center mt-12"
+          >
+            <p className="text-slate-700 dark:text-slate-300 mb-6 text-lg">
+              Ready to be the next success story?
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/register?role=investor" prefetch>
+                <Button 
+                  size="lg"
+                  className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-8 py-6 text-lg font-bold shadow-xl group"
+                >
+                  Start Investing Today
+                  <TrendingUp className="ml-2 h-5 w-5 group-hover:scale-110 transition-transform" />
+                </Button>
+              </Link>
+              <Link href="/register?role=business" prefetch>
+                <Button 
+                  size="lg"
+                  variant="outline"
+                  className="border-2 border-green-600 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-950 px-8 py-6 text-lg font-semibold"
+                >
+                  List Your Deal
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+            </div>
+          </motion.div>
         </div>
       </section>
 
