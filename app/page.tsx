@@ -465,7 +465,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Trust Bar */}
+      {/* Trust Bar - Focus on Platform Capabilities */}
       <section className="bg-gradient-to-r from-emerald-50 via-blue-50 to-indigo-50 dark:from-slate-800 dark:via-blue-950 dark:to-indigo-950 border-y border-emerald-200 dark:border-slate-700">
         <div className="container mx-auto px-4 py-8">
           <motion.div
@@ -477,34 +477,34 @@ export default function HomePage() {
           >
             <div className="text-center">
               <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2">
-                R12.4M
+                15-25%
               </div>
               <div className="text-sm md:text-base text-slate-600 dark:text-slate-300 font-medium">
-                Capital Deployed
+                Target Returns
               </div>
             </div>
             <div className="text-center">
               <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent mb-2">
-                47
+                R1,000
               </div>
               <div className="text-sm md:text-base text-slate-600 dark:text-slate-300 font-medium">
-                Businesses Funded
+                Minimum Investment
               </div>
             </div>
             <div className="text-center">
               <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
-                18.3%
+                12-36
               </div>
               <div className="text-sm md:text-base text-slate-600 dark:text-slate-300 font-medium">
-                Average IRR
+                Months Term
               </div>
             </div>
             <div className="text-center">
               <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent mb-2">
-                94%
+                10+
               </div>
               <div className="text-sm md:text-base text-slate-600 dark:text-slate-300 font-medium">
-                Repayment Rate
+                Active Deals
               </div>
             </div>
           </motion.div>
