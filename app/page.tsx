@@ -132,6 +132,8 @@ export default function HomePage() {
   const [sortBy, setSortBy] = useState('trending');
   const [isLoading, setIsLoading] = useState(true);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [compareDeals, setCompareDeals] = useState<number[]>([]);
+  const [showComparison, setShowComparison] = useState(false);
 
   const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
   const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
@@ -185,7 +187,24 @@ export default function HomePage() {
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);  return (
+  }, []);
+
+  // Deal comparison functions
+  const toggleCompare = (dealId: number) => {
+    setCompareDeals(prev => {
+      if (prev.includes(dealId)) {
+        return prev.filter(id => id !== dealId);
+      } else if (prev.length < 3) {
+        return [...prev, dealId];
+      }
+      return prev;
+    });
+  };
+
+  const clearComparison = () => {
+    setCompareDeals([]);
+    setShowComparison(false);
+  };  return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-blue-950 dark:to-indigo-950">
       {/* Scroll Progress Bar */}
       <motion.div
@@ -1459,6 +1478,211 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Business Acquisition Section - Get Businesses to List Deals */}
+      <section className="py-20 bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-700 relative overflow-hidden">
+        {/* Animated Background */}
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-white rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-300 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+        </div>
+
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="grid lg:grid-cols-2 gap-12 items-center max-w-7xl mx-auto">
+            {/* Left: Compelling Copy */}
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7 }}
+            >
+              <Badge className="mb-6 bg-white/20 text-white border-white/30 px-4 py-2 backdrop-blur-sm">
+                <DollarSign className="w-4 h-4 mr-2" />
+                For Business Owners
+              </Badge>
+
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+                Get Funded in 14 Days.
+                <br />
+                <span className="text-blue-200">Keep 100% Equity.</span>
+              </h2>
+
+              <p className="text-xl text-white/90 mb-8 leading-relaxed">
+                Stop waiting months for bank approvals. List your deal today and get funded by South African investors who believe in your vision.
+              </p>
+
+              {/* Key Benefits */}
+              <div className="space-y-4 mb-10">
+                {[
+                  { 
+                    icon: Clock, 
+                    title: '2-Week Funding', 
+                    desc: 'Get capital faster than traditional banks',
+                    stat: '14 days avg'
+                  },
+                  { 
+                    icon: Shield, 
+                    title: 'No Equity Dilution', 
+                    desc: 'Revenue-sharing model - you stay in control',
+                    stat: '100% ownership'
+                  },
+                  { 
+                    icon: TrendingUp, 
+                    title: 'R250k - R5M Range', 
+                    desc: 'Flexible funding amounts for growth',
+                    stat: 'Your terms'
+                  },
+                  { 
+                    icon: Users, 
+                    title: 'Investor Network', 
+                    desc: 'Access mentorship and business connections',
+                    stat: '2,000+ investors'
+                  }
+                ].map((benefit, index) => {
+                  const Icon = benefit.icon;
+                  return (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, x: -30 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.2 + (index * 0.1), duration: 0.5 }}
+                      whileHover={{ x: 10 }}
+                      className="flex items-start gap-4 bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20 group cursor-default"
+                    >
+                      <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-white/30 transition-colors">
+                        <Icon className="w-6 h-6 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-1">
+                          <h3 className="text-lg font-bold text-white">{benefit.title}</h3>
+                          <Badge className="bg-green-400/20 text-green-100 border-green-300/30 text-xs">
+                            {benefit.stat}
+                          </Badge>
+                        </div>
+                        <p className="text-white/80 text-sm">{benefit.desc}</p>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+
+              {/* Strong CTA */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.6 }}
+                className="flex flex-col sm:flex-row gap-4"
+              >
+                <Link href="/register?role=business" prefetch>
+                  <Button 
+                    size="lg"
+                    className="w-full sm:w-auto bg-white text-indigo-600 hover:bg-blue-50 px-8 py-6 text-lg font-bold shadow-2xl group"
+                  >
+                    List Your Deal Now
+                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </Link>
+                <Link href="/how-it-works" prefetch>
+                  <Button 
+                    size="lg"
+                    variant="outline"
+                    className="w-full sm:w-auto border-2 border-white/30 text-white hover:bg-white/10 backdrop-blur-sm px-8 py-6 text-lg"
+                  >
+                    See How It Works
+                  </Button>
+                </Link>
+              </motion.div>
+            </motion.div>
+
+            {/* Right: Success Proof + Stats */}
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7, delay: 0.3 }}
+              className="space-y-6"
+            >
+              {/* Success Story Card */}
+              <div className="bg-white dark:bg-slate-900 rounded-2xl p-8 shadow-2xl">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-16 h-16 bg-gradient-to-br from-green-400 to-emerald-600 rounded-full flex items-center justify-center text-3xl">
+                    ☕
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-slate-900 dark:text-white">Cape Town Coffee Co.</h3>
+                    <p className="text-slate-600 dark:text-slate-400 text-sm">Food & Beverage</p>
+                  </div>
+                </div>
+
+                <Quote className="w-8 h-8 text-blue-500/20 mb-4" />
+
+                <p className="text-slate-700 dark:text-slate-300 mb-6 leading-relaxed italic">
+                  "We raised R750k in 12 days. The process was transparent, investors were engaged, and we kept 100% ownership. Best funding decision we ever made."
+                </p>
+
+                <div className="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-green-600">R750k</div>
+                    <div className="text-xs text-slate-500">Raised</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-blue-600">12 days</div>
+                    <div className="text-xs text-slate-500">Timeline</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-purple-600">124</div>
+                    <div className="text-xs text-slate-500">Investors</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Quick Stats Grid */}
+              <div className="grid grid-cols-2 gap-4">
+                {[
+                  { label: 'Avg Funding Time', value: '14 days', icon: Clock },
+                  { label: 'Success Rate', value: '87%', icon: TrendingUp },
+                  { label: 'Avg Deal Size', value: 'R650k', icon: DollarSign },
+                  { label: 'Investor Pool', value: '2,000+', icon: Users }
+                ].map((stat, index) => {
+                  const Icon = stat.icon;
+                  return (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.5 + (index * 0.1), type: 'spring' }}
+                      whileHover={{ scale: 1.05 }}
+                      className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 text-center cursor-default"
+                    >
+                      <Icon className="w-8 h-8 text-white mx-auto mb-3" />
+                      <div className="text-3xl font-bold text-white mb-1">{stat.value}</div>
+                      <div className="text-sm text-white/80">{stat.label}</div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+
+              {/* Trust Badge */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.9 }}
+                className="bg-gradient-to-r from-green-400/20 to-emerald-400/20 backdrop-blur-sm border border-green-300/30 rounded-xl p-4 flex items-center gap-3"
+              >
+                <Shield className="w-6 h-6 text-green-300" />
+                <div>
+                  <div className="text-white font-semibold">Verified & Secure Platform</div>
+                  <div className="text-white/70 text-sm">FICA compliant • Bank-level security</div>
+                </div>
+              </motion.div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       {/* Live Deals - Image Card Style */}
       <section className="py-20 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-blue-950 dark:to-indigo-950">
         <div className="container mx-auto px-4">
@@ -1673,6 +1897,30 @@ export default function HomePage() {
                     <div className="absolute top-3 left-3">
                       <RiskBadge score={deal.riskScore || 3} showLabel={false} />
                     </div>
+
+                    {/* Compare Checkbox */}
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: index * 0.1 + 0.3 }}
+                      className="absolute bottom-3 right-3"
+                    >
+                      <button
+                        onClick={() => toggleCompare(deal.id)}
+                        className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${
+                          compareDeals.includes(deal.id)
+                            ? 'bg-green-500 text-white scale-110'
+                            : 'bg-white/90 text-slate-700 hover:bg-white'
+                        } shadow-lg backdrop-blur-sm`}
+                      >
+                        {compareDeals.includes(deal.id) ? (
+                          <Check className="h-5 w-5" />
+                        ) : (
+                          <div className="w-5 h-5 border-2 border-slate-400 rounded"></div>
+                        )}
+                      </button>
+                    </motion.div>
                   </div>
 
                   {/* Card Content */}
@@ -1737,6 +1985,139 @@ export default function HomePage() {
             })
             )}
           </div>
+
+          {/* Floating Compare Button */}
+          <AnimatePresence>
+            {compareDeals.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 100 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 100 }}
+                className="fixed bottom-8 right-8 z-40"
+              >
+                <Button
+                  size="lg"
+                  onClick={() => setShowComparison(true)}
+                  className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-2xl px-6 py-6 text-lg font-bold group"
+                >
+                  Compare Deals ({compareDeals.length}/3)
+                  <BarChart3 className="ml-2 h-5 w-5 group-hover:scale-110 transition-transform" />
+                </Button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Comparison Modal */}
+          <AnimatePresence>
+            {showComparison && compareDeals.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                onClick={() => setShowComparison(false)}
+              >
+                <motion.div
+                  initial={{ scale: 0.9, y: 50 }}
+                  animate={{ scale: 1, y: 0 }}
+                  exit={{ scale: 0.9, y: 50 }}
+                  onClick={(e) => e.stopPropagation()}
+                  className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-auto"
+                >
+                  {/* Modal Header */}
+                  <div className="sticky top-0 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 p-6 flex justify-between items-center z-10">
+                    <div>
+                      <h3 className="text-2xl font-bold text-slate-900 dark:text-white">Compare Deals</h3>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">Side-by-side comparison of {compareDeals.length} deals</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button variant="outline" onClick={clearComparison} size="sm">
+                        Clear All
+                      </Button>
+                      <Button variant="ghost" onClick={() => setShowComparison(false)} size="sm">
+                        Close
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Comparison Table */}
+                  <div className="p-6">
+                    <div className="grid gap-6" style={{ gridTemplateColumns: `repeat(${compareDeals.length}, 1fr)` }}>
+                      {compareDeals.map((dealId) => {
+                        const deal = fakeDealss.find(d => d.id === dealId);
+                        if (!deal) return null;
+                        const percentFunded = (deal.funded / deal.fundingGoal) * 100;
+
+                        return (
+                          <div key={deal.id} className="space-y-4">
+                            {/* Deal Card */}
+                            <div className="glass-card-light dark:glass-card-dark rounded-xl overflow-hidden">
+                              <div className="relative h-32">
+                                <Image src={deal.image} alt={deal.name} fill className="object-cover" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+                                <div className="absolute bottom-3 left-3 flex items-center gap-2">
+                                  <span className="text-2xl">{deal.logo}</span>
+                                  <div>
+                                    <div className="text-white font-bold text-sm">{deal.name}</div>
+                                    <div className="text-white/80 text-xs">{deal.industry}</div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="p-4 space-y-3">
+                                <div className="flex justify-between items-center">
+                                  <span className="text-xs text-slate-600 dark:text-slate-400">Target Return</span>
+                                  <Badge className="bg-green-500/10 text-green-600 font-bold">{deal.targetReturn}x</Badge>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                  <span className="text-xs text-slate-600 dark:text-slate-400">Risk Score</span>
+                                  <RiskBadge score={deal.riskScore || 3} showLabel />
+                                </div>
+                                <div className="flex justify-between items-center">
+                                  <span className="text-xs text-slate-600 dark:text-slate-400">Min Investment</span>
+                                  <span className="font-bold text-sm">R{(deal.minInvestment / 1000).toFixed(0)}k</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                  <span className="text-xs text-slate-600 dark:text-slate-400">Funding Progress</span>
+                                  <span className="font-bold text-sm text-blue-600">{percentFunded.toFixed(0)}%</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                  <span className="text-xs text-slate-600 dark:text-slate-400">Total Raised</span>
+                                  <span className="font-bold text-sm">R{(deal.funded / 1000).toFixed(0)}k</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                  <span className="text-xs text-slate-600 dark:text-slate-400">Investors</span>
+                                  <span className="font-bold text-sm">{deal.investors}</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                  <span className="text-xs text-slate-600 dark:text-slate-400">Days Left</span>
+                                  <Badge variant="outline" className="text-xs">{deal.daysLeft} days</Badge>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                  <span className="text-xs text-slate-600 dark:text-slate-400">Monthly Revenue</span>
+                                  <span className="font-bold text-sm">R{(deal.monthlyRevenue / 1000).toFixed(0)}k</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                  <span className="text-xs text-slate-600 dark:text-slate-400">Growth Rate</span>
+                                  <Badge className="bg-purple-500/10 text-purple-600 text-xs">+{deal.revenueGrowth}%</Badge>
+                                </div>
+                              </div>
+                            </div>
+
+                            <Link href={`/deals/${deal.id}`} prefetch>
+                              <Button className="w-full" size="sm">
+                                View Full Details
+                                <ArrowRight className="ml-2 h-4 w-4" />
+                              </Button>
+                            </Link>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <div className="text-center mt-8 md:hidden">
             <Link href="/deals">
