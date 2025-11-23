@@ -140,12 +140,12 @@ export default function SubscriptionsPage() {
 
       {/* Current Plan Status */}
       {userData && (
-        <Card className="border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+        <Card className="border-blue-200 dark:border-blue-800 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between flex-wrap gap-4">
               <div>
                 <p className="text-sm text-muted-foreground">Current Plan</p>
-                <h3 className="text-2xl font-bold">
+                <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                   {currentTier === 'FREE' ? 'Free Tier' : currentTier === 'STARTER' ? 'Starter Plan' : 'Business Plan'}
                 </h3>
                 {currentTier === 'FREE' && (
@@ -180,7 +180,7 @@ export default function SubscriptionsPage() {
       {/* Pricing Cards */}
       <div className="grid md:grid-cols-3 gap-6">
         {/* FREE PLAN */}
-        <Card className={currentTier === 'FREE' ? 'border-blue-500 border-2 relative' : 'relative'}>
+        <Card className={currentTier === 'FREE' ? 'border-blue-500 dark:border-blue-600 border-2 relative' : 'relative'}>
           {currentTier === 'FREE' && (
             <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-500 text-white px-4 py-1 rounded-full text-sm font-medium">
               Current Plan
@@ -200,42 +200,42 @@ export default function SubscriptionsPage() {
           <CardContent className="space-y-6">
             <div className="space-y-3">
               <div className="flex items-start gap-2">
-                <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <Check className="h-5 w-5 text-green-600 dark:text-green-500 flex-shrink-0 mt-0.5" />
                 <span className="text-sm"><strong>3 invoices</strong> per month</span>
               </div>
               <div className="flex items-start gap-2">
-                <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <Check className="h-5 w-5 text-green-600 dark:text-green-500 flex-shrink-0 mt-0.5" />
                 <span className="text-sm"><strong>1 user</strong> only</span>
               </div>
               <div className="flex items-start gap-2">
-                <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <Check className="h-5 w-5 text-green-600 dark:text-green-500 flex-shrink-0 mt-0.5" />
                 <span className="text-sm">Yoco payments (platform processes)</span>
               </div>
               <div className="flex items-start gap-2">
-                <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <Check className="h-5 w-5 text-green-600 dark:text-green-500 flex-shrink-0 mt-0.5" />
                 <span className="text-sm">Customer management</span>
               </div>
               <div className="flex items-start gap-2">
-                <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <Check className="h-5 w-5 text-green-600 dark:text-green-500 flex-shrink-0 mt-0.5" />
                 <span className="text-sm">Basic reporting</span>
               </div>
               
-              <div className="pt-3 border-t">
-                <p className="text-xs text-muted-foreground italic">
+              <div className="pt-3 border-t dark:border-slate-700">
+                <p className="text-xs text-amber-700 dark:text-amber-400 italic font-medium">
                   ⚠️ Payments go through platform Yoco account
                 </p>
               </div>
 
               <div className="flex items-start gap-2 opacity-50">
-                <X className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
+                <X className="h-5 w-5 text-red-500 dark:text-red-400 flex-shrink-0 mt-0.5" />
                 <span className="text-sm">No bank EFT details</span>
               </div>
               <div className="flex items-start gap-2 opacity-50">
-                <X className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
+                <X className="h-5 w-5 text-red-500 dark:text-red-400 flex-shrink-0 mt-0.5" />
                 <span className="text-sm">No team members</span>
               </div>
               <div className="flex items-start gap-2 opacity-50">
-                <X className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
+                <X className="h-5 w-5 text-red-500 dark:text-red-400 flex-shrink-0 mt-0.5" />
                 <span className="text-sm">No custom Yoco account</span>
               </div>
             </div>

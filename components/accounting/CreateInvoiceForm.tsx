@@ -489,33 +489,36 @@ export default function CreateInvoiceForm({ customers, invoiceNumber, products }
                           ))}
                         </SelectContent>
                       </Select>
-                      <Button variant="outline" onClick={() => setShowNewCustomer(true)}>
+                      <Button variant="outline" size="icon" className="shrink-0" onClick={() => setShowNewCustomer(true)}>
                         <Plus className="h-4 w-4" />
                       </Button>
                     </div>
                   ) : (
-                    <div className="space-y-2 max-h-[300px] overflow-y-auto">
+                    <div className="space-y-2 p-3 border rounded-lg bg-muted/30 dark:bg-muted/10">
                       <Input
                         placeholder="Customer name"
                         value={newCustomer.name}
                         onChange={(e) => setNewCustomer({ ...newCustomer, name: e.target.value })}
+                        className="h-9"
                       />
                       <Input
                         placeholder="Email"
                         type="email"
                         value={newCustomer.email}
                         onChange={(e) => setNewCustomer({ ...newCustomer, email: e.target.value })}
+                        className="h-9"
                       />
                       <Input
                         placeholder="Company (optional)"
                         value={newCustomer.company}
                         onChange={(e) => setNewCustomer({ ...newCustomer, company: e.target.value })}
+                        className="h-9"
                       />
                       <div className="flex gap-2">
-                        <Button size="sm" onClick={handleCreateCustomer}>
+                        <Button size="sm" onClick={handleCreateCustomer} className="flex-1">
                           Create
                         </Button>
-                        <Button size="sm" variant="outline" onClick={() => setShowNewCustomer(false)}>
+                        <Button size="sm" variant="outline" onClick={() => setShowNewCustomer(false)} className="flex-1">
                           Cancel
                         </Button>
                       </div>
@@ -561,19 +564,19 @@ export default function CreateInvoiceForm({ customers, invoiceNumber, products }
                 {items.map((item, index) => (
                   <div key={item.id} className="space-y-3 pb-4 border-b last:border-0">
                     {products.length > 0 && (
-                      <div className="flex items-center gap-2">
-                        <Label className="text-xs text-muted-foreground">Quick add:</Label>
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                        <Label className="text-xs text-muted-foreground shrink-0">Quick add:</Label>
                         <Select onValueChange={(value) => loadProduct(item.id, value)}>
-                          <SelectTrigger className="w-auto h-8 text-xs">
+                          <SelectTrigger className="w-full sm:w-auto h-8 text-xs">
                             <SelectValue placeholder="Select product..." />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="max-w-[90vw]">
                             {products.map((product) => (
                               <SelectItem key={product.id} value={product.id}>
-                                <div className="flex flex-col">
-                                  <span className="font-medium">{product.name} - {formatCurrency(product.unitPrice)}</span>
+                                <div className="flex flex-col max-w-[70vw]">
+                                  <span className="font-medium truncate">{product.name} - {formatCurrency(product.unitPrice)}</span>
                                   {product.description && (
-                                    <span className="text-xs text-muted-foreground">{product.description}</span>
+                                    <span className="text-xs text-muted-foreground truncate">{product.description}</span>
                                   )}
                                 </div>
                               </SelectItem>
@@ -582,27 +585,29 @@ export default function CreateInvoiceForm({ customers, invoiceNumber, products }
                         </Select>
                       </div>
                     )}
-                    <div className="grid gap-4 md:grid-cols-12 items-start">
-                    <div className="md:col-span-4 space-y-2">
-                      <Label>Description</Label>
+                    <div className="grid gap-3 sm:gap-4 grid-cols-2 sm:grid-cols-6 md:grid-cols-12 items-end">
+                    <div className="col-span-2 sm:col-span-6 md:col-span-3 space-y-2">
+                      <Label className="text-sm">Description</Label>
                       <Input
                         placeholder="Item description"
                         value={item.description}
                         onChange={(e) => updateItem(item.id, 'description', e.target.value)}
+                        className="h-9"
                       />
                     </div>
-                    <div className="md:col-span-1 space-y-2">
-                      <Label>Qty</Label>
+                    <div className="col-span-1 sm:col-span-2 md:col-span-1 space-y-2">
+                      <Label className="text-sm">Qty</Label>
                       <Input
                         type="number"
                         min="0"
                         step="0.01"
                         value={item.quantity}
                         onChange={(e) => updateItem(item.id, 'quantity', parseFloat(e.target.value) || 0)}
+                        className="h-9"
                       />
                     </div>
-                    <div className="md:col-span-2 space-y-2">
-                      <Label>Cost Price</Label>
+                    <div className="col-span-1 sm:col-span-2 md:col-span-2 space-y-2">
+                      <Label className="text-sm">Cost</Label>
                       <Input
                         type="number"
                         min="0"
@@ -610,38 +615,44 @@ export default function CreateInvoiceForm({ customers, invoiceNumber, products }
                         placeholder="0.00"
                         value={item.costPrice || ''}
                         onChange={(e) => updateItem(item.id, 'costPrice', parseFloat(e.target.value) || 0)}
+                        className="h-9"
                       />
                     </div>
-                    <div className="md:col-span-2 space-y-2">
-                      <Label>Unit Price</Label>
+                    <div className="col-span-1 sm:col-span-2 md:col-span-2 space-y-2">
+                      <Label className="text-sm">Price</Label>
                       <Input
                         type="number"
                         min="0"
                         step="0.01"
                         value={item.unitPrice}
                         onChange={(e) => updateItem(item.id, 'unitPrice', parseFloat(e.target.value) || 0)}
+                        className="h-9"
                       />
                     </div>
-                    <div className="md:col-span-2 space-y-2">
-                      <Label>Profit</Label>
+                    <div className="hidden sm:block col-span-2 md:col-span-2 space-y-2">
+                      <Label className="text-sm">Profit</Label>
                       <Input 
                         value={item.profit ? formatCurrency(item.profit) : 'R0.00'} 
                         disabled 
-                        className={item.profit && item.profit > 0 ? 'text-green-600 font-medium' : ''}
+                        className={`h-9 ${item.profit && item.profit > 0 ? 'text-green-600 dark:text-green-500 font-medium' : ''}`}
                       />
                     </div>
-                    <div className="md:col-span-2 space-y-2">
-                      <Label>Total</Label>
-                      <Input value={formatCurrency(item.total)} disabled />
+                    <div className="hidden md:block md:col-span-1 space-y-2">
+                      <Label className="text-sm">Total</Label>
+                      <Input value={formatCurrency(item.total)} disabled className="h-9 bg-muted/30" />
                     </div>
-                    <div className="md:col-span-1 flex items-end">
+                    <div className="col-span-1 sm:col-span-6 md:col-span-1 flex flex-col sm:flex-row items-center justify-between md:justify-center gap-2">
+                      <div className="md:hidden text-sm font-medium w-full sm:flex-1 text-left">
+                        <span className="text-muted-foreground">Total:</span> {formatCurrency(item.total)}
+                      </div>
                       <Button
                         variant="ghost"
                         size="icon"
                         onClick={() => removeItem(item.id)}
                         disabled={items.length === 1}
+                        className="shrink-0 h-9 w-9"
                       >
-                        <Trash2 className="h-4 w-4 text-red-600" />
+                        <Trash2 className="h-4 w-4 text-red-600 dark:text-red-400" />
                       </Button>
                     </div>
                     </div>
