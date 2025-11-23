@@ -197,7 +197,7 @@ export default function TemplateSelector({
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button onClick={handleSelect}>
+          <Button onClick={() => handleSelect()}>
             Select Template
           </Button>
         </div>

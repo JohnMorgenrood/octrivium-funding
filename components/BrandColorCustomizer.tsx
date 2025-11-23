@@ -39,6 +39,36 @@ export default function BrandColorCustomizer({
   });
   const [extracting, setExtracting] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch current brand colors from database
+  useEffect(() => {
+    const fetchColors = async () => {
+      try {
+        const response = await fetch('/api/user/brand-colors');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.brandColorPrimary) {
+            setColors({
+              primary: data.brandColorPrimary,
+              secondary: data.brandColorSecondary || '#764ba2',
+              accent: data.brandColorAccent || '#667eea',
+              gradient: {
+                from: data.brandColorPrimary,
+                to: data.brandColorSecondary || '#764ba2',
+              },
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching colors:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchColors();
+  }, []);
 
   const handleExtractFromLogo = async () => {
     if (!companyLogo) {
@@ -133,6 +163,12 @@ export default function BrandColorCustomizer({
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
+        {loading ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+          </div>
+        ) : (
+          <>
         {/* Action Buttons */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <Button
@@ -286,6 +322,8 @@ export default function BrandColorCustomizer({
             </div>
           </div>
         </div>
+        </>
+        )}
       </CardContent>
     </Card>
   );
