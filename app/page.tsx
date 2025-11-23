@@ -481,38 +481,33 @@ export default function HomePage() {
             transition={{ duration: 0.6 }}
             className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8"
           >
-            <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2">
-                15-25%
-              </div>
-              <div className="text-sm md:text-base text-slate-600 dark:text-slate-300 font-medium">
-                Target Returns
-              </div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent mb-2">
-                R1,000
-              </div>
-              <div className="text-sm md:text-base text-slate-600 dark:text-slate-300 font-medium">
-                Minimum Investment
-              </div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
-                12-36
-              </div>
-              <div className="text-sm md:text-base text-slate-600 dark:text-slate-300 font-medium">
-                Months Term
-              </div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent mb-2">
-                10+
-              </div>
-              <div className="text-sm md:text-base text-slate-600 dark:text-slate-300 font-medium">
-                Active Deals
-              </div>
-            </div>
+            {[
+              { value: '15-25%', label: 'Target Returns', gradient: 'from-blue-600 to-indigo-600' },
+              { value: 'R1,000', label: 'Minimum Investment', gradient: 'from-emerald-600 to-green-600' },
+              { value: '12-36', label: 'Months Term', gradient: 'from-purple-600 to-pink-600' },
+              { value: '10+', label: 'Active Deals', gradient: 'from-orange-600 to-red-600' }
+            ].map((item, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 30, scale: 0.8 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1, duration: 0.5, type: "spring" }}
+                whileHover={{ y: -5, scale: 1.05 }}
+                className="text-center cursor-default"
+              >
+                <motion.div
+                  whileHover={{ rotate: [0, -3, 3, 0] }}
+                  transition={{ duration: 0.5 }}
+                  className={`text-3xl md:text-4xl font-bold bg-gradient-to-r ${item.gradient} bg-clip-text text-transparent mb-2`}
+                >
+                  {item.value}
+                </motion.div>
+                <div className="text-sm md:text-base text-slate-600 dark:text-slate-300 font-medium">
+                  {item.label}
+                </div>
+              </motion.div>
+            ))}
           </motion.div>
         </div>
       </section>
@@ -681,12 +676,20 @@ export default function HomePage() {
             ].map((stat, index) => (
               <motion.div
                 key={index}
-                whileHover={{ scale: 1.05 }}
-                className="text-center p-6 bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl rounded-2xl border-2 border-slate-200/50 dark:border-slate-700/50 shadow-lg"
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.7 + (index * 0.1) }}
+                whileHover={{ scale: 1.1, y: -5 }}
+                className="text-center p-6 bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl rounded-2xl border-2 border-slate-200/50 dark:border-slate-700/50 shadow-lg cursor-default"
               >
-                <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2">
+                <motion.div
+                  whileHover={{ rotate: [0, -5, 5, 0] }}
+                  transition={{ duration: 0.5 }}
+                  className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2"
+                >
                   {stat.number}
-                </div>
+                </motion.div>
                 <div className="text-sm text-slate-600 dark:text-slate-400 font-medium">
                   {stat.label}
                 </div>
@@ -1526,19 +1529,35 @@ export default function HomePage() {
             ].map((testimonial, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.1, duration: 0.5 }}
-                className="glass-card-light dark:glass-card-dark p-8 rounded-2xl hover-lift"
+                transition={{ delay: index * 0.15, duration: 0.6, type: "spring" }}
+                whileHover={{ y: -10, scale: 1.02 }}
+                className="glass-card-light dark:glass-card-dark p-8 rounded-2xl cursor-default group"
               >
                 <div className="flex items-center gap-1 mb-4">
                   {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, scale: 0 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: index * 0.15 + (i * 0.05), type: "spring" }}
+                    >
+                      <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                    </motion.div>
                   ))}
                 </div>
                 
-                <Quote className="w-8 h-8 text-blue-500/20 mb-4" />
+                <motion.div
+                  initial={{ opacity: 0, rotate: -45 }}
+                  whileInView={{ opacity: 1, rotate: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.15 + 0.3 }}
+                >
+                  <Quote className="w-8 h-8 text-blue-500/20 mb-4 group-hover:text-blue-500/40 transition-colors" />
+                </motion.div>
                 
                 <p className="text-slate-700 dark:text-slate-300 mb-6 leading-relaxed">
                   "{testimonial.quote}"
