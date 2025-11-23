@@ -12,6 +12,7 @@ import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
 import { motion, AnimatePresence } from 'framer-motion';
 import { RiskBadge } from '@/components/ui/risk-badge';
+import { Skeleton } from '@/components/ui/skeleton';
 
 // Hero Carousel Slides
 const heroSlides = [
@@ -129,6 +130,7 @@ export default function HomePage() {
   const [filterSector, setFilterSector] = useState('all');
   const [filterRisk, setFilterRisk] = useState('all');
   const [sortBy, setSortBy] = useState('trending');
+  const [isLoading, setIsLoading] = useState(true);
 
   const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
   const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
@@ -153,20 +155,24 @@ export default function HomePage() {
 
   useEffect(() => {
     if (!emblaApi) return;
-    
+
     const onSelect = () => {
       setSelectedIndex(emblaApi.selectedScrollSnap());
     };
-    
+
     emblaApi.on('select', onSelect);
     onSelect();
-    
+
     return () => {
       emblaApi.off('select', onSelect);
     };
   }, [emblaApi]);
-  
-  return (
+
+  // Simulate loading state (remove in production with real API)
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 800);
+    return () => clearTimeout(timer);
+  }, []);  return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-blue-950 dark:to-indigo-950">
       {/* JSON-LD Structured Data for SEO */}
       <script
@@ -279,45 +285,97 @@ export default function HomePage() {
                 </Button>
               </SheetTrigger>
               <SheetContent side="right" className="w-[300px] bg-white dark:bg-slate-900">
-                <div className="flex flex-col space-y-6 mt-8">
-                  <Link 
-                    href="/deals" 
-                    className="text-lg font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                    onClick={() => setMobileMenuOpen(false)}
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex flex-col space-y-4 mt-8"
+                >
+                  {/* Menu Header */}
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1 }}
+                    className="pb-4 border-b border-slate-200 dark:border-slate-700"
                   >
-                    Browse Deals
-                  </Link>
-                  <Link 
-                    href="/accounting-software" 
-                    className="text-lg font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center gap-2"
-                    onClick={() => setMobileMenuOpen(false)}
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center">
+                        <span className="text-white font-bold text-lg">O</span>
+                      </div>
+                      <div>
+                        <div className="text-sm font-bold text-slate-900 dark:text-white">Octrivium</div>
+                        <div className="text-xs text-slate-500 dark:text-slate-400">Funding Platform</div>
+                      </div>
+                    </div>
+                  </motion.div>
+
+                  {/* Navigation Links */}
+                  {[
+                    { href: '/deals', label: 'Browse Deals', icon: BarChart3, delay: 0.15 },
+                    { href: '/accounting-software', label: 'Accounting', icon: Calculator, delay: 0.2 },
+                    { href: '/how-it-works', label: 'How It Works', icon: Shield, delay: 0.25 },
+                    { href: '/about', label: 'About Us', icon: Users, delay: 0.3 }
+                  ].map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <motion.div
+                        key={item.href}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: item.delay }}
+                        whileHover={{ x: 5 }}
+                      >
+                        <Link 
+                          href={item.href}
+                          prefetch
+                          className="flex items-center gap-3 p-3 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-blue-600 dark:hover:text-blue-400 transition-all group"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          <Icon className="h-5 w-5 group-hover:scale-110 transition-transform" />
+                          <span className="font-medium">{item.label}</span>
+                          <ArrowRight className="h-4 w-4 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </Link>
+                      </motion.div>
+                    );
+                  })}
+
+                  {/* CTA Buttons */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                    className="border-t border-slate-200 dark:border-slate-700 pt-6 mt-6 space-y-3"
                   >
-                    <Calculator className="h-5 w-5" />
-                    Accounting Software
-                  </Link>
-                  <Link 
-                    href="/how-it-works" 
-                    className="text-lg font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    How It Works
-                  </Link>
-                  <Link 
-                    href="/about" 
-                    className="text-lg font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    About
-                  </Link>
-                  <div className="border-t border-slate-200 dark:border-slate-700 pt-6 mt-6 space-y-3">
-                    <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
-                      <Button variant="outline" className="w-full h-12 text-base">Sign In</Button>
+                    <Link href="/login" prefetch onClick={() => setMobileMenuOpen(false)}>
+                      <Button variant="outline" className="w-full h-12 text-base group">
+                        Sign In
+                        <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                      </Button>
                     </Link>
-                    <Link href="/register" onClick={() => setMobileMenuOpen(false)}>
-                      <Button className="w-full h-12 text-base shadow-lg">Get Started</Button>
+                    <Link href="/register" prefetch onClick={() => setMobileMenuOpen(false)}>
+                      <Button className="w-full h-12 text-base shadow-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700">
+                        Get Started
+                        <TrendingUp className="ml-2 h-4 w-4" />
+                      </Button>
                     </Link>
-                  </div>
-                </div>
+                  </motion.div>
+
+                  {/* Footer Info */}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.5 }}
+                    className="mt-auto pt-6 border-t border-slate-200 dark:border-slate-700"
+                  >
+                    <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+                      <span>© 2025 Octrivium</span>
+                      <div className="flex gap-2">
+                        <Shield className="h-3 w-3" />
+                        <span>Secure</span>
+                      </div>
+                    </div>
+                  </motion.div>
+                </motion.div>
               </SheetContent>
             </Sheet>
           </div>
@@ -1354,8 +1412,38 @@ export default function HomePage() {
             </div>
           </div>
 
+          {/* Deals Grid with Loading State */}
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {filteredDeals.map((deal, index) => {
+            {isLoading ? (
+              // Skeleton Loading State
+              [...Array(4)].map((_, index) => (
+                <motion.div
+                  key={`skeleton-${index}`}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1, duration: 0.5 }}
+                  className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-2xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 overflow-hidden"
+                >
+                  {/* Image Skeleton */}
+                  <Skeleton className="h-48 w-full rounded-none" />
+                  
+                  {/* Content Skeleton */}
+                  <div className="p-6 space-y-4">
+                    <div className="space-y-2">
+                      <Skeleton className="h-4 w-3/4" />
+                      <Skeleton className="h-3 w-1/2" />
+                    </div>
+                    <Skeleton className="h-2 w-full" />
+                    <div className="grid grid-cols-2 gap-3">
+                      <Skeleton className="h-8 w-full" />
+                      <Skeleton className="h-8 w-full" />
+                    </div>
+                  </div>
+                </motion.div>
+              ))
+            ) : (
+              // Actual Deal Cards
+              filteredDeals.map((deal, index) => {
               const percentFunded = (deal.funded / deal.fundingGoal) * 100;
               
               return (
@@ -1465,7 +1553,8 @@ export default function HomePage() {
                   </div>
                 </motion.div>
               );
-            })}
+            })
+            )}
           </div>
 
           <div className="text-center mt-8 md:hidden">
