@@ -244,11 +244,7 @@ export default function CreateInvoiceForm({ customers, invoiceNumber, products }
       return;
     }
 
-    if (status === 'SENT') {
-      setShowPreview(true);
-      return;
-    }
-
+    // Save invoice directly
     await saveInvoice(status);
   };
 
@@ -278,8 +274,8 @@ export default function CreateInvoiceForm({ customers, invoiceNumber, products }
       toast({
         title: 'Success',
         description: formData.documentType === 'QUOTE' 
-          ? `Quote saved successfully` 
-          : `Invoice ${status === 'DRAFT' ? 'saved as draft' : 'created and sent'}`,
+          ? `Quote ${status === 'DRAFT' ? 'saved as draft' : 'saved'}` 
+          : `Invoice ${status === 'DRAFT' ? 'saved as draft' : 'saved'}`,
       });
 
       router.push(`/dashboard/accounting/invoices/${invoice.id}`);
@@ -456,13 +452,9 @@ export default function CreateInvoiceForm({ customers, invoiceNumber, products }
           <Button variant="secondary" size="sm" onClick={() => setShowPreview(true)} disabled={!formData.customerId || items.some(i => !i.description || i.quantity <= 0 || i.unitPrice <= 0)}>
             <span className="text-xs sm:text-sm">👁️ Preview</span>
           </Button>
-          <Button variant="outline" size="sm" onClick={() => handleSubmit('DRAFT')} disabled={loading}>
+          <Button size="sm" onClick={() => handleSubmit('DRAFT')} disabled={loading}>
             <Save className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-            <span className="text-xs sm:text-sm">Draft</span>
-          </Button>
-          <Button size="sm" onClick={() => handleSubmit(formData.documentType === 'QUOTE' ? 'DRAFT' : 'SENT')} disabled={loading}>
-            <Save className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-            <span className="text-xs sm:text-sm">{loading ? 'Saving...' : formData.documentType === 'QUOTE' ? 'Save Quote' : 'Save Invoice'}</span>
+            <span className="text-xs sm:text-sm">{loading ? 'Saving...' : 'Save'}</span>
           </Button>
         </div>
       </div>
@@ -578,7 +570,12 @@ export default function CreateInvoiceForm({ customers, invoiceNumber, products }
                           <SelectContent>
                             {products.map((product) => (
                               <SelectItem key={product.id} value={product.id}>
-                                {product.name} - {formatCurrency(product.unitPrice)}
+                                <div className="flex flex-col">
+                                  <span className="font-medium">{product.name} - {formatCurrency(product.unitPrice)}</span>
+                                  {product.description && (
+                                    <span className="text-xs text-muted-foreground">{product.description}</span>
+                                  )}
+                                </div>
                               </SelectItem>
                             ))}
                           </SelectContent>

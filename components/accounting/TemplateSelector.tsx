@@ -69,8 +69,8 @@ export default function TemplateSelector({
     return userSubscriptionTier === 'BUSINESS' || userSubscriptionTier === 'STARTER';
   };
 
-  const handleSelect = () => {
-    onSelect(selectedTemplate);
+  const handleSelect = (templateId?: number) => {
+    onSelect(templateId || selectedTemplate);
     onClose();
   };
 
@@ -131,7 +131,12 @@ export default function TemplateSelector({
                       ? 'border-blue-600 bg-blue-50'
                       : 'border-gray-200 hover:border-blue-400'
                   }`}
-                  onClick={() => canUse && setSelectedTemplate(template.id)}
+                  onClick={() => {
+                    if (canUse) {
+                      setSelectedTemplate(template.id);
+                      handleSelect(template.id);
+                    }
+                  }}
                 >
                   {template.premium && userRole !== 'ADMIN' && (
                     <div className={`absolute top-2 right-2 ${canUse ? 'bg-gradient-to-r from-yellow-400 to-yellow-600' : 'bg-gray-400'} text-white rounded-full px-2 py-1 text-xs font-bold flex items-center gap-1`}>

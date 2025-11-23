@@ -401,9 +401,9 @@ export async function POST(
           <div class="email-container">
             <!-- Header -->
             <div class="header">
-              ${invoice.user.companyLogo ? `<img src="${invoice.user.companyLogo}" alt="${invoice.user.companyName || 'Company'} Logo">` : ''}
+              ${invoice.user.companyLogo ? `<img src="${invoice.user.companyLogo}" alt="${invoice.user.companyName || 'Octrivium'}" style="max-height: 60px; max-width: 200px; height: auto; width: auto; object-fit: contain;">` : '<h2 style="margin: 0; color: white;">Octrivium</h2>'}
               <h1>Invoice ${invoice.invoiceNumber}</h1>
-              ${invoice.user.companyName ? `<div class="company-name">${invoice.user.companyName}</div>` : ''}
+              ${invoice.user.companyName && !invoice.user.companyLogo ? `<div class="company-name">${invoice.user.companyName}</div>` : ''}
             </div>
 
             <!-- Content -->
