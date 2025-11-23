@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { ArrowRight, TrendingUp, Shield, Users, BarChart3, Zap, Heart, ArrowUpRight, ArrowDownRight, Clock, DollarSign, Target, Menu, ChevronLeft, ChevronRight, Calculator, FileText, Check, Star, Quote } from 'lucide-react';
+import { ArrowRight, TrendingUp, Shield, Users, BarChart3, Zap, Heart, ArrowUpRight, ArrowDownRight, Clock, DollarSign, Target, Menu, ChevronLeft, ChevronRight, Calculator, FileText, Check, Star, Quote, Filter, SlidersHorizontal } from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
@@ -126,9 +126,30 @@ export default function HomePage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 5000 })]);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [filterSector, setFilterSector] = useState('all');
+  const [filterRisk, setFilterRisk] = useState('all');
+  const [sortBy, setSortBy] = useState('trending');
 
   const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
   const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
+
+  // Filter and sort deals
+  const filteredDeals = fakeDealss
+    .filter(deal => filterSector === 'all' || deal.industry === filterSector)
+    .filter(deal => {
+      if (filterRisk === 'all') return true;
+      const risk = deal.riskScore || 3;
+      if (filterRisk === 'low') return risk >= 4;
+      if (filterRisk === 'moderate') return risk === 3;
+      if (filterRisk === 'high') return risk <= 2;
+      return true;
+    })
+    .sort((a, b) => {
+      if (sortBy === 'return') return (b.targetReturn || 0) - (a.targetReturn || 0);
+      if (sortBy === 'funding') return (b.funded / b.fundingGoal) - (a.funded / a.fundingGoal);
+      if (sortBy === 'time') return (a.daysLeft || 30) - (b.daysLeft || 30);
+      return 0; // trending (default order)
+    });
 
   useEffect(() => {
     if (!emblaApi) return;
@@ -1199,7 +1220,7 @@ export default function HomePage() {
       {/* Live Deals - Image Card Style */}
       <section className="py-20 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-blue-950 dark:to-indigo-950">
         <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center mb-12">
+          <div className="flex justify-between items-center mb-8">
             <div>
               <h2 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-2">
                 Live Investment Opportunities
@@ -1208,7 +1229,7 @@ export default function HomePage() {
                 Trending deals from verified South African businesses
               </p>
             </div>
-            <Link href="/deals">
+            <Link href="/deals" prefetch>
               <Button variant="outline" className="hidden md:flex group">
                 View All Deals
                 <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
@@ -1216,8 +1237,122 @@ export default function HomePage() {
             </Link>
           </div>
 
+          {/* Filter Controls */}
+          <div className="glass-card-light dark:glass-card-dark rounded-xl p-4 mb-8">
+            <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
+              <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
+                <SlidersHorizontal className="h-5 w-5" />
+                <span className="font-semibold">Filter & Sort:</span>
+              </div>
+              
+              {/* Sector Filter */}
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => setFilterSector('all')}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                    filterSector === 'all'
+                      ? 'bg-blue-600 text-white shadow-lg'
+                      : 'bg-white/50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800'
+                  }`}
+                >
+                  All Sectors
+                </button>
+                <button
+                  onClick={() => setFilterSector('Renewable Energy')}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                    filterSector === 'Renewable Energy'
+                      ? 'bg-green-600 text-white shadow-lg'
+                      : 'bg-white/50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800'
+                  }`}
+                >
+                  Energy
+                </button>
+                <button
+                  onClick={() => setFilterSector('Food & Beverage')}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                    filterSector === 'Food & Beverage'
+                      ? 'bg-amber-600 text-white shadow-lg'
+                      : 'bg-white/50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800'
+                  }`}
+                >
+                  F&B
+                </button>
+                <button
+                  onClick={() => setFilterSector('FinTech')}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                    filterSector === 'FinTech'
+                      ? 'bg-purple-600 text-white shadow-lg'
+                      : 'bg-white/50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800'
+                  }`}
+                >
+                  FinTech
+                </button>
+                <button
+                  onClick={() => setFilterSector('E-commerce')}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                    filterSector === 'E-commerce'
+                      ? 'bg-pink-600 text-white shadow-lg'
+                      : 'bg-white/50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800'
+                  }`}
+                >
+                  E-commerce
+                </button>
+              </div>
+
+              <div className="hidden md:block w-px h-8 bg-slate-300 dark:bg-slate-700" />
+
+              {/* Risk Filter */}
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => setFilterRisk('all')}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                    filterRisk === 'all'
+                      ? 'bg-blue-600 text-white shadow-lg'
+                      : 'bg-white/50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800'
+                  }`}
+                >
+                  All Risk
+                </button>
+                <button
+                  onClick={() => setFilterRisk('low')}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                    filterRisk === 'low'
+                      ? 'bg-green-600 text-white shadow-lg'
+                      : 'bg-white/50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800'
+                  }`}
+                >
+                  Low Risk
+                </button>
+                <button
+                  onClick={() => setFilterRisk('moderate')}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                    filterRisk === 'moderate'
+                      ? 'bg-amber-600 text-white shadow-lg'
+                      : 'bg-white/50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800'
+                  }`}
+                >
+                  Moderate
+                </button>
+              </div>
+
+              <div className="hidden md:block w-px h-8 bg-slate-300 dark:bg-slate-700" />
+
+              {/* Sort Options */}
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="px-4 py-2 rounded-lg text-sm font-medium bg-white/50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 hover:bg-white dark:hover:bg-slate-800 transition-all cursor-pointer"
+              >
+                <option value="trending">Trending</option>
+                <option value="return">Highest Return</option>
+                <option value="funding">Most Funded</option>
+                <option value="time">Ending Soon</option>
+              </select>
+            </div>
+          </div>
+
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {fakeDealss.map((deal, index) => {
+            {filteredDeals.map((deal, index) => {
               const percentFunded = (deal.funded / deal.fundingGoal) * 100;
               
               return (
