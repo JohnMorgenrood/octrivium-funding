@@ -131,6 +131,7 @@ export default function HomePage() {
   const [filterRisk, setFilterRisk] = useState('all');
   const [sortBy, setSortBy] = useState('trending');
   const [isLoading, setIsLoading] = useState(true);
+  const [scrollProgress, setScrollProgress] = useState(0);
 
   const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
   const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
@@ -172,8 +173,27 @@ export default function HomePage() {
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 800);
     return () => clearTimeout(timer);
+  }, []);
+
+  // Scroll progress indicator
+  useEffect(() => {
+    const handleScroll = () => {
+      const totalHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const progress = (window.scrollY / totalHeight) * 100;
+      setScrollProgress(progress);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);  return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-blue-950 dark:to-indigo-950">
+      {/* Scroll Progress Bar */}
+      <motion.div
+        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 z-50 origin-left"
+        style={{ scaleX: scrollProgress / 100 }}
+        initial={{ scaleX: 0 }}
+      />
+
       {/* JSON-LD Structured Data for SEO */}
       <script
         type="application/ld+json"
@@ -1275,6 +1295,167 @@ export default function HomePage() {
               </div>
             </motion.div>
           </div>
+        </div>
+      </section>
+
+      {/* ESG Impact Metrics */}
+      <section className="py-20 bg-white dark:bg-slate-900 relative overflow-hidden">
+        {/* Background Effects */}
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute top-20 left-10 w-72 h-72 bg-green-400 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 right-10 w-72 h-72 bg-blue-400 rounded-full blur-3xl"></div>
+        </div>
+
+        <div className="container mx-auto px-4 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-16"
+          >
+            <Badge className="mb-6 bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20 px-4 py-2">
+              <Heart className="w-4 h-4 mr-2" />
+              Community Impact
+            </Badge>
+            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-4">
+              Investing with Purpose
+            </h2>
+            <p className="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
+              Track the real-world impact of your investments on South African communities
+            </p>
+          </motion.div>
+
+          {/* Impact Grid */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
+            {[
+              {
+                icon: Users,
+                value: '2,450+',
+                label: 'Jobs Created',
+                description: 'Employment opportunities generated',
+                color: 'from-blue-500 to-cyan-500',
+                bgColor: 'bg-blue-500/10',
+                textColor: 'text-blue-600 dark:text-blue-400',
+                delay: 0.1
+              },
+              {
+                icon: Heart,
+                value: '847',
+                label: 'Communities Impacted',
+                description: 'Local areas transformed',
+                color: 'from-pink-500 to-rose-500',
+                bgColor: 'bg-pink-500/10',
+                textColor: 'text-pink-600 dark:text-pink-400',
+                delay: 0.2
+              },
+              {
+                icon: Zap,
+                value: '12.5 MW',
+                label: 'Clean Energy',
+                description: 'Renewable energy generated',
+                color: 'from-green-500 to-emerald-500',
+                bgColor: 'bg-green-500/10',
+                textColor: 'text-green-600 dark:text-green-400',
+                delay: 0.3
+              },
+              {
+                icon: TrendingUp,
+                value: 'R18.7M',
+                label: 'SME Revenue Growth',
+                description: 'Business expansion enabled',
+                color: 'from-purple-500 to-indigo-500',
+                bgColor: 'bg-purple-500/10',
+                textColor: 'text-purple-600 dark:text-purple-400',
+                delay: 0.4
+              }
+            ].map((impact, index) => {
+              const Icon = impact.icon;
+              return (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: impact.delay, duration: 0.6, type: 'spring' }}
+                  whileHover={{ y: -10, scale: 1.05 }}
+                  className="group relative"
+                >
+                  <div className="glass-card-light dark:glass-card-dark p-8 rounded-2xl text-center cursor-default h-full">
+                    {/* Animated Background Circle */}
+                    <motion.div
+                      initial={{ scale: 0, opacity: 0 }}
+                      whileInView={{ scale: 1, opacity: 0.1 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: impact.delay + 0.2, duration: 0.8 }}
+                      className={`absolute inset-0 ${impact.bgColor} rounded-2xl blur-xl group-hover:opacity-20 transition-opacity`}
+                    />
+
+                    {/* Icon */}
+                    <motion.div
+                      initial={{ scale: 0, rotate: -180 }}
+                      whileInView={{ scale: 1, rotate: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: impact.delay + 0.3, type: 'spring', stiffness: 200 }}
+                      whileHover={{ rotate: [0, -10, 10, 0], scale: 1.1 }}
+                      className="relative"
+                    >
+                      <div className={`w-16 h-16 mx-auto mb-6 bg-gradient-to-br ${impact.color} rounded-2xl flex items-center justify-center shadow-lg`}>
+                        <Icon className="w-8 h-8 text-white" />
+                      </div>
+                    </motion.div>
+
+                    {/* Counter Animation */}
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.5 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: impact.delay + 0.4, type: 'spring' }}
+                      className="relative"
+                    >
+                      <div className={`text-4xl md:text-5xl font-bold ${impact.textColor} mb-2`}>
+                        {impact.value}
+                      </div>
+                      <div className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
+                        {impact.label}
+                      </div>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">
+                        {impact.description}
+                      </p>
+                    </motion.div>
+
+                    {/* Pulse Effect on Hover */}
+                    <motion.div
+                      className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${impact.color} opacity-0 group-hover:opacity-10 transition-opacity`}
+                    />
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+
+          {/* Bottom CTA */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+            className="text-center mt-16"
+          >
+            <p className="text-slate-600 dark:text-slate-400 mb-6">
+              Every investment creates positive change in South African communities
+            </p>
+            <Link href="/impact" prefetch>
+              <Button 
+                variant="outline" 
+                size="lg"
+                className="group border-2 border-green-500 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-950"
+              >
+                View Full Impact Report
+                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </Link>
+          </motion.div>
         </div>
       </section>
 
