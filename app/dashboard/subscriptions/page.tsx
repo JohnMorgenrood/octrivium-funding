@@ -247,7 +247,7 @@ export default function SubscriptionsPage() {
         </Card>
 
         {/* STARTER PLAN */}
-        <Card className={currentTier === 'STARTER' ? 'border-purple-500 border-2 relative' : 'relative border-purple-200'}>
+        <Card className={currentTier === 'STARTER' ? 'border-purple-500 dark:border-purple-600 border-2 relative' : 'relative border-purple-200 dark:border-purple-800'}>
           {currentTier === 'STARTER' && (
             <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-purple-500 text-white px-4 py-1 rounded-full text-sm font-medium">
               Current Plan
@@ -270,46 +270,46 @@ export default function SubscriptionsPage() {
           <CardContent className="space-y-6">
             <div className="space-y-3">
               <div className="flex items-start gap-2">
-                <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <Check className="h-5 w-5 text-green-600 dark:text-green-500 flex-shrink-0 mt-0.5" />
                 <span className="text-sm"><strong>15 invoices</strong> per month</span>
               </div>
               <div className="flex items-start gap-2">
-                <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <Check className="h-5 w-5 text-green-600 dark:text-green-500 flex-shrink-0 mt-0.5" />
                 <span className="text-sm"><strong>1 user</strong> only</span>
               </div>
               <div className="flex items-start gap-2">
-                <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <Check className="h-5 w-5 text-green-600 dark:text-green-500 flex-shrink-0 mt-0.5" />
                 <span className="text-sm">Yoco payments (platform processes)</span>
               </div>
               <div className="flex items-start gap-2">
-                <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <Check className="h-5 w-5 text-green-600 dark:text-green-500 flex-shrink-0 mt-0.5" />
                 <span className="text-sm"><strong>Add your bank EFT details</strong></span>
               </div>
               <div className="flex items-start gap-2">
-                <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <Check className="h-5 w-5 text-green-600 dark:text-green-500 flex-shrink-0 mt-0.5" />
                 <span className="text-sm">Customer management</span>
               </div>
               <div className="flex items-start gap-2">
-                <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <Check className="h-5 w-5 text-green-600 dark:text-green-500 flex-shrink-0 mt-0.5" />
                 <span className="text-sm">Advanced reporting</span>
               </div>
               <div className="flex items-start gap-2">
-                <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <Check className="h-5 w-5 text-green-600 dark:text-green-500 flex-shrink-0 mt-0.5" />
                 <span className="text-sm">Priority email support</span>
               </div>
 
-              <div className="pt-3 border-t">
-                <p className="text-xs text-muted-foreground italic">
+              <div className="pt-3 border-t dark:border-slate-700">
+                <p className="text-xs text-amber-700 dark:text-amber-400 italic font-medium">
                   ⚠️ Yoco payments still go through platform account
                 </p>
               </div>
 
               <div className="flex items-start gap-2 opacity-50">
-                <X className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
+                <X className="h-5 w-5 text-red-500 dark:text-red-400 flex-shrink-0 mt-0.5" />
                 <span className="text-sm">No team members</span>
               </div>
               <div className="flex items-start gap-2 opacity-50">
-                <X className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
+                <X className="h-5 w-5 text-red-500 dark:text-red-400 flex-shrink-0 mt-0.5" />
                 <span className="text-sm">No custom Yoco account</span>
               </div>
             </div>
@@ -325,7 +325,7 @@ export default function SubscriptionsPage() {
         </Card>
 
         {/* BUSINESS PLAN */}
-        <Card className={currentTier === 'BUSINESS' ? 'border-green-500 border-2 relative' : 'relative border-green-200 bg-gradient-to-br from-green-50 to-emerald-50'}>
+        <Card className={currentTier === 'BUSINESS' ? 'border-green-500 dark:border-green-600 border-2 relative' : 'relative border-green-200 dark:border-green-800 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/30'}>
           {currentTier === 'BUSINESS' && (
             <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-green-500 text-white px-4 py-1 rounded-full text-sm font-medium">
               Current Plan
@@ -348,35 +348,35 @@ export default function SubscriptionsPage() {
           <CardContent className="space-y-6">
             <div className="space-y-3">
               <div className="flex items-start gap-2">
-                <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <Check className="h-5 w-5 text-green-600 dark:text-green-500 flex-shrink-0 mt-0.5" />
                 <span className="text-sm"><strong>Unlimited invoices</strong></span>
               </div>
               <div className="flex items-start gap-2">
-                <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <Check className="h-5 w-5 text-green-600 dark:text-green-500 flex-shrink-0 mt-0.5" />
                 <span className="text-sm"><strong>Up to 4 team members</strong></span>
               </div>
               <div className="flex items-start gap-2">
-                <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <Check className="h-5 w-5 text-green-600 dark:text-green-500 flex-shrink-0 mt-0.5" />
                 <span className="text-sm"><strong>Use your own Yoco account</strong></span>
               </div>
               <div className="flex items-start gap-2">
-                <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <Check className="h-5 w-5 text-green-600 dark:text-green-500 flex-shrink-0 mt-0.5" />
                 <span className="text-sm"><strong>Add your bank EFT details</strong></span>
               </div>
               <div className="flex items-start gap-2">
-                <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <Check className="h-5 w-5 text-green-600 dark:text-green-500 flex-shrink-0 mt-0.5" />
                 <span className="text-sm">Customer management</span>
               </div>
               <div className="flex items-start gap-2">
-                <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <Check className="h-5 w-5 text-green-600 dark:text-green-500 flex-shrink-0 mt-0.5" />
                 <span className="text-sm">Advanced reporting & analytics</span>
               </div>
               <div className="flex items-start gap-2">
-                <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <Check className="h-5 w-5 text-green-600 dark:text-green-500 flex-shrink-0 mt-0.5" />
                 <span className="text-sm">Priority support</span>
               </div>
               <div className="flex items-start gap-2">
-                <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <Check className="h-5 w-5 text-green-600 dark:text-green-500 flex-shrink-0 mt-0.5" />
                 <span className="text-sm">Custom branding</span>
               </div>
 
