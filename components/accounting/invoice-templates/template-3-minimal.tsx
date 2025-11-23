@@ -37,7 +37,7 @@ export const Template3Minimal = ({ invoice, user, customer, items }: any) => {
         <div>
           <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">From</h3>
           <p className="text-base sm:text-lg font-medium text-gray-900">{user.companyName || `${user.firstName} ${user.lastName}`}</p>
-          <p className="text-sm sm:text-base text-gray-600">{user.companyEmail || user.email}</p>
+          <p className="text-sm sm:text-base text-gray-600">{user.companyEmail}</p>
         </div>
         <div>
           <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">To</h3>
@@ -111,4 +111,5 @@ export const Template3Minimal = ({ invoice, user, customer, items }: any) => {
     </div>
   );
 };
+
 

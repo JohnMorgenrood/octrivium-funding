@@ -35,7 +35,7 @@ export const Template7Elegant = ({ invoice, user, customer, items }: any) => {
         <div className="sm:border-r border-gray-300 sm:pr-6 pb-4 sm:pb-0 border-b sm:border-b-0 print:border-r print:border-b-0 print:pr-6">
           <p className="text-xs uppercase tracking-widest text-gray-500 mb-3">From</p>
           <p className="font-semibold text-xs sm:text-sm md:text-base text-gray-900">{user.companyName || `${user.firstName} ${user.lastName}`}</p>
-          <p className="text-xs sm:text-sm text-gray-600 mt-1">{user.companyEmail || user.email}</p>
+          <p className="text-xs sm:text-sm text-gray-600 mt-1">{user.companyEmail}</p>
         </div>
         <div className="sm:border-r border-gray-300 pb-4 sm:pb-0 border-b sm:border-b-0 md:border-r print:border-r print:border-b-0">
           <p className="text-xs uppercase tracking-widest text-gray-500 mb-3">To</p>
@@ -105,4 +105,5 @@ export const Template7Elegant = ({ invoice, user, customer, items }: any) => {
     </div>
   );
 };
+
 

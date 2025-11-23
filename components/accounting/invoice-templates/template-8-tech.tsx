@@ -43,7 +43,7 @@ export const Template8Tech = ({ invoice, user, customer, items }: any) => {
             <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-4 rounded-xl">
               <p className="text-xs text-orange-600 font-bold uppercase mb-2">From</p>
               <p className="font-semibold text-xs sm:text-sm md:text-base text-gray-900">{user.companyName || `${user.firstName} ${user.lastName}`}</p>
-              <p className="text-xs sm:text-sm text-gray-600">{user.companyEmail || user.email}</p>
+              {user.companyEmail && <p className="text-xs sm:text-sm text-gray-600">{user.companyEmail}</p>}
             </div>
             <div className="bg-gradient-to-br from-teal-50 to-teal-100 p-4 rounded-xl">
               <p className="text-xs text-teal-600 font-bold uppercase mb-2">To</p>
@@ -115,4 +115,5 @@ export const Template8Tech = ({ invoice, user, customer, items }: any) => {
     </div>
   );
 };
+
 

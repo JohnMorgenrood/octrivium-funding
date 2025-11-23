@@ -29,7 +29,7 @@ export const Template1Classic = ({ invoice, user, customer, items }: any) => {
             <img src={user.companyLogo} alt="Logo" className="h-12 sm:h-16 mb-2 object-contain" style={{maxWidth: '200px'}} />
           )}
           <p className="font-semibold text-sm sm:text-base text-gray-900">{user.companyName || `${user.firstName} ${user.lastName}`}</p>
-          <p className="text-xs sm:text-sm text-gray-600">{user.companyEmail || user.email}</p>
+          {user.companyEmail && {user.companyEmail && <p className="text-xs sm:text-sm text-gray-600">{user.companyEmail}</p>}}
         </div>
       </div>
 
@@ -114,4 +114,5 @@ export const Template1Classic = ({ invoice, user, customer, items }: any) => {
     </div>
   );
 };
+
 

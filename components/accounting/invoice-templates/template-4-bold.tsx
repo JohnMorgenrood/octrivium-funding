@@ -22,7 +22,7 @@ export const Template4Bold = ({ invoice, user, customer, items }: any) => {
           <img src={user.companyLogo} alt="Logo" className="h-16 sm:h-20 mb-4 object-contain print:h-20" style={{maxWidth: '200px'}} />
         )}
         <p className="text-center text-xs sm:text-sm font-semibold mb-1">{user.companyName || `${user.firstName} ${user.lastName}`}</p>
-        <p className="text-center text-xs text-purple-200">{user.companyEmail || user.email}</p>
+        <p className="text-center text-xs text-purple-200">{user.companyEmail}</p>
         
         <div className="mt-4 sm:mt-8 w-full print:mt-8">
           <div className="bg-purple-800/50 p-3 rounded mb-2">
@@ -106,4 +106,5 @@ export const Template4Bold = ({ invoice, user, customer, items }: any) => {
     </div>
   );
 };
+
 

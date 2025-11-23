@@ -24,7 +24,7 @@ export const Template9Luxury = ({ invoice, user, customer, items }: any) => {
               <img src={user.companyLogo} alt="Logo" className="h-20 sm:h-24 mb-4 object-contain" style={{maxWidth: '250px'}} />
             )}
             <p className="text-yellow-600 font-semibold text-base sm:text-lg">{user.companyName || `${user.firstName} ${user.lastName}`}</p>
-            <p className="text-gray-400 text-xs sm:text-sm">{user.companyEmail || user.email}</p>
+            <p className="text-gray-400 text-xs sm:text-sm">{user.companyEmail}</p>
           </div>
           <div className="text-right">
             <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold text-yellow-600 mb-3" style={{ fontFamily: 'serif' }}>
@@ -120,4 +120,5 @@ export const Template9Luxury = ({ invoice, user, customer, items }: any) => {
     </div>
   );
 };
+
 

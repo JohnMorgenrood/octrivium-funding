@@ -39,7 +39,7 @@ export const Template2Modern = ({ invoice, user, customer, items }: any) => {
           <div className="bg-blue-50 p-4 rounded-lg">
             <p className="text-xs text-blue-600 font-semibold uppercase mb-1">From</p>
             <p className="font-semibold text-xs sm:text-sm md:text-base text-gray-900">{user.companyName || `${user.firstName} ${user.lastName}`}</p>
-            <p className="text-xs sm:text-sm text-gray-600">{user.companyEmail || user.email}</p>
+            {user.companyEmail && <p className="text-xs sm:text-sm text-gray-600">{user.companyEmail}</p>}
           </div>
           <div className="bg-blue-50 p-4 rounded-lg">
             <p className="text-xs text-blue-600 font-semibold uppercase mb-1">To</p>
@@ -109,4 +109,5 @@ export const Template2Modern = ({ invoice, user, customer, items }: any) => {
     </div>
   );
 };
+
 
