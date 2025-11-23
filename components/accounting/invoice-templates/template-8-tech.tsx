@@ -30,12 +30,8 @@ export const Template8Tech = ({ invoice, user, customer, items }: any) => {
               <p className="text-white/90 text-base sm:text-lg">{invoice.invoiceNumber}</p>
             </div>
             <div>
-              {user.companyLogo ? (
+              {user.companyLogo && (
                 <img src={user.companyLogo} alt="Logo" className="h-16 sm:h-20 object-contain" style={{maxWidth: '200px'}} />
-              ) : (
-                <div className="h-16 w-16 sm:h-20 sm:w-20 bg-white rounded-xl flex items-center justify-center text-orange-500 text-2xl sm:text-3xl font-bold shadow-lg">
-                  {user.companyName?.charAt(0) || user.firstName?.charAt(0)}
-                </div>
               )}
             </div>
           </div>

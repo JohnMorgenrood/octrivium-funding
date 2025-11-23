@@ -25,12 +25,8 @@ export const Template1Classic = ({ invoice, user, customer, items }: any) => {
           <p className="text-sm sm:text-base text-gray-600">{invoice.invoiceNumber}</p>
         </div>
         <div className="text-left sm:text-right">
-          {user.companyLogo ? (
+          {user.companyLogo && (
             <img src={user.companyLogo} alt="Logo" className="h-12 sm:h-16 mb-2 object-contain" style={{maxWidth: '200px'}} />
-          ) : (
-            <div className="h-12 w-12 sm:h-16 sm:w-16 bg-blue-600 rounded-lg flex items-center justify-center text-white text-xl sm:text-2xl font-bold">
-              {user.companyName?.charAt(0) || user.firstName?.charAt(0)}
-            </div>
           )}
           <p className="font-semibold text-sm sm:text-base text-gray-900">{user.companyName || `${user.firstName} ${user.lastName}`}</p>
           <p className="text-xs sm:text-sm text-gray-600">{user.email}</p>

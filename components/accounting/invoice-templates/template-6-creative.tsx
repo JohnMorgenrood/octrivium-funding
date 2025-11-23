@@ -25,12 +25,8 @@ export const Template6Creative = ({ invoice, user, customer, items }: any) => {
           <p className="text-gray-400 text-base sm:text-lg md:text-xl">{invoice.invoiceNumber}</p>
         </div>
         <div>
-          {user.companyLogo ? (
-            <img src={user.companyLogo} alt="Logo" className="h-16 sm:h-20 object-contain" style={{maxWidth: '200px', filter: 'brightness(0) invert(1)'}} />
-          ) : (
-            <div className="h-16 w-16 sm:h-20 sm:w-20 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-lg flex items-center justify-center text-xl sm:text-2xl font-bold">
-              {user.companyName?.charAt(0) || user.firstName?.charAt(0)}
-            </div>
+          {user.companyLogo && (
+            <img src={user.companyLogo} alt="Logo" className="h-16 sm:h-20 object-contain" style={{maxWidth: '200px'}} />
           )}
         </div>
       </div>

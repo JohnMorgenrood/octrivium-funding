@@ -28,12 +28,8 @@ export const Template10Playful = ({ invoice, user, customer, items }: any) => {
             <p className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800">{invoice.invoiceNumber}</p>
           </div>
           <div>
-            {user.companyLogo ? (
+            {user.companyLogo && (
               <img src={user.companyLogo} alt="Logo" className="h-16 sm:h-20 object-contain" style={{maxWidth: '200px'}} />
-            ) : (
-              <div className="h-16 w-16 sm:h-20 sm:w-20 bg-gradient-to-br from-pink-400 via-purple-400 to-blue-400 rounded-2xl flex items-center justify-center text-white text-xl sm:text-2xl font-bold shadow-lg">
-                {user.companyName?.charAt(0) || user.firstName?.charAt(0)}
-              </div>
             )}
           </div>
         </div>

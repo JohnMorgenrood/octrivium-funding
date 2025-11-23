@@ -23,12 +23,8 @@ export const Template5Corporate = ({ invoice, user, customer, items }: any) => {
       <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:gap-0 mb-4 sm:mb-6 md:mb-8 pb-4 sm:pb-6 md:pb-8 border-b-2 border-green-700 print:flex-row print:mb-8 print:pb-8">
         <div className="flex-1">
           <div className="mb-4">
-            {user.companyLogo ? (
+            {user.companyLogo && (
               <img src={user.companyLogo} alt="Logo" className="h-12 sm:h-16 object-contain" style={{maxWidth: '200px'}} />
-            ) : (
-              <div className="h-12 w-12 sm:h-16 sm:w-16 bg-green-700 flex items-center justify-center text-white text-xl sm:text-2xl font-bold">
-                {user.companyName?.charAt(0) || user.firstName?.charAt(0)}
-              </div>
             )}
           </div>
           <p className="font-bold text-xs sm:text-sm md:text-base text-gray-900">{user.companyName || `${user.firstName} ${user.lastName}`}</p>
