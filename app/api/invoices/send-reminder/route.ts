@@ -53,7 +53,7 @@ export async function POST(request: Request) {
       await resend.emails.send({
         from: `${companyName} <noreply@octrivium.co.za>`,
         to: invoice.customer.email,
-        replyTo: companyEmail,
+        reply_to: companyEmail,
         subject: `Payment Reminder: Invoice ${invoice.invoiceNumber}`,
         html: `
           <!DOCTYPE html>

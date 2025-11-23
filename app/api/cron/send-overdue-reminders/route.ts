@@ -80,7 +80,7 @@ export async function GET(request: Request) {
         await resend.emails.send({
           from: `${companyName} <noreply@octrivium.co.za>`,
           to: invoice.customer!.email!,
-          replyTo: companyEmail,
+          reply_to: companyEmail,
           subject: `Payment Overdue: Invoice ${invoice.invoiceNumber}`,
           html: `
             <!DOCTYPE html>
