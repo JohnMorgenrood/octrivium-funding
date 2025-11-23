@@ -106,8 +106,6 @@ export async function POST(
                     <td style="padding: 40px;">
                       <div style="color: #111827; font-size: 18px; font-weight: 600; margin-bottom: 10px;">Hi ${invoice.customer.name},</div>
                       <div style="color: #6b7280; font-size: 15px; line-height: 1.6; margin-bottom: 30px;">Thank you for your business! Please find your invoice details below.</div>
-                      <div style="color: #111827; font-size: 18px; font-weight: 600; margin-bottom: 10px;">Hi ${invoice.customer.name},</div>
-                      <div style="color: #6b7280; font-size: 15px; line-height: 1.6; margin-bottom: 30px;">Thank you for your business! Please find your invoice details below.</div>
 
                       <!-- Invoice Summary Box -->
                       <table width="100%" cellpadding="0" cellspacing="0" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 12px; overflow: hidden; margin-bottom: 30px; border-left: 5px solid #9333ea;">
@@ -189,8 +187,6 @@ export async function POST(
                             </table>
                           </td>
                         </tr>
-                      </table>
-
                       </table>
 
                       <!-- Payment Section -->

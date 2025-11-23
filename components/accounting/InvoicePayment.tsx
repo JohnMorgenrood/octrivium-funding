@@ -162,9 +162,17 @@ export default function InvoicePayment({ invoice }: InvoicePaymentProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-4 sm:py-8 px-2 sm:px-4">
+      <style jsx global>{`
+        @media print {
+          body * { visibility: hidden; }
+          .print-area, .print-area * { visibility: visible; }
+          .print-area { position: absolute; left: 0; top: 0; width: 100%; }
+          .no-print { display: none !important; }
+        }
+      `}</style>
       <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6">
         {/* Invoice Template Display */}
-        <Card className="print:shadow-none">
+        <Card className="print:shadow-none print-area">
           <CardContent className="p-4 sm:p-6">
             <TemplateComponent
               invoice={{
@@ -213,7 +221,7 @@ export default function InvoicePayment({ invoice }: InvoicePaymentProps) {
 
         {/* Signature Section */}
         {invoice.status !== 'PAID' && invoice.requiresSignature && (
-          <Card>
+          <Card className="no-print">
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 <span>Sign Invoice</span>
@@ -260,7 +268,7 @@ export default function InvoicePayment({ invoice }: InvoicePaymentProps) {
         {/* Payment Section */}
         {invoice.status !== 'PAID' && (
           <>
-            <Card>
+            <Card className="no-print">
               <CardHeader>
                 <CardTitle>
                   Pay with Yoco (ZAR)
@@ -288,7 +296,7 @@ export default function InvoicePayment({ invoice }: InvoicePaymentProps) {
 
             {/* Bank Transfer - STARTER/BUSINESS Only */}
             {(invoice.user?.subscriptionTier === 'STARTER' || invoice.user?.subscriptionTier === 'BUSINESS') && invoice.user?.bankAccountNumber && (
-              <Card className="border-blue-200 bg-blue-50/30">
+              <Card className="border-blue-200 bg-blue-50/30 no-print">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -333,12 +341,14 @@ export default function InvoicePayment({ invoice }: InvoicePaymentProps) {
             )}
 
             {/* Currency Converter for PayPal */}
-            <CurrencyConverter 
-              zarAmount={invoice.amountDue} 
-              onUsdCalculated={setUsdAmountWithFees}
-            />
+            <div className="no-print">
+              <CurrencyConverter 
+                zarAmount={invoice.amountDue} 
+                onUsdCalculated={setUsdAmountWithFees}
+              />
+            </div>
             
-            <Card>
+            <Card className="no-print">
               <CardHeader>
                 <CardTitle>Pay with PayPal (USD)</CardTitle>
               </CardHeader>
@@ -361,13 +371,11 @@ export default function InvoicePayment({ invoice }: InvoicePaymentProps) {
         )}
 
         {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+        <div className="flex flex-col sm:flex-row gap-3 justify-center no-print">
           <Button 
             size="lg" 
             variant="outline"
-            onClick={async () => {
-              window.open(`/api/accounting/invoices/${invoice.id}/pdf`, '_blank');
-            }}
+            onClick={() => window.print()}
             className="w-full sm:w-auto"
           >
             <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -387,7 +395,7 @@ export default function InvoicePayment({ invoice }: InvoicePaymentProps) {
         </div>
 
         {/* Payment Info */}
-        <Card>
+        <Card className="no-print">
           <CardContent className="p-6">
             <div className="flex items-start gap-3">
               <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
