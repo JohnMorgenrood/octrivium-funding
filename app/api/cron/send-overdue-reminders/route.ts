@@ -61,7 +61,8 @@ export async function GET(request: Request) {
         const recentReminder = await prisma.notification.findFirst({
           where: {
             userId: invoice.userId,
-            type: 'PAYMENT_REMINDER',
+            type: 'EMAIL',
+            category: 'PAYMENT_REMINDER',
             message: {
               contains: invoice.invoiceNumber,
             },
@@ -163,7 +164,8 @@ export async function GET(request: Request) {
         await prisma.notification.create({
           data: {
             userId: invoice.userId,
-            type: 'PAYMENT_REMINDER',
+            type: 'EMAIL',
+            category: 'PAYMENT_REMINDER',
             title: `Reminder sent for ${invoice.invoiceNumber}`,
             message: `Automated overdue reminder sent to ${invoice.customer!.name} (${daysOverdue} days overdue)`,
             read: true, // Mark as read since it's automatic
