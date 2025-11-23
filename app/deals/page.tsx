@@ -7,9 +7,10 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Navigation } from '@/components/navigation';
-import { Building2, TrendingUp, Users, Calendar, ArrowUpRight, ArrowDownRight, Clock, Target, Shield, ArrowRight, Lock } from 'lucide-react';
+import { Building2, TrendingUp, Users, Calendar, ArrowUpRight, ArrowDownRight, Clock, Target, Shield, ArrowRight, Lock, Check, BarChart3, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { formatCurrency } from '@/lib/utils';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface Deal {
   id: string;
@@ -174,6 +175,8 @@ export default function DealsPage() {
   const [filterRisk, setFilterRisk] = useState('all');
   const [deals, setDeals] = useState<Deal[]>([]);
   const [loading, setLoading] = useState(true);
+  const [compareDeals, setCompareDeals] = useState<number[]>([]);
+  const [showComparison, setShowComparison] = useState(false);
 
   useEffect(() => {
     fetchDeals();
@@ -215,6 +218,23 @@ export default function DealsPage() {
   
   const getDealInvestors = (deal: any) => 
     '_count' in deal ? deal._count.investments : ('investors' in deal ? deal.investors : 0);
+
+  // Comparison functions
+  const toggleCompare = (dealId: number) => {
+    setCompareDeals(prev => {
+      if (prev.includes(dealId)) {
+        return prev.filter(id => id !== dealId);
+      } else if (prev.length < 3) {
+        return [...prev, dealId];
+      }
+      return prev;
+    });
+  };
+
+  const clearComparison = () => {
+    setCompareDeals([]);
+    setShowComparison(false);
+  };
   
   const getDealImage = (deal: any) => 
     'imageUrl' in deal && deal.imageUrl ? deal.imageUrl : ('image' in deal ? deal.image : '/placeholder-business.jpg');
@@ -516,6 +536,25 @@ export default function DealsPage() {
                     </div>
                   )}
 
+                  {/* Compare Checkbox */}
+                  <div className="flex items-center justify-between pt-2 border-t border-slate-200 dark:border-slate-700">
+                    <span className="text-xs text-slate-600 dark:text-slate-400">Compare this deal</span>
+                    <button
+                      onClick={() => toggleCompare(Number(deal.id))}
+                      className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all ${
+                        compareDeals.includes(Number(deal.id))
+                          ? 'bg-green-500 text-white scale-110'
+                          : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
+                      } shadow-md`}
+                    >
+                      {compareDeals.includes(Number(deal.id)) ? (
+                        <Check className="h-5 w-5" />
+                      ) : (
+                        <div className="w-5 h-5 border-2 border-slate-400 dark:border-slate-500 rounded"></div>
+                      )}
+                    </button>
+                  </div>
+
                   {/* CTA Button */}
                   <Link href={`/deals/${deal.id}`} className="block">
                     <Button 
@@ -531,6 +570,141 @@ export default function DealsPage() {
             );
           })}
         </div>
+
+        {/* Floating Compare Button */}
+        <AnimatePresence>
+          {compareDeals.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 100 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 100 }}
+              className="fixed bottom-8 right-8 z-40"
+            >
+              <Button
+                size="lg"
+                onClick={() => setShowComparison(true)}
+                className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-2xl px-6 py-6 text-lg font-bold group"
+              >
+                Compare Deals ({compareDeals.length}/3)
+                <BarChart3 className="ml-2 h-5 w-5 group-hover:scale-110 transition-transform" />
+              </Button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Comparison Modal */}
+        <AnimatePresence>
+          {showComparison && compareDeals.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+              onClick={() => setShowComparison(false)}
+            >
+              <motion.div
+                initial={{ scale: 0.9, y: 50 }}
+                animate={{ scale: 1, y: 0 }}
+                exit={{ scale: 0.9, y: 50 }}
+                onClick={(e) => e.stopPropagation()}
+                className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-auto"
+              >
+                {/* Modal Header */}
+                <div className="sticky top-0 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 p-6 flex justify-between items-center z-10">
+                  <div>
+                    <h3 className="text-2xl font-bold text-slate-900 dark:text-white">Compare Deals</h3>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">Side-by-side comparison of {compareDeals.length} deals</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button variant="outline" onClick={clearComparison} size="sm">
+                      Clear All
+                    </Button>
+                    <Button variant="ghost" onClick={() => setShowComparison(false)} size="sm">
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Comparison Table */}
+                <div className="p-6">
+                  <div className="grid gap-6" style={{ gridTemplateColumns: `repeat(${compareDeals.length}, 1fr)` }}>
+                    {compareDeals.map((dealId) => {
+                      const deal = [...fakeDeals, ...deals].find((d: any) => Number(d.id) === dealId);
+                      if (!deal) return null;
+
+                      const dealName = getDealName(deal);
+                      const dealIndustry = getDealIndustry(deal);
+                      const dealImage = getDealImage(deal);
+                      const dealLogo = getDealLogo(deal);
+                      const funded = getDealFunded(deal);
+                      const percentFunded = (funded / deal.fundingGoal) * 100;
+                      const investors = getDealInvestors(deal);
+                      const targetReturn = 'targetReturn' in deal ? deal.targetReturn : 1.5;
+                      const riskLevel = 'riskLevel' in deal ? deal.riskLevel : 'Medium';
+                      const daysLeft = 'daysLeft' in deal ? deal.daysLeft : 30;
+
+                      return (
+                        <div key={deal.id} className="space-y-4">
+                          {/* Deal Card */}
+                          <div className="bg-slate-50 dark:bg-slate-800 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700">
+                            <div className="relative h-32">
+                              <Image src={dealImage} alt={dealName} fill className="object-cover" />
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+                              <div className="absolute bottom-3 left-3 flex items-center gap-2">
+                                <span className="text-2xl">{dealLogo}</span>
+                                <div>
+                                  <div className="text-white font-bold text-sm">{dealName}</div>
+                                  <div className="text-white/80 text-xs">{dealIndustry}</div>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="p-4 space-y-3">
+                              <div className="flex justify-between items-center">
+                                <span className="text-xs text-slate-600 dark:text-slate-400">Target Return</span>
+                                <Badge className="bg-green-500/10 text-green-600 dark:text-green-400 font-bold">{targetReturn}x</Badge>
+                              </div>
+                              <div className="flex justify-between items-center">
+                                <span className="text-xs text-slate-600 dark:text-slate-400">Risk Level</span>
+                                <Badge variant="outline" className="text-xs">{riskLevel}</Badge>
+                              </div>
+                              <div className="flex justify-between items-center">
+                                <span className="text-xs text-slate-600 dark:text-slate-400">Funding Progress</span>
+                                <span className="font-bold text-sm text-blue-600 dark:text-blue-400">{percentFunded.toFixed(0)}%</span>
+                              </div>
+                              <div className="flex justify-between items-center">
+                                <span className="text-xs text-slate-600 dark:text-slate-400">Total Raised</span>
+                                <span className="font-bold text-sm">{formatCurrency(funded)}</span>
+                              </div>
+                              <div className="flex justify-between items-center">
+                                <span className="text-xs text-slate-600 dark:text-slate-400">Funding Goal</span>
+                                <span className="font-bold text-sm">{formatCurrency(deal.fundingGoal)}</span>
+                              </div>
+                              <div className="flex justify-between items-center">
+                                <span className="text-xs text-slate-600 dark:text-slate-400">Investors</span>
+                                <span className="font-bold text-sm">{investors}</span>
+                              </div>
+                              <div className="flex justify-between items-center">
+                                <span className="text-xs text-slate-600 dark:text-slate-400">Days Left</span>
+                                <Badge variant="outline" className="text-xs">{daysLeft} days</Badge>
+                              </div>
+                            </div>
+                          </div>
+
+                          <Link href={`/deals/${deal.id}`}>
+                            <Button className="w-full" size="sm">
+                              View Full Details
+                              <ArrowRight className="ml-2 h-4 w-4" />
+                            </Button>
+                          </Link>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* No Results */}
         {filteredDeals.length === 0 && (
