@@ -227,26 +227,26 @@ export default function HomePage() {
             </div>
           </Link>
           <div className="hidden md:flex items-center space-x-8">
-            <Link href="/deals" className="text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors">
+            <Link href="/deals" prefetch className="text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors">
               Browse Deals
             </Link>
-            <Link href="/accounting-software" className="text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors flex items-center gap-1">
+            <Link href="/accounting-software" prefetch className="text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors flex items-center gap-1">
               <Calculator className="h-4 w-4" />
               Accounting
             </Link>
-            <Link href="/how-it-works" className="text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors">
+            <Link href="/how-it-works" prefetch className="text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors">
               How It Works
             </Link>
-            <Link href="/about" className="text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors">
+            <Link href="/about" prefetch className="text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors">
               About
             </Link>
           </div>
           <div className="flex items-center space-x-2 md:space-x-4">
             <ThemeToggle />
-            <Link href="/login" className="hidden sm:block">
+            <Link href="/login" prefetch className="hidden sm:block">
               <Button variant="ghost">Sign In</Button>
             </Link>
-            <Link href="/register" className="hidden sm:block">
+            <Link href="/register" prefetch className="hidden sm:block">
               <Button className="shadow-lg">Get Started</Button>
             </Link>
             
@@ -317,7 +317,9 @@ export default function HomePage() {
                     fill
                     className="object-cover"
                     priority={index === 0}
-                    quality={90}
+                    loading={index === 0 ? 'eager' : 'lazy'}
+                    quality={85}
+                    sizes="100vw"
                   />
                   <div className={`absolute inset-0 bg-gradient-to-r ${slide.gradient}`} />
                   <div className="absolute inset-0 bg-black/20" />
@@ -367,7 +369,7 @@ export default function HomePage() {
                           transition={{ delay: 0.5, duration: 0.6 }}
                           className="flex flex-col sm:flex-row gap-4"
                         >
-                          <Link href="/register?role=investor">
+                          <Link href="/register?role=investor" prefetch>
                             <Button 
                               size="lg" 
                               className="text-lg px-8 py-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-2xl w-full sm:w-auto group"
@@ -377,7 +379,7 @@ export default function HomePage() {
                               <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                             </Button>
                           </Link>
-                          <Link href="/register?role=business">
+                          <Link href="/register?role=business" prefetch>
                             <Button 
                               size="lg" 
                               variant="outline" 
