@@ -21,21 +21,44 @@ export async function POST(req: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Compress and optimize image
-    const compressedBuffer = await sharp(buffer)
-      .resize(800, 800, {
-        fit: 'inside',
-        withoutEnlargement: true,
-      })
-      .jpeg({
-        quality: 85,
-        progressive: true,
-      })
-      .toBuffer();
+    // Get image metadata to detect format
+    const metadata = await sharp(buffer).metadata();
+    const hasAlpha = metadata.hasAlpha;
+    
+    // Compress and optimize image, preserving transparency
+    let compressedBuffer: Buffer;
+    let mimeType: string;
+    
+    if (hasAlpha) {
+      // Use PNG for images with transparency
+      compressedBuffer = await sharp(buffer)
+        .resize(800, 800, {
+          fit: 'inside',
+          withoutEnlargement: true,
+        })
+        .png({
+          quality: 90,
+          compressionLevel: 9,
+        })
+        .toBuffer();
+      mimeType = 'image/png';
+    } else {
+      // Use JPEG for images without transparency
+      compressedBuffer = await sharp(buffer)
+        .resize(800, 800, {
+          fit: 'inside',
+          withoutEnlargement: true,
+        })
+        .jpeg({
+          quality: 85,
+          progressive: true,
+        })
+        .toBuffer();
+      mimeType = 'image/jpeg';
+    }
 
     // Convert to base64
     const base64 = compressedBuffer.toString('base64');
-    const mimeType = 'image/jpeg';
     const dataUrl = `data:${mimeType};base64,${base64}`;
 
     return NextResponse.json({

@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { User, Lock, Bell, Building2, Loader2, CreditCard, Users, Landmark } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import NotificationSettings from '@/components/NotificationSettings';
+import BrandColorCustomizer from '@/components/BrandColorCustomizer';
 
 export default function SettingsPage() {
   const { data: session, update } = useSession();
@@ -723,6 +724,12 @@ export default function SettingsPage() {
                       )}
                     </div>
                   </div>
+                </div>
+
+                {/* Brand Colors */}
+                <div className="space-y-4 pb-4 border-b">
+                  <h3 className="font-medium">Brand Colors</h3>
+                  <BrandColorCustomizer companyLogo={companyData.companyLogo} />
                 </div>
 
                 {/* Contact Information */}
