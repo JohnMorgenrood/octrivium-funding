@@ -401,9 +401,8 @@ export async function POST(
           <div class="email-container">
             <!-- Header -->
             <div class="header">
-              ${invoice.user.companyLogo ? `<img src="${invoice.user.companyLogo}" alt="${invoice.user.companyName || 'Octrivium'}" style="max-height: 60px; max-width: 200px; height: auto; width: auto; object-fit: contain;">` : '<h2 style="margin: 0; color: white;">Octrivium</h2>'}
+              ${invoice.user.companyLogo ? `<img src="${invoice.user.companyLogo}" alt="${invoice.user.companyName || 'Company Logo'}" style="display: block; max-height: 80px; max-width: 220px; height: auto; width: auto; margin: 0 auto 15px; object-fit: contain;">` : `<h2 style="margin: 0; color: white; font-size: 32px;">${invoice.user.companyName || 'Octrivium'}</h2>`}
               <h1>Invoice ${invoice.invoiceNumber}</h1>
-              ${invoice.user.companyName && !invoice.user.companyLogo ? `<div class="company-name">${invoice.user.companyName}</div>` : ''}
             </div>
 
             <!-- Content -->
@@ -553,13 +552,15 @@ export async function POST(
       </html>
     `;
 
-    // Send email - Use company email if available
-    const fromEmail = invoice.user.companyEmail || process.env.RESEND_FROM_EMAIL || 'support@octrivium.co.za';
+    // Send email - Use company email if available, otherwise use verified Resend domain
+    const fromEmail = process.env.RESEND_FROM_EMAIL || 'invoices@octrivium.co.za';
+    const replyToEmail = invoice.user.companyEmail || invoice.user.email;
     
     const resend = getResendClient();
     const { data, error } = await resend.emails.send({
       from: fromEmail,
       to: [invoice.customer.email],
+      reply_to: replyToEmail,
       subject: `Invoice ${invoice.invoiceNumber} from ${invoice.user.companyName || invoice.user.firstName + ' ' + invoice.user.lastName}`,
       html: emailHtml,
     });

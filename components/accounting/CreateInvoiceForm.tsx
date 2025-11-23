@@ -135,7 +135,7 @@ export default function CreateInvoiceForm({ customers, invoiceNumber, products }
   const loadProduct = (itemId: string, productId: string) => {
     const product = products.find(p => p.id === productId);
     if (product) {
-      updateItem(itemId, 'description', product.name);
+      updateItem(itemId, 'description', product.description || product.name);
       updateItem(itemId, 'unitPrice', Number(product.unitPrice));
       if (product.costPrice) {
         updateItem(itemId, 'costPrice', Number(product.costPrice));
