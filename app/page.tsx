@@ -1464,13 +1464,13 @@ export default function HomePage() {
             <p className="text-slate-600 dark:text-slate-400 mb-6">
               Every investment creates positive change in South African communities
             </p>
-            <Link href="/impact" prefetch>
+            <Link href="/about" prefetch>
               <Button 
                 variant="outline" 
                 size="lg"
                 className="group border-2 border-green-500 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-950"
               >
-                View Full Impact Report
+                Learn More About Our Impact
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
@@ -1577,7 +1577,7 @@ export default function HomePage() {
                 <Link href="/register?role=business" prefetch>
                   <Button 
                     size="lg"
-                    className="w-full sm:w-auto bg-white text-indigo-600 hover:bg-blue-50 px-8 py-6 text-lg font-bold shadow-2xl group"
+                    className="w-full sm:w-auto bg-white text-indigo-600 hover:bg-blue-50 hover:text-indigo-700 px-8 py-6 text-lg font-bold shadow-2xl group"
                   >
                     List Your Deal Now
                     <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
@@ -1587,7 +1587,7 @@ export default function HomePage() {
                   <Button 
                     size="lg"
                     variant="outline"
-                    className="w-full sm:w-auto border-2 border-white/30 text-white hover:bg-white/10 backdrop-blur-sm px-8 py-6 text-lg"
+                    className="w-full sm:w-auto border-2 border-white text-white hover:bg-white hover:text-indigo-600 backdrop-blur-sm px-8 py-6 text-lg font-semibold transition-all"
                   >
                     See How It Works
                   </Button>
