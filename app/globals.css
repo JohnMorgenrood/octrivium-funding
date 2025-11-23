@@ -62,6 +62,54 @@
   .text-balance {
     text-wrap: balance;
   }
+  
+  /* Glassmorphism Effects - 2025 Design Trend */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  }
+  
+  .glass-card-light {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px) saturate(150%);
+    -webkit-backdrop-filter: blur(10px) saturate(150%);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.05);
+  }
+  
+  .glass-card-dark {
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Gradient Mesh Backgrounds */
+  .gradient-mesh {
+    background: 
+      radial-gradient(at 20% 30%, rgba(99, 102, 241, 0.3) 0px, transparent 50%),
+      radial-gradient(at 80% 70%, rgba(139, 92, 246, 0.3) 0px, transparent 50%),
+      radial-gradient(at 40% 80%, rgba(59, 130, 246, 0.2) 0px, transparent 50%);
+  }
+  
+  /* Smooth Transitions */
+  .transition-smooth {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  /* Hover Lift Effect */
+  .hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.2);
+  }
 }
 
 /* Embla Carousel Styles */

@@ -6,11 +6,13 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { ArrowRight, TrendingUp, Shield, Users, BarChart3, Zap, Heart, ArrowUpRight, ArrowDownRight, Clock, DollarSign, Target, Menu, ChevronLeft, ChevronRight, Calculator, FileText, Check } from 'lucide-react';
+import { ArrowRight, TrendingUp, Shield, Users, BarChart3, Zap, Heart, ArrowUpRight, ArrowDownRight, Clock, DollarSign, Target, Menu, ChevronLeft, ChevronRight, Calculator, FileText, Check, Star, Quote } from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
 import { motion, AnimatePresence } from 'framer-motion';
+import { RiskBadge } from '@/components/ui/risk-badge';
+import { RiskBadge } from '@/components/ui/risk-badge';
 
 // Hero Carousel Slides
 const heroSlides = [
@@ -64,6 +66,7 @@ const fakeDealss = [
     status: 'active',
     logo: '🔋',
     image: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=600&h=400&fit=crop',
+    riskScore: 4,
   },
   {
     id: 2,
@@ -81,6 +84,7 @@ const fakeDealss = [
     status: 'active',
     logo: '☕',
     image: 'https://images.unsplash.com/photo-1511920170033-f8396924c348?w=600&h=400&fit=crop',
+    riskScore: 4,
   },
   {
     id: 3,
@@ -98,6 +102,7 @@ const fakeDealss = [
     status: 'active',
     logo: '💳',
     image: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=600&h=400&fit=crop',
+    riskScore: 3,
   },
   {
     id: 4,
@@ -1236,9 +1241,14 @@ export default function HomePage() {
               const percentFunded = (deal.funded / deal.fundingGoal) * 100;
               
               return (
-                <div
+                <motion.div
                   key={deal.id}
-                  className="group bg-white dark:bg-slate-800 rounded-2xl shadow-lg hover:shadow-2xl border border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-600 hover:-translate-y-2 transition-all duration-300 overflow-hidden"
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1, duration: 0.5 }}
+                  whileHover={{ y: -8 }}
+                  className="group bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-2xl shadow-lg hover:shadow-2xl border border-slate-200/50 dark:border-slate-700/50 hover:border-blue-400/50 dark:hover:border-blue-500/50 transition-all duration-300 overflow-hidden glass-card-light dark:glass-card-dark"
                 >
                   {/* Business Image Header */}
                   <div className="relative h-48 overflow-hidden">
@@ -1270,6 +1280,11 @@ export default function HomePage() {
                       <Badge className="bg-emerald-500 text-white font-bold text-sm px-2.5 py-1 shadow-lg">
                         {deal.targetReturn}x
                       </Badge>
+                    </div>
+                    
+                    {/* Risk Badge */}
+                    <div className="absolute top-3 left-3">
+                      <RiskBadge score={deal.riskScore} showLabel={false} />
                     </div>
                   </div>
 
@@ -1330,7 +1345,7 @@ export default function HomePage() {
                       </Button>
                     </Link>
                   </div>
-                </div>
+                </motion.div>
               );
             })}
           </div>
@@ -1342,6 +1357,93 @@ export default function HomePage() {
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Social Proof - Testimonials */}
+      <section className="py-20 bg-white dark:bg-slate-900 relative overflow-hidden">
+        <div className="absolute inset-0 gradient-mesh opacity-30"></div>
+        
+        <div className="container mx-auto px-4 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-16"
+          >
+            <Badge className="mb-6 bg-blue-500/10 text-blue-600 border-blue-500/20 px-4 py-2">
+              <Heart className="w-4 h-4 mr-2" />
+              Trusted by South Africans
+            </Badge>
+            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-4">
+              What Our Community Says
+            </h2>
+            <p className="text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
+              Real stories from investors and businesses growing together
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {[
+              {
+                name: "Sarah M.",
+                role: "Investor",
+                location: "Cape Town",
+                quote: "I've earned consistent returns while supporting local businesses. The platform makes it easy to diversify my investments.",
+                rating: 5
+              },
+              {
+                name: "Michael T.",
+                role: "Business Owner",
+                location: "Johannesburg",
+                quote: "Got funding in 2 weeks without giving up equity. The investors genuinely care about our success. Game changer for my business.",
+                rating: 5
+              },
+              {
+                name: "Thandiwe N.",
+                role: "Investor",
+                location: "Durban",
+                quote: "Finally, an investment platform that's transparent and focused on South African SMEs. Love seeing my portfolio grow monthly.",
+                rating: 5
+              }
+            ].map((testimonial, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1, duration: 0.5 }}
+                className="glass-card-light dark:glass-card-dark p-8 rounded-2xl hover-lift"
+              >
+                <div className="flex items-center gap-1 mb-4">
+                  {[...Array(testimonial.rating)].map((_, i) => (
+                    <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                  ))}
+                </div>
+                
+                <Quote className="w-8 h-8 text-blue-500/20 mb-4" />
+                
+                <p className="text-slate-700 dark:text-slate-300 mb-6 leading-relaxed">
+                  "{testimonial.quote}"
+                </p>
+                
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                    {testimonial.name[0]}
+                  </div>
+                  <div>
+                    <div className="font-semibold text-slate-900 dark:text-white">
+                      {testimonial.name}
+                    </div>
+                    <div className="text-sm text-slate-500 dark:text-slate-400">
+                      {testimonial.role} • {testimonial.location}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
