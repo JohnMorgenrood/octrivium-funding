@@ -135,6 +135,11 @@ model User {
   yocoPublicKey     String?  // Their own pk_live_xxx or pk_test_xxx
   yocoSecretKey     String?  // Their own sk_live_xxx or sk_test_xxx
 
+  // Brand colors for invoices and templates
+  brandColorPrimary   String?  // Main brand color
+  brandColorSecondary String?  // Secondary brand color
+  brandColorAccent    String?  // Accent/highlight color
+
   // Notification preferences
   emailNotifications    Boolean @default(true)
   pushNotifications     Boolean @default(false)
