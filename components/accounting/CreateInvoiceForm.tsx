@@ -676,11 +676,11 @@ export default function CreateInvoiceForm({ customers, invoiceNumber, products }
             <CardContent>
               <Button 
                 variant="outline" 
-                className="w-full"
+                className="w-full text-sm"
                 onClick={() => setShowTemplateSelector(true)}
               >
                 <Palette className="h-4 w-4 mr-2" />
-                Choose Template (Currently: Template {formData.templateId})
+                Layout {formData.templateId}
               </Button>
             </CardContent>
           </Card>
