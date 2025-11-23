@@ -18,6 +18,7 @@ import { CheckCircle, XCircle, Clock, User, FileText, Eye, AlertCircle, Building
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { formatDistanceToNow } from 'date-fns';
+import { motion } from 'framer-motion';
 
 interface KYCDocument {
   id: string;
@@ -183,145 +184,227 @@ export function KYCVerificationList({ submissions, stats }: Props) {
     <>
       {/* Stats */}
       <div className="grid md:grid-cols-5 gap-4 mb-8">
-        <Card className="bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-950/30 dark:to-amber-950/30 border-orange-200 dark:border-orange-900">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">Pending</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-orange-600 rounded-lg flex items-center justify-center">
-                <Clock className="h-5 w-5 text-white" />
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0, duration: 0.5 }}
+          whileHover={{ y: -5, scale: 1.02 }}
+        >
+          <Card className="glass-card-light dark:glass-card-dark border-none bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-950/30 dark:to-amber-950/30 overflow-hidden relative group">
+            <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <CardHeader className="pb-3 relative z-10">
+              <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">Pending</CardTitle>
+            </CardHeader>
+            <CardContent className="relative z-10">
+              <div className="flex items-center gap-3">
+                <motion.div
+                  whileHover={{ rotate: 360 }}
+                  transition={{ duration: 0.5 }}
+                  className="w-10 h-10 bg-orange-600 rounded-lg flex items-center justify-center shadow-lg"
+                >
+                  <Clock className="h-5 w-5 text-white" />
+                </motion.div>
+                <p className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">{stats.pending + stats.submitted}</p>
               </div>
-              <p className="text-2xl font-bold">{stats.pending + stats.submitted}</p>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </motion.div>
 
-        <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border-blue-200 dark:border-blue-900">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">Under Review</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-                <Eye className="h-5 w-5 text-white" />
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1, duration: 0.5 }}
+          whileHover={{ y: -5, scale: 1.02 }}
+        >
+          <Card className="glass-card-light dark:glass-card-dark border-none bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 overflow-hidden relative group">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-indigo-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <CardHeader className="pb-3 relative z-10">
+              <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">Under Review</CardTitle>
+            </CardHeader>
+            <CardContent className="relative z-10">
+              <div className="flex items-center gap-3">
+                <motion.div
+                  whileHover={{ rotate: 360 }}
+                  transition={{ duration: 0.5 }}
+                  className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg"
+                >
+                  <Eye className="h-5 w-5 text-white" />
+                </motion.div>
+                <p className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">{stats.underReview}</p>
               </div>
-              <p className="text-2xl font-bold">{stats.underReview}</p>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </motion.div>
 
-        <Card className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/30 border-green-200 dark:border-green-900">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">Approved</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
-                <CheckCircle className="h-5 w-5 text-white" />
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
+          whileHover={{ y: -5, scale: 1.02 }}
+        >
+          <Card className="glass-card-light dark:glass-card-dark border-none bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/30 overflow-hidden relative group">
+            <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-emerald-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <CardHeader className="pb-3 relative z-10">
+              <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">Approved</CardTitle>
+            </CardHeader>
+            <CardContent className="relative z-10">
+              <div className="flex items-center gap-3">
+                <motion.div
+                  whileHover={{ rotate: 360 }}
+                  transition={{ duration: 0.5 }}
+                  className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center shadow-lg"
+                >
+                  <CheckCircle className="h-5 w-5 text-white" />
+                </motion.div>
+                <p className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">{stats.approved}</p>
               </div>
-              <p className="text-2xl font-bold">{stats.approved}</p>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </motion.div>
 
-        <Card className="bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-950/30 dark:to-rose-950/30 border-red-200 dark:border-red-900">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">Rejected</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-red-600 rounded-lg flex items-center justify-center">
-                <XCircle className="h-5 w-5 text-white" />
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+          whileHover={{ y: -5, scale: 1.02 }}
+        >
+          <Card className="glass-card-light dark:glass-card-dark border-none bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-950/30 dark:to-rose-950/30 overflow-hidden relative group">
+            <div className="absolute inset-0 bg-gradient-to-br from-red-500/10 to-rose-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <CardHeader className="pb-3 relative z-10">
+              <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">Rejected</CardTitle>
+            </CardHeader>
+            <CardContent className="relative z-10">
+              <div className="flex items-center gap-3">
+                <motion.div
+                  whileHover={{ rotate: 360 }}
+                  transition={{ duration: 0.5 }}
+                  className="w-10 h-10 bg-red-600 rounded-lg flex items-center justify-center shadow-lg"
+                >
+                  <XCircle className="h-5 w-5 text-white" />
+                </motion.div>
+                <p className="text-2xl font-bold bg-gradient-to-r from-red-600 to-rose-600 bg-clip-text text-transparent">{stats.rejected}</p>
               </div>
-              <p className="text-2xl font-bold">{stats.rejected}</p>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </motion.div>
 
-        <Card className="bg-gradient-to-br from-slate-50 to-gray-50 dark:from-slate-950/30 dark:to-gray-950/30 border-slate-200 dark:border-slate-800">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">Total</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-slate-600 rounded-lg flex items-center justify-center">
-                <User className="h-5 w-5 text-white" />
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.5 }}
+          whileHover={{ y: -5, scale: 1.02 }}
+        >
+          <Card className="glass-card-light dark:glass-card-dark border-none bg-gradient-to-br from-slate-50 to-gray-50 dark:from-slate-950/30 dark:to-gray-950/30 overflow-hidden relative group">
+            <div className="absolute inset-0 bg-gradient-to-br from-slate-500/10 to-gray-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <CardHeader className="pb-3 relative z-10">
+              <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">Total</CardTitle>
+            </CardHeader>
+            <CardContent className="relative z-10">
+              <div className="flex items-center gap-3">
+                <motion.div
+                  whileHover={{ rotate: 360 }}
+                  transition={{ duration: 0.5 }}
+                  className="w-10 h-10 bg-slate-600 rounded-lg flex items-center justify-center shadow-lg"
+                >
+                  <User className="h-5 w-5 text-white" />
+                </motion.div>
+                <p className="text-2xl font-bold bg-gradient-to-r from-slate-600 to-gray-600 bg-clip-text text-transparent">
+                  {stats.pending + stats.submitted + stats.underReview + stats.approved + stats.rejected}
+                </p>
               </div>
-              <p className="text-2xl font-bold">
-                {stats.pending + stats.submitted + stats.underReview + stats.approved + stats.rejected}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </motion.div>
       </div>
 
       {/* Submissions List */}
-      <Card>
-        <CardHeader>
-          <CardTitle>KYC Submissions</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {submissions.length === 0 ? (
-            <div className="text-center py-12">
-              <AlertCircle className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-              <p className="text-slate-600 dark:text-slate-400">No pending KYC submissions</p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {submissions.map((submission) => (
-                <Card key={submission.id} className="hover:shadow-md transition-shadow">
-                  <CardContent className="pt-6">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-start gap-4 flex-1">
-                        <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                          submission.role === 'BUSINESS' ? 'bg-purple-100 dark:bg-purple-900' : 'bg-blue-100 dark:bg-blue-900'
-                        }`}>
-                          {submission.role === 'BUSINESS' ? (
-                            <Building2 className="h-6 w-6 text-purple-600 dark:text-purple-400" />
-                          ) : (
-                            <User className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-                          )}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5, duration: 0.5 }}
+      >
+        <Card className="glass-card-light dark:glass-card-dark border-none overflow-hidden">
+          <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20">
+            <CardTitle className="flex items-center gap-2">
+              <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+              KYC Submissions
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-6">
+            {submissions.length === 0 ? (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-center py-12"
+              >
+                <AlertCircle className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+                <p className="text-slate-600 dark:text-slate-400">No pending KYC submissions</p>
+              </motion.div>
+            ) : (
+              <div className="space-y-4">
+                {submissions.map((submission, index) => (
+                  <motion.div
+                    key={submission.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.6 + index * 0.05 }}
+                    whileHover={{ x: 5, scale: 1.01 }}
+                  >
+                    <Card className="glass-card-light dark:glass-card-dark border-none hover:shadow-md transition-shadow">
+                      <CardContent className="pt-6">
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-start gap-4 flex-1">
+                            <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                              submission.role === 'BUSINESS' ? 'bg-purple-100 dark:bg-purple-900' : 'bg-blue-100 dark:bg-blue-900'
+                            }`}>
+                              {submission.role === 'BUSINESS' ? (
+                                <Building2 className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+                              ) : (
+                                <User className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                              )}
+                            </div>
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <h3 className="font-semibold text-lg">
+                                  {submission.firstName} {submission.lastName}
+                                </h3>
+                                {getStatusBadge(submission.kycStatus)}
+                              </div>
+                              <p className="text-sm text-slate-600 dark:text-slate-400">{submission.email}</p>
+                              <div className="flex items-center gap-4 mt-2 text-sm text-slate-500">
+                                <span>ID: {submission.idNumber ? `****${submission.idNumber.slice(-4)}` : 'N/A'}</span>
+                                <span>•</span>
+                                <span>{submission.role === 'BUSINESS' ? 'Business Account' : 'Investor'}</span>
+                                <span>•</span>
+                                <span>Submitted {formatDistanceToNow(new Date(submission.updatedAt))} ago</span>
+                              </div>
+                              <div className="flex items-center gap-2 mt-3">
+                                <FileText className="h-4 w-4 text-slate-400" />
+                                <span className="text-sm text-slate-600 dark:text-slate-400">
+                                  {submission.kycDocuments.length} document{submission.kycDocuments.length !== 1 ? 's' : ''} uploaded
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setSelectedUser(submission)}
+                            className="glass-card-light dark:glass-card-dark border-white/50 dark:border-slate-700/50 hover:scale-105 transition-transform"
+                          >
+                            <Eye className="h-4 w-4 mr-2" />
+                            Review
+                          </Button>
                         </div>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h3 className="font-semibold text-lg">
-                              {submission.firstName} {submission.lastName}
-                            </h3>
-                            {getStatusBadge(submission.kycStatus)}
-                          </div>
-                          <p className="text-sm text-slate-600 dark:text-slate-400">{submission.email}</p>
-                          <div className="flex items-center gap-4 mt-2 text-sm text-slate-500">
-                            <span>ID: {submission.idNumber ? `****${submission.idNumber.slice(-4)}` : 'N/A'}</span>
-                            <span>•</span>
-                            <span>{submission.role === 'BUSINESS' ? 'Business Account' : 'Investor'}</span>
-                            <span>•</span>
-                            <span>Submitted {formatDistanceToNow(new Date(submission.updatedAt))} ago</span>
-                          </div>
-                          <div className="flex items-center gap-2 mt-3">
-                            <FileText className="h-4 w-4 text-slate-400" />
-                            <span className="text-sm text-slate-600 dark:text-slate-400">
-                              {submission.kycDocuments.length} document{submission.kycDocuments.length !== 1 ? 's' : ''} uploaded
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setSelectedUser(submission)}
-                      >
-                        <Eye className="h-4 w-4 mr-2" />
-                        Review
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </motion.div>
 
       {/* Review Dialog */}
       <Dialog open={!!selectedUser} onOpenChange={() => setSelectedUser(null)}>
